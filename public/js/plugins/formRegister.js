@@ -74,9 +74,9 @@ if ( typeof Object.create !== 'function' ) {
         },
         setTap: function( tap ){
             var self = this;
-            
+
             self.$tap.removeClass('active');
-            self.$tap.find('[data-target=#form'+tap+']').addClass('active');
+            self.$elem.find('[data-target=#form'+tap+']').addClass('active');
             self.$elem.find(".js-hidden-form").addClass("hidden_elem");
             self.$elem.find("#form"+tap).removeClass("hidden_elem");
             self.setButton( tap );
