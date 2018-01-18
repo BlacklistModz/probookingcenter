@@ -12,6 +12,40 @@ class agency extends Controller {
     public function save(){
         if( empty($_POST) ) $this->error();
 
+        try{
+            $postCompany = array();
+            $postData = array();
+
+            if( $_POST["type"] == "company" ){
+                if( empty($_POST["agency_company_id"]) ){
+                    foreach ($_POST["company"] as $key => $value) {
+                        if( empty($value) ) $arr['error']['agen_'.$key] = 'กรุณากรอกข้อมูล';
+                        continue;
+                        $postCompany["agen_".$key] = $value;
+                    }
+                }
+            }
+
+            if( $_POST["type"] == "agency" ){
+
+            }
+
+            if( $_POST["type"] == "save" ){
+
+            }
+
+            if( empty($arr['error']) ){
+                $arr['status'] = 1;
+            }
+
+        } catch (Exception $e) {
+            $arr['error'] = $this->_getError($e->getMessage());
+        }
+        echo json_encode($arr);
+    }
+    public function _save(){
+        if( empty($_POST) ) $this->error();
+
         $id = !empty($_POST["id"]) ? $_POST["id"] : null;
         if( !empty($id) ){
             $item = $this->model->get($id);
@@ -92,5 +126,10 @@ class agency extends Controller {
             $arr['error'] = $this->_getError($e->getMessage());
         }
         echo json_encode($arr);
+    }
+
+    public function listsCompany(){
+        if( empty($this->me) || $this->format!='json' ) $this->error();
+        echo json_encode( $this->model->query('agency_company')->lists() );
     }
 }
