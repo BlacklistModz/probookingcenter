@@ -56,8 +56,7 @@ if ( typeof Object.create !== 'function' ) {
                 }
                 else{
                     self.currTap = parseInt(self.currTap)+1;
-                    self.$elem.find(".js-hidden-form").addClass("hidden_elem");
-                    self.$elem.find("#form"+self.currTap).removeClass("hidden_elem");
+                    self.setTap( self.currTap );
                     self.setButton( self.currTap );
                 }
             });
@@ -68,11 +67,19 @@ if ( typeof Object.create !== 'function' ) {
                 }
                 else{
                     self.currTap = parseInt(self.currTap)-1;
-                    self.$elem.find(".js-hidden-form").addClass("hidden_elem");
-                    self.$elem.find("#form"+self.currTap).removeClass("hidden_elem");
+                    self.setTap( self.currTap );
                     self.setButton( self.currTap );
                 }
             });
+        },
+        setTap: function( tap ){
+            var self = this;
+            
+            self.$tap.removeClass('active');
+            self.$tap.find('[data-target=#form'+tap+']').addClass('active');
+            self.$elem.find(".js-hidden-form").addClass("hidden_elem");
+            self.$elem.find("#form"+tap).removeClass("hidden_elem");
+            self.setButton( tap );
         },
         setButton: function( tap ){
             var self = this;
