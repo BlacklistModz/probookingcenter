@@ -178,7 +178,7 @@ $formAgen   ->field("agen_password2")
                         </div>
                         <div class="part middle">
                            <div class="text"> 
-                              <a class="js-change-step" data-target="#form1"> กรอกข้อมูล เอเจนซี่</a>
+                              <a class="js-change-step" data-target="#form1"> ข้อมูลบริษัท</a>
                            </div>
                         </div>
                         <div class="part point">
@@ -193,7 +193,7 @@ $formAgen   ->field("agen_password2")
                         </div>
                         <div class="part middle">
                            <div class="text">  
-                              <a class="js-change-step" data-target="#form2"> กรอกข้อมูล ตัวแทน</a>
+                              <a class="js-change-step" data-target="#form2"> ข้อมูลเซลล์</a>
                            </div>
                         </div>
                         <div class="part point">
