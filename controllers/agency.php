@@ -20,8 +20,6 @@ class agency extends Controller {
                 if( empty($_POST["agency_company_id"]) ){
                     foreach ($_POST["company"] as $key => $value) {
                         if( empty($value) ) $arr['error']['agen_'.$key] = 'กรุณากรอกข้อมูล';
-                        continue;
-                        $postCompany["agen_".$key] = $value;
                     }
                 }
             }
@@ -31,7 +29,17 @@ class agency extends Controller {
             }
 
             if( $_POST["type"] == "save" ){
-
+                if( empty($_POST["agency_company_id"]) ){
+                    foreach ($_POST["company"] as $key => $value) {
+                        $postCompany["agen_".$key] = $value;
+                    }
+                }
+                else{
+                    $postData["agency_company_id"] = $_POST["agency_company_id"];
+                }
+                foreach ($_POST["agency"] as $key => $value) {
+                    $postData["agen_".$key] = $value;
+                }
             }
 
             if( empty($arr['error']) ){
