@@ -9,7 +9,7 @@
 
 				<div class="clearfix">
 					<div class="clearfix">
-						<a href="<?=URL?>agency/add/<?=$this->me['company_id']?>" data-plugins="dialog" class="btn btn-blue rfloat"><i class="icon-plus"></i> เพิ่มเซลล์</a>
+						<a href="<?=URL?>agency/add/" data-plugins="dialog" class="btn btn-blue rfloat"><i class="icon-plus"></i> เพิ่มเซลล์</a>
 					</div>
 					<div class="mtm">
 						<table class="table-bordered" style="color:#000;">

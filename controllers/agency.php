@@ -10,10 +10,10 @@ class agency extends Controller {
     	$this->error();
     }
     public function add($company=null){
-        $company = isset($_REQUEST["company"]) ? $_REQUEST["company"] : $company;
-        if( empty($this->me) || empty($company) || $this->format!='json' ) $this->error();
+        // $company = isset($_REQUEST["company"]) ? $_REQUEST["company"] : $company;
+        if( empty($this->me) || $this->format!='json' ) $this->error();
+        // || empty($company) 
 
-        $this->view->setData('company', $this->me['company_name']);
         $this->view->render('forms/agency/add');
     }
     public function edit($id=null){
