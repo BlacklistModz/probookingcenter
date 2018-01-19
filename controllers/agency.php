@@ -9,7 +9,76 @@ class agency extends Controller {
     public function index(){
     	$this->error();
     }
+    public function add($company=null){
+        $company = isset($_REQUEST["company"]) ? $_REQUEST["company"] : $company;
+        if( empty($this->me) || empty($company) || $this->format!='json' ) $this->error();
+
+        $this->view->setData('company', $this->me['company_name']);
+        $this->view->render('forms/agency/add');
+    }
+    public function edit($id=null){
+        $id = isset($_REQUEST["id"]) ? $_REQUEST["id"] : $id;
+        if( empty($id) || empty($this->me) || $this->format!='json' ) $this->error();
+
+        $item = $this->model->get($id);
+        if( empty($item) ) $this->error();
+
+        $this->view->setData('item', $item);
+        $this->view->render('forms/agency/add');
+    }
     public function save(){
+        if( empty($_POST) ) $this->error();
+
+        $id = isset($_POST["id"]) ? $_POST["id"] : null;
+        if( !empty($id) ){
+            $item = $this->model->get($id);
+            if( empty($item) ) $this->error();
+        }
+
+        try{
+            $form = new Form();
+            $form   ->post('agen_fname')->val('is_empty')
+                    ->post('agen_lname')
+                    ->post('agen_nickname')
+                    ->post('agen_position')
+                    ->post('agen_email')
+                    ->post('agen_tel')
+                    ->post('agen_line_id')
+                    ->post('agen_skype')
+                    ->post('agen_user_name')->val('is_empty');
+            $form->submit();
+            $postData = $form->fetch();
+
+            if( empty($id) ){
+                if( strlen($_POST["agen_password"]) < 6 ){
+                    $arr['error']['agen_password'] = 'รหัสผ่านต้องมีความยาว 6 ตัวอักษรขึ้นไป';
+                }
+                elseif( $_POST["agen_password"] != $_POST["agen_password2"] ){
+                    $arr['error']['agen_password2'] = 'รหัสยืนยันไม่ตรงกับรหัสผ่าน';
+                }
+                else{
+                    $postData['agen_password'] = substr(md5(trim($_POST["agen_password"])),0,20);
+                }
+            }
+
+            if( empty($arr['error']) ){
+                if( !empty($id) ){
+                    $this->model->update($id, $postData);
+                }
+                else{
+                    $this->model->insert($postData);
+                }
+                $arr['message'] = 'บันทึกข้อมูลเรียบร้อย';
+                $arr['url'] = 'refresh';
+            }
+
+        } catch (Exception $e) {
+            $arr['error'] = $this->_getError($e->getMessage());
+        }
+        echo json_encode($arr);
+    }
+
+    public function set(){
         if( empty($_POST) ) $this->error();
 
         try{

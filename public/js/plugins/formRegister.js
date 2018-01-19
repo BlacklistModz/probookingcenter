@@ -444,7 +444,7 @@ if ( typeof Object.create !== 'function' ) {
 
             $.ajax({
                 type:'POST',
-                url : Event.URL + 'agency/save',
+                url : Event.URL + 'agency/set',
                 data : formData,
                 dataType : 'json'
             }).done(function (results) {
