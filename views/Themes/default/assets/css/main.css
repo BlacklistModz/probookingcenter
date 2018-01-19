@@ -32,7 +32,6 @@ div.beadcrumbs{
 .dropdown-menu > .dropdown-content{
     display: none;
     position: absolute;
-    transform: translate3d(0px, 38px, 0px);
     top: 0px;
     left: 0px;
     will-change: transform;
@@ -41,7 +40,7 @@ div.beadcrumbs{
     float: left;
     min-width: 10rem;
     padding: .5rem 0;
-    transform: translate3d(-124px, 17px, 0px);
+    transform: translate3d(-60px, 17px, 0px);
     font-size: 1rem;
     color: #212529!important;
     text-align: left;
@@ -82,6 +81,7 @@ div.beadcrumbs{
     font-style: normal;
     font-weight: normal;
     text-decoration: inherit;
+    margin-left:5px;
 }
 li.part a{
 cursor: default;
