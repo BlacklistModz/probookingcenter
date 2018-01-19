@@ -53,11 +53,16 @@ class agency extends Controller {
             $postData = $form->fetch();
 
             $has_user = true;
+            $has_email = true;
             if( !empty($item) ){
                 if( $item['user_name'] == $postData['agen_user_name'] ) $has_user = false;
+                if( $item['email'] == $postData["agen_email"] ) $has_email = false;
             }
             if( $this->model->is_username($postData["agen_user_name"]) && $has_user ){
                 $arr['error']['agen_user_name'] = 'มีชื่อผู้ใช้นี้ในระบบแล้ว';
+            }
+            if( $this->model->is_email($postData["agen_email"]) && $has_email ){
+                $arr['error']['agen_email'] = 'มีอีเมลนี้ในระบบแล้ว';
             }
 
             if( empty($id) ){
