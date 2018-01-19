@@ -9,7 +9,95 @@ class agency extends Controller {
     public function index(){
     	$this->error();
     }
+    public function add($company=null){
+        // $company = isset($_REQUEST["company"]) ? $_REQUEST["company"] : $company;
+        if( empty($this->me) || $this->format!='json' ) $this->error();
+        // || empty($company) 
+
+        $this->view->setData('status', $this->model->status());
+        $this->view->render('forms/agency/add');
+    }
+    public function edit($id=null){
+        $id = isset($_REQUEST["id"]) ? $_REQUEST["id"] : $id;
+        if( empty($id) || empty($this->me) || $this->format!='json' ) $this->error();
+
+        $item = $this->model->get($id);
+        if( empty($item) ) $this->error();
+
+        $this->view->setData('status', $this->model->status());
+        $this->view->setData('item', $item);
+        $this->view->render('forms/agency/add');
+    }
     public function save(){
+        if( empty($_POST) ) $this->error();
+
+        $id = isset($_POST["id"]) ? $_POST["id"] : null;
+        if( !empty($id) ){
+            $item = $this->model->get($id);
+            if( empty($item) ) $this->error();
+        }
+
+        try{
+            $form = new Form();
+            $form   ->post('agen_fname')->val('is_empty')
+                    ->post('agen_lname')
+                    ->post('agen_nickname')
+                    ->post('agen_position')
+                    ->post('agen_email')->val('email')
+                    ->post('agen_tel')
+                    ->post('agen_line_id')
+                    ->post('agen_skype')
+                    ->post('agen_user_name')->val('is_empty')
+                    ->post('status');
+            $form->submit();
+            $postData = $form->fetch();
+
+            $has_user = true;
+            $has_email = true;
+            if( !empty($item) ){
+                if( $item['user_name'] == $postData['agen_user_name'] ) $has_user = false;
+                if( $item['email'] == $postData["agen_email"] ) $has_email = false;
+            }
+            if( $this->model->is_username($postData["agen_user_name"]) && $has_user ){
+                $arr['error']['agen_user_name'] = 'มีชื่อผู้ใช้นี้ในระบบแล้ว';
+            }
+            if( $this->model->is_email($postData["agen_email"]) && $has_email ){
+                $arr['error']['agen_email'] = 'มีอีเมลนี้ในระบบแล้ว';
+            }
+
+            if( empty($id) ){
+                if( strlen($_POST["agen_password"]) < 6 ){
+                    $arr['error']['agen_password'] = 'รหัสผ่านต้องมีความยาว 6 ตัวอักษรขึ้นไป';
+                }
+                elseif( $_POST["agen_password"] != $_POST["agen_password2"] ){
+                    $arr['error']['agen_password2'] = 'รหัสยืนยันไม่ตรงกับรหัสผ่าน';
+                }
+                else{
+                    $postData['agen_password'] = substr(md5(trim($_POST["agen_password"])),0,20);
+                }
+            }
+
+            if( empty($arr['error']) ){
+                if( !empty($id) ){
+                    $this->model->update($id, $postData);
+                }
+                else{
+                    // $postData['status'] = 1;
+                    $postData['agen_role'] = 'sales';
+                    $postData['agency_company_id'] = $this->me['company_id'];
+                    $this->model->insert($postData);
+                }
+                $arr['message'] = 'บันทึกข้อมูลเรียบร้อย';
+                $arr['url'] = 'refresh';
+            }
+
+        } catch (Exception $e) {
+            $arr['error'] = $this->_getError($e->getMessage());
+        }
+        echo json_encode($arr);
+    }
+
+    public function set(){
         if( empty($_POST) ) $this->error();
 
         try{
