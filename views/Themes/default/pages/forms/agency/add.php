@@ -2,7 +2,6 @@
 
 $title = "เซลล์";
 $arr["title"] = "เพิ่ม {$title}";
-$arr['hiddenInput'][] = array('name'=>'company', 'value'=>$this->me['company_id']);
 if( !empty($this->item) ){
 	$arr['title'] = "แก้ไข {$title}";
 	$arr['hiddenInput'][] = array('name'=>'id','value'=>$this->item['id']);
@@ -105,6 +104,21 @@ $form   ->field("agen_user_name")
          			->attr('style', 'color:black;')
          			->value('');
          }
+
+$status
+foreach ($this->status as $key => $value) {
+   $ck = '';
+   if( !empty($this->item) ){
+      $ck = $this->item['status'] == $value['id'] ? 'checked="1"' : '';
+   }
+   $status .= '<div>
+                  <label class="radio"><input type="radio" '.$ck.' name="status" value="'.$value['id'].'"> '.$value['name'].'</label>
+               </div>';
+}
+
+$form    ->field('status')
+         ->label("สถานะ*")
+         ->text( $status );
 
 # set form
 $arr['form'] = '<form class="js-submit-form" style="color:#000;" method="post" action="'.URL. 'agency/save"></form>';
