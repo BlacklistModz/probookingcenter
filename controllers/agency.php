@@ -19,14 +19,26 @@ class agency extends Controller {
             if( $_POST["type"] == "company" ){
                 if( empty($_POST["agency_company_id"]) ){
                     foreach ($_POST["company"] as $key => $value) {
-                        if( empty($value) ) $arr['error']['agen_'.$key] = 'กรุณากรอกข้อมูล';
+                        if( $key != 'com_fax' ){
+                            if( empty($value) ) $arr['error']['agen_'.$key] = 'กรุณากรอกข้อมูล';
+                        }
                     }
                 }
             }
 
             if( $_POST["type"] == "agency" ){
                 foreach ($_POST["agency"] as $key => $value) {
-                    if( empty($value) ) $arr['error']['agen_'.$key] = 'กรุณากรอกข้อมูล';
+                    if( $key != 'lname' && $key != 'nickname' && $key != 'position' && $key != 'tel' && $key != 'line_id' && $key != 'skype' ){
+                        if( empty($value) ) $arr['error']['agen_'.$key] = 'กรุณากรอกข้อมูล';
+                    }
+                }
+
+                if( strlen($_POST["agency"]["password"]) < 4 ){
+                    $arr["error"]["password"] = "กรุณากรอกรหัสผ่านให้มีความยาว 4 ตัวอักษรขึ้นไป";
+                }
+                elseif( $_POST["agency"]["password"] != $_POST["agency"]["password2"] ){
+                    $arr["error"]["password"] = "กรุณากรอกรหัสผ่านให้ตรงกัน";
+                    $arr["error"]["password2"] = "กรุณากรอกรหัสผ่านให้ตรงกัน";
                 }
             }
 
@@ -35,17 +47,31 @@ class agency extends Controller {
                     foreach ($_POST["company"] as $key => $value) {
                         $postCompany["agen_".$key] = $value;
                     }
+                    $postCompany["status"] = 0;
+                    $postData["agency_company_id"] = $this->model->query('agency_company')->insert($postCompany);
                 }
                 else{
                     $postData["agency_company_id"] = $_POST["agency_company_id"];
                 }
+
                 foreach ($_POST["agency"] as $key => $value) {
+                    if( $key == 'password2' ) continue;
+                    if( $key == "password" ) $value = substr(md5(trim($value)),0,20);
                     $postData["agen_".$key] = $value;
                 }
+
+                $postData["status"] = 0;
+                $this->model->insert($postData);
             }
 
             if( empty($arr['error']) ){
-                $arr['status'] = 1;
+                if( $_POST["type"] != "save" ){
+                    $arr['status'] = 1;
+                }
+                else{
+                    $arr["message"] = "ขอบคุณที่เข้าร่วมกับเรา";
+                    $arr["url"] = isset($_REQUEST["next"]) ? $_REQUEST["next"] : URL;
+                }
             }
 
         } catch (Exception $e) {

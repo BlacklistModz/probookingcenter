@@ -88,6 +88,11 @@ if ( typeof Object.create !== 'function' ) {
                 }
             });
 
+            self.$submit.click(function(e){
+                self.submit( self.currTap );
+                e.preventDefault();
+            });
+
             var v;
             self.$company.keyup(function (e) {
                 var $this = $(this);
@@ -203,6 +208,8 @@ if ( typeof Object.create !== 'function' ) {
         },
         setPreview: function(){
             var self = this;
+
+            /* CODE SHOW */
         },
         setMenuCompany: function () {
             var self = this;
@@ -380,6 +387,19 @@ if ( typeof Object.create !== 'function' ) {
                         self.currTap = parseInt(self.currTap)+1;
                         self.setTap( self.currTap );
                         self.setButton( self.currTap );
+
+                        if( type == 2 ){
+                            self.setPreview();
+                        }
+                    }
+                    else{
+                        Event.showMsg({text:results.message,load:1,auto:1});
+                        if( results.url == 'refresh' ){
+                            window.location.reload();
+                        }
+                        else{
+                            window.location.href(results.url);
+                        }
                     }
                 }
             });
