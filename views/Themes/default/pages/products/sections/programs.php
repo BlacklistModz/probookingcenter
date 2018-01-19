@@ -7,7 +7,8 @@
 
 				<?php if ( !empty($this->me) ) { ?>
                 <th class="qty">ที่นั้ง</th>
-                <th class="qty">รับได้</th>
+				<th class="qty">รับได้</th>
+				<th class="status"> ใบเตรียมตัว </th>
                 <th class="actions"></th>
                 <?php } ?>
                 
