@@ -12,10 +12,11 @@
 						<thead>
 							<tr style="color:#fff; background-color: #003;">
 								<th width="10%">วันที่</th>
-								<th width="10%">CODE</th>
-								<th width="30%">ซีรีย์</th>
+								<th width="8%">CODE</th>
+								<th width="25%">ซีรีย์</th>
 								<th width="5%">ที่นั่ง</th>
-								<th width="10%">ยอดสุทธิ</th>
+								<th width="7%">ยอดสุทธิ</th>
+								<th width="10%">เซลล์</th>
 								<th width="10%">สถานะ</th>
 								<th width="10%">แจ้งโอนเงิน</th>
 								<th width="10%">ยกเลิก</th>
@@ -34,9 +35,13 @@
 									<tr>
 										<td class="tac"><?=$dateTime?><br/><?=$timeStr?></td>
 										<td class="tac"><?=$value["book_code"]?></td>
-										<td><a href="<?=URL?>tour/<?=$value["ser_id"]?>" style="color:blue; text-decoration: none;" target="_blank">(<?=$value['ser_code']?>) <?=$value['ser_name']?></a></td>
+										<td>
+											<a href="<?=URL?>tour/<?=$value["ser_id"]?>" style="color:blue; text-decoration: none;" target="_blank">
+											<span class="fwb">(<?=$value['ser_code']?>)</span> <?=$value['ser_name']?></a>
+										</td>
 										<td class="tac"><?=$value["book_qty"]?></td>
 										<td class="tar" style="padding-right: 2mm;"><?=number_format($value['book_amountgrandtotal'], 2)?></td>
+										<td><?=$value['agen_fname']?> <?=$value['agen_lname']?></td>
 										<td class="tac">
 											<span class="fwb status_<?=$value['status']?>"><?=$value["book_status"]['name']?></span>
 										</td>
@@ -47,13 +52,13 @@
 												echo '<a class="btn btn-blue disabled">LOCK</a>';
 											}
 											else{
-												echo '<a href="'.URL.'booking/payment/'.$value['book_id'].'" class="btn btn-blue" data-plugins="dialog">แจ้งโอนเงิน</a>';
+												echo '<a href="'.URL.'profile/payment/'.$value['book_id'].'" class="btn btn-blue">แจ้งโอนเงิน</a>';
 											}
 											?>
 										</td>
 										<td class="tac">
 											<?php 
-											if( $value['status'] == 0 || $value['status'] == 5 ) {
+											if( ($value['status'] == 0 || $value['status'] == 5) && $value['agen_id'] == $this->me['id'] ) {
 												echo '<a href="'.URL.'booking/booking_cancel/'.$value['book_id'].'" class="btn btn-red" data-plugins="dialog">ยกเลิก</a>';
 											}
 											else{
