@@ -236,7 +236,7 @@ $formAgen   ->field("agen_password2")
                             <?=$formAgen->html();?>
                         </div>
                         <div class="js-hidden-form preview" id="form3">
-                            <h1>This is preview </h1>
+                            
                         </div>
                         <div class="mtl clearfix">
                             <a class="btn btn-red hidden_elem" id="btn-back"><i class="icon-arrow-left"></i> กลับ</a>

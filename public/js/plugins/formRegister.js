@@ -211,8 +211,79 @@ if ( typeof Object.create !== 'function' ) {
         },
         setPreview: function(){
             var self = this;
+            if(self.$elem.find('input[name=agency_company_id]').length ==0){
+                var dataCompany = {
+                    "บริษัท":$('#agen_com_name').val(),
+                    "ที่อยู่บริษัท":$('#agen_com_address1').val(),
+                    "เบอร์โทรศัพท์":$('#agen_com_tel').val(),
+                    "แฟกซ์":$('#agen_com_fax').val(),
+                    "เลขที่ ททท":$('#agen_com_ttt_on').val(),
+                    "อีเมล บริษัท":$('#agen_com_email').val(),
+                            }         
+            }else{
+                var dataCompany = {
+                    "บริษัท":$('#agen_com_name').val()                    
+                            }            
+            }
+            dataSales = {
+                "ชื่อ":$('#agen_fname').val(),
+                "นามสกุล":$('#agen_lname').val(),
+                "ชื่อเล่น":$('#agen_nickname').val(),
+                "ตำแหน่ง":$('#agen_position').val(),
+                "อีเมล":$("#agen_email").val(),
+                "มือถือ":$("#agen_tel").val(),
+            }
+            dataSalesE = {
+                "Line ID":$("#agen_line_id").val() =="" ? "-":$("#agen_line_id").val(),
+                "Skype ID":$("#agen_skype").val() =="" ? "-":$("#agen_skype").val(), 
+                "Username":$("#agen_user_name").val(),
+            }
+          
 
-            /* CODE SHOW */
+            let  _table = $('<table>', {class:"table"});
+            let _tbody =$('<tbody>', {class:"tbody"});
+            $.each(dataCompany, function(key, values){
+                    _tbody.append(
+                        $('<tr>').append(
+                            $('<td>', {text:key}),
+                            $('<td>', {text:values})
+                        )
+                    )
+                  
+            })
+            _table.append(_tbody);
+            self.$elem.find('.preview').append(
+                $('<h3>',{text:'ข้อมูลบริษัท',class:'tac'}),
+                _table
+    
+            )
+              _table = $('<table>', {class:"table"}); //clear data
+             _tbody =$('<tbody>', {class:"tbody"}); // clear data
+            $.each(dataSales, function(key, values){
+                    _tbody.append(
+                        $('<tr>').append(
+                            $('<td>', {text:key}),
+                            $('<td>', {text:values})
+                        )
+                    )
+                  
+            })
+            $.each(dataSalesE, function(key, values){
+                _tbody.append(
+                    $('<tr>').append(
+                        $('<td>', {text:key}),
+                        $('<td>', {text:values})
+                    )
+                )
+              
+        })
+            _table.append(_tbody);
+            self.$elem.find('.preview').append(
+                $('<h3>',{text:'ข้อมูลเซลล์',class:'tac'}),
+                _table
+            )
+         // Event.showMsg({text:'TEST' , load:1, auto:1, color:'red'});
+         
         },
         setMenuCompany: function () {
             var self = this;
