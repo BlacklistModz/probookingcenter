@@ -13,11 +13,12 @@
 							<tr style="color:#fff; background-color: #003;">
 								<th width="10%">วันที่</th>
 								<th width="10%">CODE</th>
-								<th width="40%">ซีรีย์</th>
+								<th width="30%">ซีรีย์</th>
 								<th width="5%">ที่นั่ง</th>
 								<th width="10%">ยอดสุทธิ</th>
 								<th width="10%">สถานะ</th>
-								<th width="10%">จัดการ</th>
+								<th width="10%">แจ้งโอนเงิน</th>
+								<th width="10%">ยกเลิก</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -41,11 +42,21 @@
 										</td>
 										<td class="tac">
 											<?php 
-											if( $value['status'] == 0 || $value['status'] == 5 ) {
-												echo '<a href="'.URL.'booking/booking_cancel/'.$value['book_id'].'" class="btn btn-red" data-plugins="dialog"><i class="icon-remove"></i> ยกเลิก</a>';
+											if( $value['status'] == 35 || $value['status'] == 40 || $value['status'] == 50 ){
+												echo '<a class="btn btn-blue disabled">LOCK</a>';
 											}
 											else{
-												echo '<a class="disabled btn btn-red"><i class="icon-lock"></i> LOCK</a>';
+												echo '<a href="'.URL.'booking/payment/'.$value['book_id'].'" class="btn btn-blue" data-plugins="dialog">แจ้งโอนเงิน</a>';
+											}
+											?>
+										</td>
+										<td class="tac">
+											<?php 
+											if( $value['status'] == 0 || $value['status'] == 5 ) {
+												echo '<a href="'.URL.'booking/booking_cancel/'.$value['book_id'].'" class="btn btn-red" data-plugins="dialog">ยกเลิก</a>';
+											}
+											else{
+												echo '<a class="disabled btn btn-red">LOCK</a>';
 											}
 											?>
 										</td>

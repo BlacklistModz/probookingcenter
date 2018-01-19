@@ -17,7 +17,7 @@ class Booking_Model extends Model {
                        , ag.agen_fname
                        , ag.agen_lname
                        , ag.agen_position
-                       
+
                        , per.per_date_start
                        , per.per_date_end
 
@@ -54,6 +54,7 @@ class Booking_Model extends Model {
         $arr['total'] = $this->db->count($this->_table, $where_str, $where_arr);
 
         $limit = $this->limited( $options['limit'], $options['pager'] );
+        if( !empty($options["unlimit"]) ) $limit = '';
         $orderby = $this->orderby( $options['sort'], $options['dir'] );
         $where_str = !empty($where_str) ? "WHERE {$where_str}":'';
         $arr['lists'] = $this->buildFrag( $this->db->select("SELECT {$this->_field} FROM {$this->_table} {$where_str} {$orderby} {$limit}", $where_arr ), $options );
@@ -89,6 +90,9 @@ class Booking_Model extends Model {
     	$this->db->insert('booking', $data);
     	$data['id'] = $this->db->lastInsertId();
     }
+    public function update($id, $data){
+        $this->db->update($this->_objName, $data, "{$this->_cutNamefield}id={$id}");
+    }
     public function buildFrag($results, $options=array()) {
         $data = array();
         foreach ($results as $key => $value) {
@@ -111,6 +115,11 @@ class Booking_Model extends Model {
         $data['book_qty'] = $total_qty;
         $data['book_status'] = $this->getStatus($data['status']);
         $data['items'] = $items;
+
+        $data["permit"]["cancel"] = false;
+        if( $data["status"] == 0 || $data["status"] == 5 ){
+            $data["permit"]["cancel"] = true;
+        }
 
         return $data;
     }
