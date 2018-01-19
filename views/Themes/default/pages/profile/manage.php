@@ -42,7 +42,7 @@
 												</span>
 											</td>
 											<td class="tac whitespace">
-												<a href="<?=URL?>edit/<?=$value['id']?>" data-plugins="dialog" class="btn btn-orange">แก้ไข</a>
+												<a href="<?=URL?>agency/edit/<?=$value['id']?>" data-plugins="dialog" class="btn btn-orange">แก้ไข</a>
 												<!-- <a href="" class="btn btn-red">ลบ</a> -->
 											</td>
 										</tr>
