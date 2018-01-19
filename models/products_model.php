@@ -77,7 +77,6 @@ class Products_Model extends Model{
         $condition .= "s.ser_deposit>:deposit";
         $params[":deposit"] = 0;*/
 
-
         $arr['total'] = $this->db->count($this->_table, $condition, $params);
 
         $_field = "

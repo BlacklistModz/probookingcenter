@@ -8,6 +8,61 @@ class Booking_Model extends Model {
 		parent::__construct();
 	}
 
+    private $_objName = "booking";
+    private $_table = "booking b 
+                       LEFT JOIN agency ag ON b.agen_id=ag.agen_id
+                       LEFT JOIN period per ON b.per_id=per.per_id
+                       LEFT JOIN series ser ON per.ser_id=ser.ser_id";
+    private $_field = "b.*
+                       , ag.agen_fname
+                       , ag.agen_lname
+                       , ag.agen_position
+                       
+                       , per.per_date_start
+                       , per.per_date_end
+
+                       , ser.ser_name
+                       , ser.ser_code";
+    private $_cutNamefield = "book_";
+
+    public function lists($options=array()){
+        $options = array_merge(array(
+            'pager' => isset($_REQUEST['pager'])? $_REQUEST['pager']:1,
+            'limit' => isset($_REQUEST['limit'])? $_REQUEST['limit']:50,
+            'more' => true,
+
+            'sort' => isset($_REQUEST['sort'])? $_REQUEST['sort']: 'create_date',
+            'dir' => isset($_REQUEST['dir'])? $_REQUEST['dir']: 'DESC',
+            
+            'time'=> isset($_REQUEST['time'])? $_REQUEST['time']:time(),
+            
+            'q' => isset($_REQUEST['q'])? $_REQUEST['q']:null,
+
+        ), $options);
+
+        $date = date('Y-m-d H:i:s', $options['time']);
+
+        $where_str = "";
+        $where_arr = array();
+
+        if( !empty($options["company"]) ){
+            $where_str .= !empty($where_str) ? " AND " : "";
+            $where_str .= "ag.agency_company_id=:company";
+            $where_arr[":company"] = $options["company"];
+        }
+
+        $arr['total'] = $this->db->count($this->_table, $where_str, $where_arr);
+
+        $limit = $this->limited( $options['limit'], $options['pager'] );
+        $orderby = $this->orderby( $options['sort'], $options['dir'] );
+        $where_str = !empty($where_str) ? "WHERE {$where_str}":'';
+        $arr['lists'] = $this->buildFrag( $this->db->select("SELECT {$this->_field} FROM {$this->_table} {$where_str} {$orderby} {$limit}", $where_arr ), $options );
+
+        if( ($options['pager']*$options['limit']) >= $arr['total'] ) $options['more'] = false;
+        $arr['options'] = $options;
+
+        return $arr;
+    }
 
 	public function prefixNumber()
 	{
@@ -23,7 +78,7 @@ class Booking_Model extends Model {
 
 	public function get($id, $options=array())
 	{
-		$sth = $this->db->prepare("SELECT * FROM booking WHERE book_id=:id LIMIT 1");
+		$sth = $this->db->prepare("SELECT {$this->_field} FROM {$this->_table} WHERE {$this->_cutNamefield}id=:id LIMIT 1");
         $sth->execute( array( ':id' => $id ) );
 
         if( $sth->rowCount()==1 ){
@@ -46,13 +101,15 @@ class Booking_Model extends Model {
     public function convert($data, $options=array()){
 
     	// $data = $this->_cutFirstFieldName($this->_cutNamefield, $data);
-        
+        $total_qty = 0;
         $booking_list = $this->db->select("SELECT * FROM booking_list WHERE `book_code`=:code ORDER BY book_list_code ASC", array(':code'=>$data['book_code']));
         $items = array();
         foreach ($booking_list as $key => $value) {
         	$items[$value['book_list_code']] = $value;
+            $total_qty += $value["book_list_qty"];
         }
-
+        $data['book_qty'] = $total_qty;
+        $data['book_status'] = $this->getStatus($data['status']);
         $data['items'] = $items;
 
         return $data;
@@ -64,5 +121,28 @@ class Booking_Model extends Model {
     	$data['id'] = $this->db->lastInsertId();
     }
 
+    /* STATUS */
+    public function status(){
+        $a[] = array('id'=>0, 'name'=>'จอง');
+        $a[] = array('id'=>10, 'name'=>'แจ้ง Invoice');
+        $a[] = array('id'=>20, 'name'=>'DEP(PT)');
+        $a[] = array('id'=>25, 'name'=>'DEP');
+        $a[] = array('id'=>30, 'name'=>'Full payment(PT)');
+        $a[] = array('id'=>35, 'name'=>'Full payment');
+        $a[] = array('id'=>40, 'name'=>'CXL');
+        $a[] = array('id'=>5, 'name'=>'W/L');
+        $a[] = array('id'=>50, 'name'=>'รอติดต่อกลับ');
 
+        return $a;
+    }
+    public function getStatus($id){
+        $data = array();
+        foreach ($this->status() as $key => $value) {
+            if( $id == $value['id'] ){
+                $data = $value;
+                break;
+            }
+        }
+        return $data;
+    }
 }
