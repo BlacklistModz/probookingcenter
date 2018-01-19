@@ -43,7 +43,7 @@
 											</td>
 											<td class="tac whitespace">
 												<a href="" class="btn btn-orange">แก้ไข</a>
-												<a href="" class="btn btn-red">ลบ</a>
+												<!-- <a href="" class="btn btn-red">ลบ</a> -->
 											</td>
 										</tr>
 										<?php 

@@ -106,9 +106,16 @@ $form   ->field("agen_user_name")
          			->value('');
          }
 
-$status = '<div>
-            <label class="radio"><input type="radio" name="status" value="0"> รอการตรวจสอบ</label>
-          </div>';
+$status
+foreach ($this->status as $key => $value) {
+   $ck = '';
+   if( !empty($this->item) ){
+      $ck = $this->item['status'] == $value['id'] ? 'checked="1"' : '';
+   }
+   $status .= '<div>
+                  <label class="radio"><input type="radio" '.$ck.' name="status" value="'.$value['id'].'"> '.$value['name'].'</label>
+               </div>';
+}
 
 $form    ->field('status')
          ->label("สถานะ*")

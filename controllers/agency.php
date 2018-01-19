@@ -14,6 +14,7 @@ class agency extends Controller {
         if( empty($this->me) || $this->format!='json' ) $this->error();
         // || empty($company) 
 
+        $this->view->setData('status', $this->model->status());
         $this->view->render('forms/agency/add');
     }
     public function edit($id=null){
@@ -23,6 +24,7 @@ class agency extends Controller {
         $item = $this->model->get($id);
         if( empty($item) ) $this->error();
 
+        $this->view->setData('status', $this->model->status());
         $this->view->setData('item', $item);
         $this->view->render('forms/agency/add');
     }
@@ -45,7 +47,8 @@ class agency extends Controller {
                     ->post('agen_tel')
                     ->post('agen_line_id')
                     ->post('agen_skype')
-                    ->post('agen_user_name')->val('is_empty');
+                    ->post('agen_user_name')->val('is_empty')
+                    ->post('status')->val('is_empty');
             $form->submit();
             $postData = $form->fetch();
 
@@ -66,7 +69,7 @@ class agency extends Controller {
                     $this->model->update($id, $postData);
                 }
                 else{
-                    $postData['status'] = 1;
+                    // $postData['status'] = 1;
                     $postData['agen_role'] = 'sales';
                     $postData['agency_company_id'] = $this->me['company_id'];
                     $this->model->insert($postData);
