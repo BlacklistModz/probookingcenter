@@ -94,7 +94,6 @@ $form   ->field("agen_user_name")
          			->placeholder('Password')
          			->attr('style', 'color:black;')
          			->value('');
-
          	$form   ->hr('<h4 class="fwb">กรุณากรอกอย่างน้อย 6 ตัวอักษร</h4>');
 
          	$form   ->field("agen_password2")
