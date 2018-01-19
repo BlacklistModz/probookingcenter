@@ -15,7 +15,6 @@ $form = $form ->create()
 
 $form   ->field("agen_fname")
          ->label("ชื่อ*")
-        
          ->addClass('inputtext')
          ->autocomplete('off')
          ->placeholder('ชื่อ')
@@ -24,13 +23,11 @@ $form   ->field("agen_fname")
 
 $form   ->field("agen_lname")
          ->label("นามสกุล*")
-       
          ->addClass('inputtext')
          ->autocomplete('off')
          ->placeholder('นามสกุล')
          ->attr('style', 'color:black;')
-         ->value('');
-
+         ->value(''
 $form   ->field("agen_nickname")
          ->label("ชื่อเล่น")
          ->addClass('inputtext')
@@ -40,8 +37,7 @@ $form   ->field("agen_nickname")
          ->value('');
 
 $form   ->field("agen_position")
-         ->label("ตำแหน่ง*")
-        
+         ->label("ตำแหน่ง*")   
          ->addClass('inputtext')
          ->autocomplete('off')
          ->placeholder('ตำแหน่ง')
@@ -49,8 +45,7 @@ $form   ->field("agen_position")
          ->value('');
 
 $form   ->field("agen_email")
-         ->label("อีเมล*")
-        
+         ->label("อีเมล*")    
          ->addClass('inputtext')
          ->autocomplete('off')
          ->placeholder('อีเมล')
@@ -58,8 +53,7 @@ $form   ->field("agen_email")
          ->value('');
 
 $form   ->field("agen_tel")
-         ->label("มือถือ*")
-         
+         ->label("มือถือ*")    
          ->addClass('inputtext')
          ->autocomplete('off')
          ->placeholder('มือถือ')
@@ -67,8 +61,7 @@ $form   ->field("agen_tel")
          ->value('');
 
 $form   ->field("agen_line_id")
-         ->label("Line ID")
-      
+         ->label("Line ID")  
          ->addClass('inputtext')
          ->autocomplete('off')
          ->placeholder('Line ID (ถ้ามี)')
@@ -76,8 +69,7 @@ $form   ->field("agen_line_id")
          ->value('');
 
 $form   ->field("agen_skype")
-         ->label("Skype")
-         
+         ->label("Skype")   
          ->addClass('inputtext')
          ->autocomplete('off')
          ->placeholder('Skype (ถ้ามี)')
@@ -86,7 +78,7 @@ $form   ->field("agen_skype")
 
 $form   ->field("agen_user_name")
          ->label("ชื่อเข้าใช้งาน*")      
-           ->addClass('inputtext')
+        ->addClass('inputtext')
          ->autocomplete('off')
          ->placeholder('Username')
          ->attr('style', 'color:black;')
