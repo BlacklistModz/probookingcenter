@@ -89,6 +89,9 @@ if ( typeof Object.create !== 'function' ) {
             });
 
             self.$submit.click(function(e){
+                $(this).addClass('disabled');
+                $(this).attr('disabled', true);
+
                 self.submit( self.currTap );
                 e.preventDefault();
             });
