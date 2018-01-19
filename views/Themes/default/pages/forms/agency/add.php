@@ -18,7 +18,7 @@ $form   ->field("agen_fname")
          ->autocomplete('off')
          ->placeholder('ชื่อ')
          ->attr('style', 'color:black;')
-         ->value('');
+         ->value( !empty($this->item['fname']) ? $this->item['fname'] : '' );
 
 $form   ->field("agen_lname")
          ->label("นามสกุล*")
@@ -26,7 +26,7 @@ $form   ->field("agen_lname")
          ->autocomplete('off')
          ->placeholder('นามสกุล')
          ->attr('style', 'color:black;')
-         ->value('');
+         ->value( !empty($this->item['lname']) ? $this->item['lname'] : '' );
 
 $form   ->field("agen_nickname")
          ->label("ชื่อเล่น")
@@ -34,7 +34,7 @@ $form   ->field("agen_nickname")
          ->autocomplete('off')
          ->placeholder('ชื่อเล่น')
          ->attr('style', 'color:black;')
-         ->value('');
+         ->value( !empty($this->item['nickname']) ? $this->item['nickname'] : '' );
 
 $form   ->field("agen_position")
          ->label("ตำแหน่ง*")   
@@ -42,7 +42,7 @@ $form   ->field("agen_position")
          ->autocomplete('off')
          ->placeholder('ตำแหน่ง')
          ->attr('style', 'color:black;')
-         ->value('');
+         ->value( !empty($this->item['position']) ? $this->item['position'] : '' );
 
 $form   ->field("agen_email")
          ->label("อีเมล*")    
@@ -50,7 +50,7 @@ $form   ->field("agen_email")
          ->autocomplete('off')
          ->placeholder('อีเมล')
          ->attr('style', 'color:black;')
-         ->value('');
+         ->value( !empty($this->item['email']) ? $this->item['email'] : '' );
 
 $form   ->field("agen_tel")
          ->label("มือถือ*")    
@@ -58,7 +58,7 @@ $form   ->field("agen_tel")
          ->autocomplete('off')
          ->placeholder('มือถือ')
          ->attr('style', 'color:black;')
-         ->value('');
+         ->value( !empty($this->item['tel']) ? $this->item['tel'] : '' );
 
 $form   ->field("agen_line_id")
          ->label("Line ID")  
@@ -66,7 +66,7 @@ $form   ->field("agen_line_id")
          ->autocomplete('off')
          ->placeholder('Line ID (ถ้ามี)')
          ->attr('style', 'color:black;')
-         ->value('');
+         ->value( !empty($this->item['line_id']) ? $this->item['line_id'] : '' );
 
 $form   ->field("agen_skype")
          ->label("Skype")   
@@ -74,7 +74,7 @@ $form   ->field("agen_skype")
          ->autocomplete('off')
          ->placeholder('Skype (ถ้ามี)')
          ->attr('style', 'color:black;')
-         ->value('');
+         ->value( !empty($this->item['skype']) ? $this->item['skype'] : '' );
 
 $form   ->field("agen_user_name")
          ->label("ชื่อเข้าใช้งาน*")      
@@ -82,7 +82,7 @@ $form   ->field("agen_user_name")
          ->autocomplete('off')
          ->placeholder('Username')
          ->attr('style', 'color:black;')
-         ->value('');
+         ->value( !empty($this->item['user_name']) ? $this->item['user_name'] : '' );
 
          if( empty($this->item) ) { 
          	$form   ->field("agen_password")
