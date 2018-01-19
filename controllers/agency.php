@@ -41,7 +41,7 @@ class agency extends Controller {
                     ->post('agen_lname')
                     ->post('agen_nickname')
                     ->post('agen_position')
-                    ->post('agen_email')
+                    ->post('agen_email')->val('email')
                     ->post('agen_tel')
                     ->post('agen_line_id')
                     ->post('agen_skype')
@@ -66,6 +66,9 @@ class agency extends Controller {
                     $this->model->update($id, $postData);
                 }
                 else{
+                    $postData['status'] = 1;
+                    $postData['agen_role'] = 'sales';
+                    $postData['agency_company_id'] = $this->me['company_id'];
                     $this->model->insert($postData);
                 }
                 $arr['message'] = 'บันทึกข้อมูลเรียบร้อย';
