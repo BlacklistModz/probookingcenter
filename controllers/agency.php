@@ -52,6 +52,14 @@ class agency extends Controller {
             $form->submit();
             $postData = $form->fetch();
 
+            $has_user = true;
+            if( !empty($item) ){
+                if( $item['user_name'] == $postData['agen_user_name'] ) $has_user = false;
+            }
+            if( $this->model->is_username($postData["agen_user_name"]) && $has_user ){
+                $arr['error']['agen_user_name'] = 'มีชื่อผู้ใช้นี้ในระบบแล้ว';
+            }
+
             if( empty($id) ){
                 if( strlen($_POST["agen_password"]) < 6 ){
                     $arr['error']['agen_password'] = 'รหัสผ่านต้องมีความยาว 6 ตัวอักษรขึ้นไป';
