@@ -49,6 +49,10 @@ d88' `8b   88bP"Y88b   888P"Y88b  "888P"Y88b   888' `88b
     display: inline-flex;
 
 }
+.dropdown-menu a{
+    text-decoration: none;
+
+}
 .dropdown-menu:hover > .dropdown-content{
     display: block;
 }
