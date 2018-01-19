@@ -20,6 +20,7 @@ class Agency_Model extends Model {
         , agency.agen_email
         , agency.agen_tel
         , agency.agen_line_id
+        , agency.agen_role
 
         , agency_company.agen_com_id as company_id
         , agency_company.agen_com_name as company_name
@@ -32,7 +33,7 @@ class Agency_Model extends Model {
             'limit' => isset($_REQUEST['limit'])? $_REQUEST['limit']:50,
             'more' => true,
 
-            'sort' => isset($_REQUEST['sort'])? $_REQUEST['sort']: 'created',
+            'sort' => isset($_REQUEST['sort'])? $_REQUEST['sort']: 'agency.create_date',
             'dir' => isset($_REQUEST['dir'])? $_REQUEST['dir']: 'DESC',
             
             'time'=> isset($_REQUEST['time'])? $_REQUEST['time']:time(),
@@ -46,10 +47,17 @@ class Agency_Model extends Model {
         $where_str = "";
         $where_arr = array();
 
+        if( !empty($options["company"]) ){
+            $where_str .= !empty($where_str) ? " AND " : "";
+            $where_str .= "agency_company_id=:company";
+            $where_arr[":company"] = $options["company"];
+        }
+
         $arr['total'] = $this->db->count($this->_table, $where_str, $where_arr);
 
         $limit = $this->limited( $options['limit'], $options['pager'] );
-        $orderby = $this->orderby( $this->_cutNamefield.$options['sort'], $options['dir'] );
+        if( !empty($options["unlimit"]) ) $limit = '';
+        $orderby = $this->orderby( $options['sort'], $options['dir'] );
         $where_str = !empty($where_str) ? "WHERE {$where_str}":'';
         $arr['lists'] = $this->buildFrag( $this->db->select("SELECT {$this->_field} FROM {$this->_table} {$where_str} {$orderby} {$limit}", $where_arr ), $options );
 
@@ -89,6 +97,8 @@ class Agency_Model extends Model {
         if( !empty($data['lname']) ){
             $data['fullname'] .= " {$data['lname']}";
         }
+
+        $data['agen_status'] = $this->getStatus($data['status']);
 
         return $data;
     }
@@ -148,4 +158,23 @@ class Agency_Model extends Model {
 	public function is_email($text){
 		return $this->db->count($this->_objType, 'agen_emil=:text', array(':text'=>$text));
 	}
+
+    /* STATUS */
+    public function status(){
+        $a[] = array('id'=>0, 'name'=>'รอการตรวจสอบ');
+        $a[] = array('id'=>1, 'name'=>'ใช้งาน');
+        $a[] = array('id'=>2, 'name'=>'ระงับการใช้งาน');
+
+        return $a;
+    }
+    public function getStatus($id){
+        $data = array();
+        foreach ($this->status() as $key => $value) {
+            if( $id == $value['id'] ){
+                $data = $value;
+                break;
+            }
+        }
+        return $data;
+    }
 }
