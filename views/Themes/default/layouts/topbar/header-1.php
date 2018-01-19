@@ -33,10 +33,10 @@ $form   ->field("pass")
 					<div class="dropdown-content">
 					<ul>
 						<li>
-							<a class="dropdown-item" href="#">Manage Sales</a>
+							<a class="dropdown-item" href="<?=URL?>profile/sales">Manage Sales</a>
 						</li>
 						<li>
-							<a class="dropdown-item" href="#">Booking History</a>
+							<a class="dropdown-item" href="<?=URL?>profile/history">Booking History</a>
 						</li>
 					</div>
 				</div>
