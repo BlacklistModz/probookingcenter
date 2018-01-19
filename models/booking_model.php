@@ -3,10 +3,10 @@
 class Booking_Model extends Model {
 
 
-	public function __construct()
-	{
-		parent::__construct();
-	}
+    public function __construct()
+    {
+        parent::__construct();
+    }
 
     private $_objName = "booking";
     private $_table = "booking b 
@@ -21,6 +21,7 @@ class Booking_Model extends Model {
                        , per.per_date_start
                        , per.per_date_end
 
+                       , ser.ser_id
                        , ser.ser_name
                        , ser.ser_code";
     private $_cutNamefield = "book_";
@@ -65,30 +66,30 @@ class Booking_Model extends Model {
         return $arr;
     }
 
-	public function prefixNumber()
-	{
-		$sth = $this->db->prepare("SELECT * FROM prefixnumber LIMIT 1");
+    public function prefixNumber()
+    {
+        $sth = $this->db->prepare("SELECT * FROM prefixnumber LIMIT 1");
         $sth->execute();
 
         return $sth->fetch( PDO::FETCH_ASSOC );
-	}
-	public function prefixNumberUpdate($id, $data) {
-		$this->db->update('prefixnumber', $data, "`prefix_id`={$id}");
-	}
+    }
+    public function prefixNumberUpdate($id, $data) {
+        $this->db->update('prefixnumber', $data, "`prefix_id`={$id}");
+    }
 
 
-	public function get($id, $options=array())
-	{
-		$sth = $this->db->prepare("SELECT {$this->_field} FROM {$this->_table} WHERE {$this->_cutNamefield}id=:id LIMIT 1");
+    public function get($id, $options=array())
+    {
+        $sth = $this->db->prepare("SELECT * FROM booking WHERE book_id=:id LIMIT 1");
         $sth->execute( array( ':id' => $id ) );
 
         if( $sth->rowCount()==1 ){
             return $this->convert( $sth->fetch( PDO::FETCH_ASSOC ), $options );
         } return array();
-	}
-	public function insert(&$data){
-    	$this->db->insert('booking', $data);
-    	$data['id'] = $this->db->lastInsertId();
+    }
+    public function insert(&$data){
+        $this->db->insert('booking', $data);
+        $data['id'] = $this->db->lastInsertId();
     }
     public function update($id, $data){
         $this->db->update($this->_objName, $data, "{$this->_cutNamefield}id={$id}");
@@ -104,12 +105,13 @@ class Booking_Model extends Model {
     }
     public function convert($data, $options=array()){
 
-    	// $data = $this->_cutFirstFieldName($this->_cutNamefield, $data);
+        // $data = $this->_cutFirstFieldName($this->_cutNamefield, $data);
+        
         $total_qty = 0;
         $booking_list = $this->db->select("SELECT * FROM booking_list WHERE `book_code`=:code ORDER BY book_list_code ASC", array(':code'=>$data['book_code']));
         $items = array();
         foreach ($booking_list as $key => $value) {
-        	$items[$value['book_list_code']] = $value;
+            $items[$value['book_list_code']] = $value;
             $total_qty += $value["book_list_qty"];
         }
         $data['book_qty'] = $total_qty;
@@ -126,8 +128,8 @@ class Booking_Model extends Model {
 
 
     public function detailInsert(&$data){
-    	$this->db->insert('booking_list', $data);
-    	$data['id'] = $this->db->lastInsertId();
+        $this->db->insert('booking_list', $data);
+        $data['id'] = $this->db->lastInsertId();
     }
 
     /* STATUS */
@@ -154,4 +156,5 @@ class Booking_Model extends Model {
         }
         return $data;
     }
+
 }

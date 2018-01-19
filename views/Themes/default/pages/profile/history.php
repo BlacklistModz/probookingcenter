@@ -34,14 +34,15 @@
 									<tr>
 										<td class="tac"><?=$dateTime?><br/><?=$timeStr?></td>
 										<td class="tac"><?=$value["book_code"]?></td>
-										<td>(<?=$value['ser_code']?>) <?=$value['ser_name']?></td>
+										<td><a href="<?=URL?>tour/<?=$value["ser_id"]?>" style="color:blue; text-decoration: none;" target="_blank">(<?=$value['ser_code']?>) <?=$value['ser_name']?></a></td>
 										<td class="tac"><?=$value["book_qty"]?></td>
 										<td class="tar" style="padding-right: 2mm;"><?=number_format($value['book_amountgrandtotal'], 2)?></td>
 										<td class="tac">
 											<span class="fwb status_<?=$value['status']?>"><?=$value["book_status"]['name']?></span>
 										</td>
 										<td class="tac">
-											<?php 
+											<?php
+											// echo '<a class="btn btn-blue disabled">ปิดปรับปรุง</a>'; 
 											if( $value['status'] == 35 || $value['status'] == 40 || $value['status'] == 50 ){
 												echo '<a class="btn btn-blue disabled">LOCK</a>';
 											}
