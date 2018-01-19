@@ -211,6 +211,7 @@ if ( typeof Object.create !== 'function' ) {
         },
         setPreview: function(){
             var self = this;
+            self.$elem.find('.preview').empty();
             if(self.$elem.find('input[name=agency_company_id]').length ==0){
                 var dataCompany = {
                     "บริษัท":$('#agen_com_name').val(),
