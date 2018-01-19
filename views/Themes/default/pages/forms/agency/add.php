@@ -15,7 +15,7 @@ $form = $form ->create()
 
 $form   ->field("agen_fname")
          ->label("ชื่อ*")
-         ->name('agency[fname]')
+        
          ->addClass('inputtext')
          ->autocomplete('off')
          ->placeholder('ชื่อ')
@@ -24,7 +24,7 @@ $form   ->field("agen_fname")
 
 $form   ->field("agen_lname")
          ->label("นามสกุล*")
-         ->name('agency[lname]')
+       
          ->addClass('inputtext')
          ->autocomplete('off')
          ->placeholder('นามสกุล')
@@ -33,7 +33,6 @@ $form   ->field("agen_lname")
 
 $form   ->field("agen_nickname")
          ->label("ชื่อเล่น")
-         ->name('agency[nickname]')
          ->addClass('inputtext')
          ->autocomplete('off')
          ->placeholder('ชื่อเล่น')
@@ -42,7 +41,7 @@ $form   ->field("agen_nickname")
 
 $form   ->field("agen_position")
          ->label("ตำแหน่ง*")
-         ->name('agency[position]')
+        
          ->addClass('inputtext')
          ->autocomplete('off')
          ->placeholder('ตำแหน่ง')
@@ -51,7 +50,7 @@ $form   ->field("agen_position")
 
 $form   ->field("agen_email")
          ->label("อีเมล*")
-         ->name('agency[email]')
+        
          ->addClass('inputtext')
          ->autocomplete('off')
          ->placeholder('อีเมล')
@@ -60,7 +59,7 @@ $form   ->field("agen_email")
 
 $form   ->field("agen_tel")
          ->label("มือถือ*")
-         ->name('agency[tel]')
+         
          ->addClass('inputtext')
          ->autocomplete('off')
          ->placeholder('มือถือ')
@@ -69,7 +68,7 @@ $form   ->field("agen_tel")
 
 $form   ->field("agen_line_id")
          ->label("Line ID")
-         ->name('agency[line_id]')
+      
          ->addClass('inputtext')
          ->autocomplete('off')
          ->placeholder('Line ID (ถ้ามี)')
@@ -78,7 +77,7 @@ $form   ->field("agen_line_id")
 
 $form   ->field("agen_skype")
          ->label("Skype")
-         ->name('agency[skype]')
+         
          ->addClass('inputtext')
          ->autocomplete('off')
          ->placeholder('Skype (ถ้ามี)')
@@ -86,9 +85,8 @@ $form   ->field("agen_skype")
          ->value('');
 
 $form   ->field("agen_user_name")
-         ->label("ชื่อเข้าใช้งาน*")
-         ->name('agency[user_name]')
-         ->addClass('inputtext')
+         ->label("ชื่อเข้าใช้งาน*")      
+           ->addClass('inputtext')
          ->autocomplete('off')
          ->placeholder('Username')
          ->attr('style', 'color:black;')
@@ -96,8 +94,7 @@ $form   ->field("agen_user_name")
 
          if( empty($this->item) ) { 
          	$form   ->field("agen_password")
-         			->label("รหัสผ่าน*")
-         			->name('agency[password]')
+         			->label("รหัสผ่าน*")		
          			->addClass('inputtext')
          			->autocomplete('off')
          			->type('password')
@@ -108,8 +105,7 @@ $form   ->field("agen_user_name")
          	$form   ->hr('<h4 class="fwb">กรุณากรอกอย่างน้อย 6 ตัวอักษร</h4>');
 
          	$form   ->field("agen_password2")
-         			->label("ยืนยันรหัสผ่าน*")
-         			->name('agency[password2]')
+         			->label("ยืนยันรหัสผ่าน*")        		
          			->addClass('inputtext')
          			->autocomplete('off')
          			->type('password')
@@ -119,7 +115,7 @@ $form   ->field("agen_user_name")
          }
 
 # set form
-$arr['form'] = '<form class="js-submit-form" method="post" action="'.URL. 'agency/save"></form>';
+$arr['form'] = '<form class="js-submit-form" style="color:#000;" method="post" action="'.URL. 'agency/save"></form>';
 
 # set body
 $arr['body'] = $form->html();
