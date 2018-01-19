@@ -93,7 +93,6 @@ $form   ->field("agen_user_name")
          			->placeholder('Password')
          			->attr('style', 'color:black;')
          			->value('');
-
          	$form   ->hr('<h4 class="fwb">กรุณากรอกอย่างน้อย 6 ตัวอักษร</h4>');
 
          	$form   ->field("agen_password2")
@@ -106,11 +105,14 @@ $form   ->field("agen_user_name")
          			->value('');
          }
 
-$status
+$status = '';
 foreach ($this->status as $key => $value) {
    $ck = '';
    if( !empty($this->item) ){
       $ck = $this->item['status'] == $value['id'] ? 'checked="1"' : '';
+   }
+   else{
+       if( $value['id'] == 1 ) $ck = 'checked="1"';
    }
    $status .= '<div>
                   <label class="radio"><input type="radio" '.$ck.' name="status" value="'.$value['id'].'"> '.$value['name'].'</label>

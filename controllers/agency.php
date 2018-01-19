@@ -48,7 +48,7 @@ class agency extends Controller {
                     ->post('agen_line_id')
                     ->post('agen_skype')
                     ->post('agen_user_name')->val('is_empty')
-                    ->post('status')->val('is_empty');
+                    ->post('status');
             $form->submit();
             $postData = $form->fetch();
 
