@@ -25,7 +25,9 @@ class agency extends Controller {
             }
 
             if( $_POST["type"] == "agency" ){
-
+                foreach ($_POST["agency"] as $key => $value) {
+                    if( empty($value) ) $arr['error']['agen_'.$key] = 'กรุณากรอกข้อมูล';
+                }
             }
 
             if( $_POST["type"] == "save" ){
@@ -137,7 +139,7 @@ class agency extends Controller {
     }
 
     public function listsCompany(){
-        if( empty($this->me) || $this->format!='json' ) $this->error();
+        if( $this->format!='json' ) $this->error();
         echo json_encode( $this->model->query('agency_company')->lists() );
     }
 }
