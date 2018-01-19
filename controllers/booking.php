@@ -225,4 +225,29 @@ class Booking extends Controller {
         echo json_encode($arr);
     }
 
+    public function booking_cancel($id=null){
+        $id = isset($_REQUEST["id"]) ? $_REQUEST["id"] : $id;
+        if( empty($this->me) || empty($id) || $this->format!='json' ) $this->error();
+
+        $item = $this->model->get($id);
+        if( empty($item) ) $this->error();
+
+        if( !empty($_POST) ){
+            
+            $this->model->update($id, array('status'=>40));
+
+            if( $item['permit']['cancel'] ){
+                $arr['message'] = 'ยกเลิกการจองเรียบร้อย';
+                $arr['url'] = 'refresh';
+            }
+            else{
+                $arr['message'] = 'ไม่สามารถยกเลิกได้ กรุณาติดต่อทาง ProbookingCenter';
+            }
+            echo json_encode($arr);
+        }
+        else{
+            $this->view->setData('item', $item);
+            $this->view->render('forms/booking/cancel');
+        }
+    }
 }

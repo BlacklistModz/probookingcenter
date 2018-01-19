@@ -10,6 +10,7 @@ class Profile extends Controller {
     	header("location:".URL."profile/history");
     }
     public function history(){
+    	if( empty($this->me) || empty($this->me['company_id']) ) $this->error();
     	$this->view->setPage('title', "Booking History");
 
     	$options = array(
@@ -21,6 +22,6 @@ class Profile extends Controller {
     	$this->view->render('profile/history');
     }
     public function sales(){
-    	
+
     }
 }
