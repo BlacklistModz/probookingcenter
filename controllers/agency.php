@@ -33,12 +33,19 @@ class agency extends Controller {
                     }
                 }
 
+                if( $this->model->is_username($_POST["agency"]["user_name"]) ){
+                    $arr['error']['agen_user_name'] = 'มี Username นี้ในระบบ';
+                }
+                if( $this->model->is_email($_POST["agency"]["email"]) ){
+                    $arr['error']['agen_email'] = 'มี Email ซ้ำในระบบ';
+                }
+
                 if( strlen($_POST["agency"]["password"]) < 4 ){
-                    $arr["error"]["password"] = "กรุณากรอกรหัสผ่านให้มีความยาว 4 ตัวอักษรขึ้นไป";
+                    $arr["error"]["agen_password"] = "กรุณากรอกรหัสผ่านให้มีความยาว 4 ตัวอักษรขึ้นไป";
                 }
                 elseif( $_POST["agency"]["password"] != $_POST["agency"]["password2"] ){
-                    $arr["error"]["password"] = "กรุณากรอกรหัสผ่านให้ตรงกัน";
-                    $arr["error"]["password2"] = "กรุณากรอกรหัสผ่านให้ตรงกัน";
+                    $arr["error"]["agen_password"] = "กรุณากรอกรหัสผ่านให้ตรงกัน";
+                    $arr["error"]["agen_password2"] = "กรุณากรอกรหัสผ่านให้ตรงกัน";
                 }
             }
 
@@ -49,9 +56,11 @@ class agency extends Controller {
                     }
                     $postCompany["status"] = 0;
                     $postData["agency_company_id"] = $this->model->query('agency_company')->insert($postCompany);
+                    $postData["agen_role"] = 'admin';
                 }
                 else{
                     $postData["agency_company_id"] = $_POST["agency_company_id"];
+                    $postData['agen_role'] = 'sales';
                 }
 
                 foreach ($_POST["agency"] as $key => $value) {
