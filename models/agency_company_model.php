@@ -82,7 +82,7 @@ class Agency_company_model extends Model  {
 
 	public function insert($data)
 	{
-		if( empty($data['create_date']) ) $data['create_date'] = date('c');
+		$data['create_date'] = date('c');
 		// $data['status'] = 1;
 		// $data['agen_show'] = 1;
 
