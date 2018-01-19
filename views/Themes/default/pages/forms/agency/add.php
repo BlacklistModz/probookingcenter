@@ -27,7 +27,8 @@ $form   ->field("agen_lname")
          ->autocomplete('off')
          ->placeholder('นามสกุล')
          ->attr('style', 'color:black;')
-         ->value(''
+         ->value('');
+
 $form   ->field("agen_nickname")
          ->label("ชื่อเล่น")
          ->addClass('inputtext')
