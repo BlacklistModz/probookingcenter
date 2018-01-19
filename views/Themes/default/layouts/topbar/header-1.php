@@ -29,6 +29,17 @@ $form   ->field("pass")
         <?php if ( !empty($this->me) ) { ?>
         <div id="login-popup" class="login-popup">
             <span class="mrs"><span style="color:#ff0;">Welcome !</span> <?php echo $this->me['fullname']; ?></span>
+				<div class="dropdown-menu">
+					<div class="dropdown-content">
+					<ul>
+						<li>
+							<a class="dropdown-item" href="#">Manage Sales</a>
+						</li>
+						<li>
+							<a class="dropdown-item" href="#">Booking History</a>
+						</li>
+					</div>
+				</div>
             <a class="btn btn-yellow btn-border" href="<?=URL?>logout"><span class="fwn">Logout</span></a>
         </div>
         <?php } else { ?>
@@ -65,7 +76,8 @@ $form   ->field("pass")
 			<li class="register"><a class="btn btn-yellow btn-border" href="<?=URL?>register"><span class="fwn">Register</span></a></li>
 			
 			<li id="primary-menu-toggle"><a class="btn btn-yellow btn-border"><i class="icon-bars"></i></a></li>
-
+			
+			
 			
 		</ul>
         <?php } ?>
