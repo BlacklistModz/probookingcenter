@@ -4,6 +4,7 @@
 			<div class="card">
 				<header class="header clearfix">
 					<h1 class="tac"><i class="icon-book"></i> Booking History</h1>
+					<h3 class="tac">บริษัท : <?=$this->me['company_name']?></h3>
 				</header>
 
 				<div class="clearfix">
@@ -14,7 +15,7 @@
 								<th width="10%">CODE</th>
 								<th width="40%">ซีรีย์</th>
 								<th width="5%">ที่นั่ง</th>
-								<th width="10%">ราคา</th>
+								<th width="10%">ยอดสุทธิ</th>
 								<th width="10%">สถานะ</th>
 								<th width="10%">จัดการ</th>
 							</tr>
@@ -32,13 +33,22 @@
 									<tr>
 										<td class="tac"><?=$dateTime?><br/><?=$timeStr?></td>
 										<td class="tac"><?=$value["book_code"]?></td>
-										<td></td>
+										<td>(<?=$value['ser_code']?>) <?=$value['ser_name']?></td>
 										<td class="tac"><?=$value["book_qty"]?></td>
-										<td></td>
+										<td class="tar" style="padding-right: 2mm;"><?=number_format($value['book_amountgrandtotal'], 2)?></td>
 										<td class="tac">
 											<span class="fwb status_<?=$value['status']?>"><?=$value["book_status"]['name']?></span>
 										</td>
-										<td></td>
+										<td class="tac">
+											<?php 
+											if( $value['status'] == 0 || $value['status'] == 5 ) {
+												echo '<a href="'.URL.'booking/booking_cancel/'.$value['book_id'].'" class="btn btn-red" data-plugins="dialog"><i class="icon-remove"></i> ยกเลิก</a>';
+											}
+											else{
+												echo '<a class="disabled btn btn-red"><i class="icon-lock"></i> LOCK</a>';
+											}
+											?>
+										</td>
 									</tr>
 									<?php } 
 								}

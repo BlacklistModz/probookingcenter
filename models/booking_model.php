@@ -10,11 +10,19 @@ class Booking_Model extends Model {
 
     private $_objName = "booking";
     private $_table = "booking b 
-                       LEFT JOIN agency ag ON b.agen_id=ag.agen_id";
+                       LEFT JOIN agency ag ON b.agen_id=ag.agen_id
+                       LEFT JOIN period per ON b.per_id=per.per_id
+                       LEFT JOIN series ser ON per.ser_id=ser.ser_id";
     private $_field = "b.*
                        , ag.agen_fname
                        , ag.agen_lname
-                       , ag.agen_position";
+                       , ag.agen_position
+                       
+                       , per.per_date_start
+                       , per.per_date_end
+
+                       , ser.ser_name
+                       , ser.ser_code";
     private $_cutNamefield = "book_";
 
     public function lists($options=array()){
