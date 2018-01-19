@@ -9,6 +9,56 @@ d88' `8b   88bP"Y88b   888P"Y88b  "888P"Y88b   888' `88b
                                                      088`
                                                     .o88
 ============================================================ */
+.dropdown-menu > .dropdown-content{
+    display: none;
+    position: absolute;
+    transform: translate3d(0px, 38px, 0px);
+    top: 0px;
+    left: 0px;
+    will-change: transform;
+    z-index: 1000;
+    display: none;
+    float: left;
+    min-width: 10rem;
+    padding: .5rem 0;
+    transform: translate3d(-124px, 17px, 0px);
+    font-size: 1rem;
+    color: #212529!important;
+    text-align: left;
+    list-style: none;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid rgba(0,0,0,.15);
+    border-radius: .25rem;
+}
+.dropdown-content .dropdown-item{
+    display: block;
+    width: 100%;
+    padding: .25rem 1.5rem;
+    clear: both;
+    font-weight: 400;
+    color: #212529;
+    text-align: inherit;
+    white-space: nowrap;
+    background-color: transparent;
+    border: 0;
+}
+.dropdown-menu{
+    position: relative;
+    padding-right: 20px;
+    display: inline-flex;
+
+}
+.dropdown-menu:hover > .dropdown-content{
+    display: block;
+}
+.dropdown-menu::after{
+    content: "\f0d7";
+    font-family: FontAwesome;
+    font-style: normal;
+    font-weight: normal;
+    text-decoration: inherit;
+}
 li.part a{
 cursor: default;
 }
