@@ -158,6 +158,9 @@ class Agency_Model extends Model {
 	public function is_email($text){
 		return $this->db->count($this->_objType, 'agen_emil=:text', array(':text'=>$text));
 	}
+    public function is_fullname($fname, $lname){
+        return $this->db->count($this->_objType, 'agen_fname=:fname AND agen_lname=:lname', array(":fname"=>$fname, ":lname"=>$lname));
+    }
 
     /* STATUS */
     public function status(){

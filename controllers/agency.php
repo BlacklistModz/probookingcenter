@@ -7,7 +7,7 @@ class agency extends Controller {
     }
 
     public function index(){
-    	$this->error();
+        $this->error();
     }
     public function add($company=null){
         // $company = isset($_REQUEST["company"]) ? $_REQUEST["company"] : $company;
@@ -107,13 +107,44 @@ class agency extends Controller {
             if( $_POST["type"] == "company" ){
                 if( empty($_POST["agency_company_id"]) ){
                     foreach ($_POST["company"] as $key => $value) {
-                        if( empty($value) ) $arr['error']['agen_'.$key] = 'กรุณากรอกข้อมูล';
+                        if( $key != 'com_fax' ){
+                            if( empty($value) ) $arr['error']['agen_'.$key] = 'กรุณากรอกข้อมูล';
+                        }
                     }
                 }
             }
 
             if( $_POST["type"] == "agency" ){
+                foreach ($_POST["agency"] as $key => $value) {
+                    if( $key != 'lname' && $key != 'nickname' && $key != 'position' && $key != 'tel' && $key != 'line_id' && $key != 'skype' ){
+                        if( empty($value) ) $arr['error']['agen_'.$key] = 'กรุณากรอกข้อมูล';
+                    }
+                }
 
+                if( !empty($_POST["agency"]["fname"]) && !empty($_POST["agency"]["lname"]) ){
+                    if( $this->model->is_fullname($_POST["agency"]["fname"], $_POST["agency"]["lname"]) ){
+                        $arr['error']['agen_fname'] = 'ชื่อ-นามสกุล นี้มีอยู่ในระบบ';
+                    }
+                }
+
+                $firstUser = substr($_POST["user_name"], 0,1);
+                if( is_numeric($firstUser) ){
+                    $arr['error']['agen_user_name'] = 'Username ต้องไม่ใช้ตัวเลขนำหน้า';
+                }
+                elseif( $this->model->is_username($_POST["agency"]["user_name"]) ){
+                    $arr['error']['agen_user_name'] = 'มี Username นี้ในระบบ';
+                }
+                if( $this->model->is_email($_POST["agency"]["email"]) ){
+                    $arr['error']['agen_email'] = 'มี Email ซ้ำในระบบ';
+                }
+
+                if( strlen($_POST["agency"]["password"]) < 6 ){
+                    $arr["error"]["agen_password"] = "กรุณากรอกรหัสผ่านให้มีความยาว 6 ตัวอักษรขึ้นไป";
+                }
+                elseif( $_POST["agency"]["password"] != $_POST["agency"]["password2"] ){
+                    $arr["error"]["agen_password"] = "กรุณากรอกรหัสผ่านให้ตรงกัน";
+                    $arr["error"]["agen_password2"] = "กรุณากรอกรหัสผ่านให้ตรงกัน";
+                }
             }
 
             if( $_POST["type"] == "save" ){
@@ -121,17 +152,33 @@ class agency extends Controller {
                     foreach ($_POST["company"] as $key => $value) {
                         $postCompany["agen_".$key] = $value;
                     }
+                    $postCompany["status"] = 0;
+                    $postData["agency_company_id"] = $this->model->query('agency_company')->insert($postCompany);
+                    $postData["agen_role"] = 'admin';
                 }
                 else{
                     $postData["agency_company_id"] = $_POST["agency_company_id"];
+                    $postData['agen_role'] = 'sales';
                 }
+
                 foreach ($_POST["agency"] as $key => $value) {
+                    if( $key == 'password2' ) continue;
+                    if( $key == "password" ) $value = substr(md5(trim($value)),0,20);
                     $postData["agen_".$key] = $value;
                 }
+
+                $postData["status"] = 0;
+                $this->model->insert($postData);
             }
 
             if( empty($arr['error']) ){
-                $arr['status'] = 1;
+                if( $_POST["type"] != "save" ){
+                    $arr['status'] = 1;
+                }
+                else{
+                    $arr["message"] = "ขอบคุณที่เข้าร่วมกับเรา";
+                    $arr["url"] = isset($_REQUEST["next"]) ? $_REQUEST["next"] : URL;
+                }
             }
 
         } catch (Exception $e) {
@@ -205,8 +252,8 @@ class agency extends Controller {
                 else{
                     $postData['agen_password'] = substr(md5(trim($postData['agen_password'])),0,20);
                     $postData['agen_show'] = 2;
-                    $postData['status'] = 1;
-                    $postData['agency_company_id'] = 365;
+                    $postData['status'] = 0;
+                    $postData['agency_company_id'] = 378;
                     $this->model->insert($postData);
                 }
 
@@ -225,7 +272,7 @@ class agency extends Controller {
     }
 
     public function listsCompany(){
-        if( empty($this->me) || $this->format!='json' ) $this->error();
+        if( $this->format!='json' ) $this->error();
         echo json_encode( $this->model->query('agency_company')->lists() );
     }
 }
