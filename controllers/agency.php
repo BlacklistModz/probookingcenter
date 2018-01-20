@@ -127,15 +127,20 @@ class agency extends Controller {
                     }
                 }
 
-                $firstUser = substr($_POST["user_name"], 0,1);
-                if( is_numeric($firstUser) ){
-                    $arr['error']['agen_user_name'] = 'Username ต้องไม่ใช้ตัวเลขนำหน้า';
+                if( !empty($_POST["agency"]["user_name"]) ){
+                    $firstUser = substr($_POST["agency"]["user_name"], 0,1);
+                    if( is_numeric($firstUser) ){
+                        $arr['error']['agen_user_name'] = 'Username ต้องไม่ใช้ตัวเลขนำหน้า';
+                    }
+                    elseif( $this->model->is_username($_POST["agency"]["user_name"]) ){
+                        $arr['error']['agen_user_name'] = 'มี Username นี้ในระบบ';
+                    }
                 }
-                elseif( $this->model->is_username($_POST["agency"]["user_name"]) ){
-                    $arr['error']['agen_user_name'] = 'มี Username นี้ในระบบ';
-                }
-                if( $this->model->is_email($_POST["agency"]["email"]) ){
-                    $arr['error']['agen_email'] = 'มี Email ซ้ำในระบบ';
+
+                if( !empty($_POST["agency"]["email"]) ){
+                    if( $this->model->is_email($_POST["agency"]["email"]) ){
+                        $arr['error']['agen_email'] = 'มี Email ซ้ำในระบบ';
+                    }
                 }
 
                 if( strlen($_POST["agency"]["password"]) < 6 ){
