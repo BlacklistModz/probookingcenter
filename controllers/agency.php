@@ -58,7 +58,12 @@ class agency extends Controller {
                 if( $item['user_name'] == $postData['agen_user_name'] ) $has_user = false;
                 if( $item['email'] == $postData["agen_email"] ) $has_email = false;
             }
-            if( $this->model->is_username($postData["agen_user_name"]) && $has_user ){
+
+            $firstUser = substr($postData['agen_user_name'], 0,1);
+            if( is_numeric($firstUser) ){
+                $arr['error']['agen_user_name'] = 'Username ต้องไม่ใช้ตัวเลขนำหน้า';
+            }
+            elseif( $this->model->is_username($postData["agen_user_name"]) && $has_user ){
                 $arr['error']['agen_user_name'] = 'มีชื่อผู้ใช้นี้ในระบบแล้ว';
             }
             if( $this->model->is_email($postData["agen_email"]) && $has_email ){
