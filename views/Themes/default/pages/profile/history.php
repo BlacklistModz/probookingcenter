@@ -1,4 +1,5 @@
 <section id="product" class="module parallax product" style="padding-top: 180px; background-image: url(<?=IMAGES?>/demo/curtain/curtain-3.jpg)">
+
 	<div class=" container clearfix">
 		<div class="primary-content post">
 			<div class="card">
@@ -12,10 +13,12 @@
 						<thead>
 							<tr style="color:#fff; background-color: #003;">
 								<th width="10%">วันที่</th>
-								<th width="8%">CODE</th>
-								<th width="25%">ซีรีย์</th>
+								<th width="8%">รหัส</th>
+								<th width="5%">CODE</th>
 								<th width="5%">ที่นั่ง</th>
 								<th width="7%">ยอดสุทธิ</th>
+								<th width="10%">Deposit Date</th>
+								<th width="10%">Full Payment Date</th>
 								<th width="10%">เซลล์</th>
 								<th width="10%">สถานะ</th>
 								<th width="10%">แจ้งโอนเงิน</th>
@@ -31,29 +34,52 @@
 
 									$timeStr = date("H:i:s", strtotime($value["book_date"]));
 									$dateTime = "{$dayStr} {$monthStr} {$yearStr}";
+
+									$dDaystr = date("d", strtotime($value['book_due_date_deposit']));
+									$dMonthStr = $this->fn->q('time')->month( date("n", strtotime($value["book_due_date_deposit"])) );
+									$dYearStr = date("Y", strtotime($value["book_due_date_deposit"])) + 543;
+									$DepositStr = "{$dDaystr} {$dMonthStr} {$dYearStr}";
+									//print_r($value); die;
+									$fullPaymentStr = "-";
+									$fullPaymenting ="";
+									$deposited="";
+									
+									if( $value["book_due_date_full_payment"] != "0000-00-00 00:00:00" ){
+										$fDaystr = date("d", strtotime($value['book_due_date_full_payment']));
+										$fMonthStr = $this->fn->q('time')->month( date("n", strtotime($value["book_due_date_full_payment"])) );
+										$fYearStr = date("Y", strtotime($value["book_due_date_full_payment"])) + 543;
+										$fullPaymentStr = "{$fDaystr} {$fMonthStr} {$fYearStr}";
+										$deposited = $value['book_master_full_payment'];
+									}
+									if ($value["book_due_date_deposit"] !="0000-00-00 00:00:00"){
+										$fullPaymenting = $value["book_master_deposit"];
+									}
+									
 									?>
 									<tr>
 										<td class="tac"><?=$dateTime?><br/><?=$timeStr?></td>
 										<td class="tac"><?=$value["book_code"]?></td>
-										<td>
+										<td class="tac">
 											<a href="<?=URL?>tour/<?=$value["ser_id"]?>" style="color:blue; text-decoration: none;" target="_blank">
-											<span class="fwb">(<?=$value['ser_code']?>)</span> <?=$value['ser_name']?></a>
+											<span class="fwb"><?=$value['ser_code']?></a>
 										</td>
 										<td class="tac"><?=$value["book_qty"]?></td>
-										<td class="tar" style="padding-right: 2mm;"><?=number_format($value['book_amountgrandtotal'], 2)?></td>
-										<td><?=$value['agen_fname']?> <?=$value['agen_lname']?></td>
+										<td class="tar" style="padding-right: 2mm;"><?=number_format($value['book_amountgrandtotal'])?></td>
+										<td class="tac"><?=$DepositStr?><?= $deposited ==""? "" :'<br>'.'<span class="fwb status_0">('.$deposited.')</span>'   ?></td>
+										<td class="tac"><?=$fullPaymentStr?><?=$fullPaymenting ==""? "" : '<br>'.'<span class="fwb status_35">('.$fullPaymenting.')</span>'?> </td>
+										<td class="tac"><?=$value['agen_fname']?></td>
 										<td class="tac">
-											<span class="fwb status_<?=$value['status']?>"><?=$value["book_status"]['name']?></span>
+											<span class="fwb status_<?=$value['status']?>"><?=$value["book_status"]['name']=="Full payment"?"FP":$value["book_status"]['name']?></span>
 										</td>
 										<td class="tac">
 											<?php
-											// echo '<a class="btn btn-blue disabled">ปิดปรับปรุง</a>'; 
-											if( $value['status'] == 35 || $value['status'] == 40 || $value['status'] == 50 ){
-												echo '<a class="btn btn-blue disabled">LOCK</a>';
-											}
-											else{
-												echo '<a href="'.URL.'profile/payment/'.$value['book_id'].'" class="btn btn-blue">แจ้งโอนเงิน</a>';
-											}
+											echo '<span>N/A</span>'; 
+											// if( $value['status'] == 35 || $value['status'] == 40 || $value['status'] == 50 ){
+											// 	echo '<a class="btn btn-blue disabled">LOCK</a>';
+											// }
+											// else{
+											// 	echo '<a href="'.URL.'booking/payment/'.$value['book_id'].'" class="btn btn-blue" data-plugins="dialog">แจ้งโอนเงิน</a>';
+											// }
 											?>
 										</td>
 										<td class="tac">
