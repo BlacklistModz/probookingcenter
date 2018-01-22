@@ -39,11 +39,15 @@ class Booking extends Controller {
 
         $item = $this->model->query('products')->period( $period );
         if( empty($item) ) $this->error();
-        // print_r($item); die;
+         print_r($period); die;
 
         // จำนวน ที่นั่ง ที่จองไปแล้ว
         $seatBooked = $this->model->query('products')->seatBooked( $period );
         $availableSeat = $item['per_qty_seats']-$seatBooked['booking'];
+        echo(date('Y-m-d')); die;
+                    // switch (date() - (strtotime($item['per_date_start'])()){
+                    
+                    // }
 
         $settings = array(
             'trave' => array(
@@ -59,7 +63,7 @@ class Booking extends Controller {
         $settings['trave']['date'] = date('Y-m-d', strtotime("-1 day", strtotime($settings['trave']['date'])));
 
         $settings['fullPayment']['date'] = date('Y-m-d', strtotime("-21 day", strtotime($settings['trave']['date'])));
-
+//print_r($settings); die;
         if( strtotime($settings['fullPayment']['date']) < strtotime(date('Y-m-d')) ){
             $settings['fullPayment']['date'] = date("Y-m-d", strtotime('tomorrow'));
             $settings['deposit']['date'] = '-';
