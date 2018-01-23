@@ -60,4 +60,16 @@ class Profile extends Controller {
             $this->view->render("profile/forms/change_password");
         }
     }
+    public function manage_profile($id=null){
+        $id = isset($_REQUEST["id"]) ? $_REQUEST["id"] : $id;
+        $item =  $this->model->query("agency")->get($this->me['id']);
+        if (empty($item)) $this->error();
+        if( empty($this->me) || $this->format!='json' ) $this->error();
+
+        if( !empty($_POST) ){
+
+        }else {
+            $this->view->render("profile/account");
+        }
+    }
 }

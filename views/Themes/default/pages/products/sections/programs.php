@@ -24,16 +24,16 @@
 
 				<?php if ( !empty($this->me) ) { ?>
 				<td class="qty"><?=number_format($value['seats'])?></td>
-                <td class="qty fwb"><?=$value['balance']==0  ? '-': number_format($value['balance']) ?></td> 
+                <td class="qty fwb"><?=$value['balance']<=0  ? 'เต็ม': number_format($value['balance']) ?></td> 
 				<!-- <td class="actions"><a>ดาวน์โหลด</a></td> -->
                
                 <td style="white-space: nowrap;">
-
-            		<?php if ($value['balance']==0){ 
+					
+            		<?php print_r($value);die; if ($value['balance']==0){ 
 
             			if( $value['booking']['payed'] < $value['seats'] ){
 
-            				echo '<a href="'.URL.'booking/register/'.$value['id'].'" class="btn btn-orange btn-submit">W-L</a>';
+            				echo '<a href="'.URL.'booking/register/'.$value['id'].'" class="btn btn-orange btn-submit">W/L</a>';
             			}
             			else{
             				echo '<span class="btn btn-danger disabled">เต็ม</span>';
