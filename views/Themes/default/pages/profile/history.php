@@ -129,10 +129,20 @@
 <script type="text/javascript"> 
 	$( ".filter_sales" )
 	.change(function() {
-	  var str = "";
+	 if ($(this).val()!=0 ||$(this).val()!='0' ){ 
+	  console.log($(this).val());
 	  $( "select option:selected" ).each(function() {
-		console.log($(this ).val());
+		$.ajax({
+			method:'GET',
+			url:'/',
+			data:$(this).val()
+		}).done(function(res){
+
+		})
+	  
 	  });  
+	 }
+
 	})
 	
 
