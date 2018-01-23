@@ -9,7 +9,9 @@
 
 				<div class="clearfix">
 					<div class="clearfix">
+						<?php if( $this->me["role"] == "admin" ) { ?>
 						<a href="<?=URL?>agency/add/" data-plugins="dialog" class="btn btn-blue rfloat"><i class="icon-plus"></i> เพิ่มเซลล์</a>
+						<?php } ?>
 					</div>
 					<div class="mtm">
 						<table class="table-bordered" style="color:#000;">
@@ -21,7 +23,9 @@
 									<th width="25%">Email</th>
 									<th width="7%">สิทธิ์</th>
 									<th width="13%">สถานะ</th>
+									<?php if( $this->me["role"] == "admin" ){ ?>
 									<th width="10%">จัดการ</th>
+									<?php } ?>
 								</tr>
 							</thead>
 							<tbody>
@@ -29,23 +33,36 @@
 								if( !empty($this->results['lists']) ) {
 									$num=1;
 									foreach ($this->results['lists'] as $key => $value) { 
+										if( $value['role'] == "admin" ){
+											$role = "Admin";
+										}
+										elseif( $value['role'] == "sales" ){
+											$role = "Sale";
+										}
+										else{
+											$role = "-";
+										}
 										?>
 										<tr>
 											<td class="tac pam"><?=$num?></td>
 											<td class="tac"><?=$value['user_name']?></td>
 											<td class="plm"><?=$value['fullname']?></td>
 											<td class="plm"><?=$value['email']?></td>
-											<td class="tac"><?= strtoupper($value['role']) ?></td>
+											<td class="tac"><?= $role ?></td>
 											<td class="tac">
 												<span class="agen_status_<?=$value['status']?>">
 													<?=$value['agen_status']['name']?>
 												</span>
 											</td>
+											<?php if( $this->me["role"] == "admin" ){ ?>
 											<td class="tac whitespace">
+
 												<a href="<?=URL?>agency/change_password/<?=$value["id"]?>" data-plugins="dialog" class="btn btn-blue"><i class="icon-key"></i></a>
+
 												<a href="<?=URL?>agency/edit/<?=$value['id']?>" data-plugins="dialog" class="btn btn-orange"><i class="icon-pencil"></i></a>
 												<!-- <a href="" class="btn btn-red">ลบ</a> -->
 											</td>
+											<?php } ?>
 										</tr>
 										<?php 
 										$num++;

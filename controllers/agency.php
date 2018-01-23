@@ -285,4 +285,46 @@ class agency extends Controller {
         if( $this->format!='json' ) $this->error();
         echo json_encode( $this->model->query('agency_company')->lists() );
     }
+
+    public function change_password($id=null){
+        $id = isset($_REQUEST["id"]) ? $_REQUEST["id"] : $id;
+        if( empty($id) || empty($this->me) || $this->format!='json' ) $this->error();
+
+        $item = $this->model->query("agency")->get($id);
+        if( empty($item) ) $this->error();
+
+        if( !empty($_POST) ){
+            $form = new Form();
+            $form   ->post("new_password")->val('is_empty')
+                    ->post("new_password2")->val('is_empty');
+            $form->submit();
+            $postData = $form->fetch();
+
+            if( $this->me['id'] == $id ){
+                if( !$this->model->login($this->me['user_name'], $_POST["old_password"]) ){
+                    $arr['error']['old_password'] = 'รหัสผ่านเก่าผิดพลาด กรุณาตรวจสอบและลองอีกครั้ง';
+                }
+            }
+
+            if( strlen($postData["new_password"]) < 6 ){
+                $arr['error']["new_password"] = "รหัสผ่านต้องมีความยาว 6 ตัวอักษรขึ้นไป";
+            }
+            elseif( $postData["new_password"] != $postData["new_password2"] ){
+                $arr['error']["new_password2"] = "กรุณากรอกรหัสผ่านให้ตรงกัน";
+            }
+
+            if( empty($arr['error']) ){
+                $password = substr(trim(md5($postData["new_password"])), 0, 20);
+                $this->model->update($id, array("agen_password"=>$password));
+
+                $arr["message"] = "เปลี่ยนรหัสผ่านเรียบร้อย";
+            }
+
+            echo json_encode($arr);
+        }
+        else{
+            $this->view->setData('item', $item);
+            $this->view->render("profile/forms/change_password");
+        }
+    }
 }
