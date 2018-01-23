@@ -1,13 +1,3 @@
-
-
-	<?php 
-	foreach ($this->results["lists"] as $key => $value){ 
-		$is_agen[] = $value['agen_fname'];
-	 }
-	 $is_agen = array_unique($is_agen);
-	 
-	 
-	 ?>
 <section id="product" class="module parallax product" style="padding-top: 180px; background-image: url(<?=IMAGES?>/demo/curtain/curtain-3.jpg)">
 
 	<div class=" container clearfix">
@@ -17,18 +7,19 @@
 					<h1 class="tac"><i class="icon-book"></i> Booking History</h1>
 					<h3 class="tac">บริษัท : <?=$this->me['company_name']?></h3>
 				</header>
-				<ul class="rfloat" ref="control"><li>
-						<label for="status" class="label">เซลล์</label>
-							<select ref="selector" class="inputtext filter_sales" name="agen_fillter">
-									<option value="0">-- เลือกเซลล์--</option>
-									 <?php 
-										foreach ($is_agen as $value){ ?>
-											<option value='"<?=$value?>"'><?=$value?></option>
-										<?php } ?>
-								
-							</select>		
-						</li>
-					</ul>
+				<ul class="rfloat mbm" ref="control">
+					<li>
+						<label for="status" class="label fwb">เซลล์ : </label>
+						<select ref="selector" class="inputtext" name="agency" style="display:inline;">
+							<option value="">-- เลือกเซลล์--</option>
+							<?php foreach ($this->sales['lists'] as $key => $value) {
+								$sel = '';
+								if( $this->agen_id == $value["id"] ) $sel = ' selected="1"';
+								echo '<option'.$sel.' value="'.$value["id"].'">'.$value["fullname"].'</option>';
+							} ?>
+						</select>		
+					</li>
+				</ul>
 				<div class="clearfix">
 					<table class="table-bordered" style="color:#000;">
 						<thead>
@@ -79,15 +70,15 @@
 									?>
 									<tr>
 										<td class="tac"><?=$dateTime?><br/><?=$timeStr?></td>
-										<td class="tac"><?=$value["book_code"]?></td>
+										<td class="tac"><a target="_blank" style="color:blue; text-decoration: none;" href="<?=URL?>booking/<?=$value["book_id"]?>"><?=$value["book_code"]?></a></td>
 										<td class="tac">
 											<a href="<?=URL?>tour/<?=$value["ser_id"]?>" style="color:blue; text-decoration: none;" target="_blank">
 											<span class="fwb"><?=$value['ser_code']?></a>
 										</td>
 										<td class="tac"><?=$value["book_qty"]?></td>
 										<td class="tar" style="padding-right: 2mm;"><?=number_format($value['book_amountgrandtotal'])?></td>
-										<td class="tac"><?=$DepositStr?><?= $deposited ==""? "" :'<br>'.'<span class="fwb status_95">('.$deposited.')</span>'   ?></td>
-										<td class="tac"><?=$fullPaymentStr?><?=$fullPaymenting ==""? "" : '<br>'.'<span class="fwb status_96">('.$fullPaymenting.')</span>'?> </td>
+										<td class="tac"><?=$DepositStr?><?= $deposited ==""? "" :'<br>'.'<span class="fwb status_95">('.number_format($deposited).')</span>'   ?></td>
+										<td class="tac"><?=$fullPaymentStr?><?=$fullPaymenting ==""? "" : '<br>'.'<span class="fwb status_96">('.number_format($fullPaymenting).')</span>'?> </td>
 										<td class="tac"><?=$value['agen_fname']?></td>
 										<td class="tac">
 											<span class="fwb status_<?=$value['status']?>"><?=$value["book_status"]['name']=="Full payment"?"FP":$value["book_status"]['name']?></span>
@@ -117,7 +108,7 @@
 									<?php } 
 								}
 								else{
-									echo '<tr><td colspan="6" style="color:red;" class="tac fwb">ไม่มีข้อมูลการจอง</td></tr>';
+									echo '<tr><td colspan="11" style="color:red;" class="tac fwb">ไม่มีข้อมูลการจอง</td></tr>';
 								} ?>
 						</tbody>
 					</table>
@@ -127,23 +118,8 @@
 	</div>
 </section>
 <script type="text/javascript"> 
-	$( ".filter_sales" )
-	.change(function() {
-	 if ($(this).val()!=0 ||$(this).val()!='0' ){ 
-	  console.log($(this).val());
-	  $( "select option:selected" ).each(function() {
-		$.ajax({
-			method:'GET',
-			url:'/',
-			data:$(this).val()
-		}).done(function(res){
-
-		})
-	  
-	  });  
-	 }
-
-	})
-	
-
-	</script>
+	$("[name=agency]").change(function(){
+		// alert($(this).val());
+		window.location.href = Event.URL + "profile/history/" + $(this).val();
+	});
+</script>

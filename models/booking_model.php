@@ -52,6 +52,12 @@ class Booking_Model extends Model {
             $where_arr[":company"] = $options["company"];
         }
 
+        if( !empty($options["agency"]) ){
+            $where_str .= !empty($where_str) ? " AND " : "";
+            $where_str .= "b.agen_id=:agency";
+            $where_arr[":agency"] = $options["agency"];
+        }
+
         $arr['total'] = $this->db->count($this->_table, $where_str, $where_arr);
 
         $limit = $this->limited( $options['limit'], $options['pager'] );
