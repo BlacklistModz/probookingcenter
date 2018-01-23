@@ -18,10 +18,10 @@
 									<th width="5%">ลำดับ</th>
 									<th width="15%">Username</th>
 									<th width="25%">ชื่อ-นามสกุล</th>
-									<th width="20%">Email</th>
+									<th width="25%">Email</th>
 									<th width="7%">สิทธิ์</th>
 									<th width="13%">สถานะ</th>
-									<th width="15%">จัดการ</th>
+									<th width="10%">จัดการ</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -42,7 +42,8 @@
 												</span>
 											</td>
 											<td class="tac whitespace">
-												<a href="<?=URL?>agency/edit/<?=$value['id']?>" data-plugins="dialog" class="btn btn-orange">แก้ไข</a>
+												<a href="<?=URL?>agency/change_password/<?=$value["id"]?>" data-plugins="dialog" class="btn btn-blue"><i class="icon-key"></i></a>
+												<a href="<?=URL?>agency/edit/<?=$value['id']?>" data-plugins="dialog" class="btn btn-orange"><i class="icon-pencil"></i></a>
 												<!-- <a href="" class="btn btn-red">ลบ</a> -->
 											</td>
 										</tr>
