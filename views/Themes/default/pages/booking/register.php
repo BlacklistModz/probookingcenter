@@ -34,7 +34,7 @@ $form->field("seat")->text('<div class="clearfix"><label for="seat" class="contr
 );
 $form->field("sgent")->label('Agent Company:')->autocomplete('off')->attr('disabled', 1)->addClass('inputtext disabled')->value( $this->me['company_name'] );
 $form->field("sale")->label('Agent Name:')->autocomplete('off')->attr('disabled', 1)->addClass('inputtext disabled')->value( $this->me['fullname'] );
-$form->field("comment")->label('คำขอพิเศษ:')->autocomplete('off')->placeholder('สำหรับคำขอพิเศษต่างๆสำหรับลูกค้า')->addClass('inputtext')->type('textarea');
+$form->field("comment")->label('คำขอพิเศษ:')->autocomplete('off')->placeholder('สำหรับคำขอพิเศษต่างๆ หรือชื่อลูกค้า')->addClass('inputtext')->attr('data-plugins','autosize')->type('textarea');
 
 $contactFrom = $form->html();
 
@@ -91,7 +91,7 @@ if( $this->item['per_com_agency']>0 ){
                 <input type="hidden" name="period" value="<?=$this->item['per_id']?>" autocomplete="off">
 
                 <header class="mbl clearfix">
-                    <h1><a style="color: #000" href="<?=URL?>tour/<?=$this->item['ser_id']?>"><?=$this->item['name']?></a> -> จองทัวร์</h1>
+                    <h1><a style="color: #000" href="<?=URL?>tour/<?=$this->item['ser_id']?>"><?=$this->item['name']?></a> จองทัวร์</h1>
                 </header>
 
                 <div id="info" class="" style="">
@@ -102,10 +102,10 @@ if( $this->item['per_com_agency']>0 ){
                         <div class="uiBoxGray pam">
                         <table><tbody>
                             <tr><td class="clearfix fwb pbm"><i class="icon-address-book-o mrs"></i>ข้อมูลผู้จอง</td></tr>
-                            <tr><td><?=$this->me['fullname']?></td></tr>
-                            <tr><td><?=$this->me['email']?></td></tr>
-                            <tr><td><?=$this->me['tel']?></td></tr>
-                            <tr><td><?=$this->me['company_name']?></td></tr>
+                            <tr><td>ชื่อเซลล์ : <span style="color:#3F51B5;"><?=$this->me['fullname']?></span></td></tr>
+                            <tr><td>อีเมลล์ : <span style="color:#3F51B5;"><?=$this->me['email']?></span></td></tr>
+                            <tr><td>เบอร์โทร : <span style="color:#3F51B5;"><?=$this->me['tel']?></span></td></tr>
+                            <tr><td>บริษัท : <span style="color:#3F51B5;"><?=$this->me['company_name']?></span></td></tr>
                         </tbody></table>
                         </div>
                     </div>
@@ -114,10 +114,10 @@ if( $this->item['per_com_agency']>0 ){
                         <div class="uiBoxGray pam">
                         <table><tbody>
                             <tr><td class="clearfix fwb pbm"><i class="icon-plane mrs"></i>ข้อมูลการเดินทาง</td></tr>
-                            <tr><td><span style="color:red;">Code :</span> <span class="text-blue"><?=$this->item['code']?></span></td></tr>
-                            <tr><td><span style="color:red;">หัวข้อ : </span><?=$this->item['name']?></td></tr>
-                            <tr><td><span style="color:red;">วันเดินทาง : </span><?=$this->fn->q('time')->str_event_date($this->item['per_date_start'], $this->item['per_date_end'])?></td></tr>
-                            <tr><td><span style="color:red;">สายการบิน : </span><span class="text-red"><?=$this->item['air_name']?></span> เส้นทาง <?=$this->item['ser_route'];?></td></tr>
+                            <tr><td>Code : <span class="text-blue" style="color:red;"><?=$this->item['code']?></span></td></tr>
+                            <tr><td>หัวข้อ : <span style="color:red;"><?=$this->item['name']?></span></td></tr>
+                            <tr><td>วันเดินทาง : <span style="color:red;"><?=$this->fn->q('time')->str_event_date($this->item['per_date_start'], $this->item['per_date_end'])?></span></td></tr>
+                            <tr><td>สายการบิน : <span class="text-red" style="color:red;"><?=$this->item['air_name']?></span> เส้นทาง : <span class="text-red" style="color:red;"><?=$this->item['ser_route'];?></span></td></tr>
                             <!-- <tr><td>
                                 <label>Bus:</label> <select name="bus" id="bus" class="inputtext" style="display: inline-block;background-color: #fff;border-width: 1px"><?php
 

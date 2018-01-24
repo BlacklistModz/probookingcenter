@@ -41,4 +41,6 @@ $arr['body'] = $form->html();
 $arr['button'] = '<button type="submit" class="btn btn-primary btn-submit"><span class="btn-text">บันทึก</span></button>';
 $arr['bottom_msg'] = '<a class="btn" role="dialog-close"><span class="btn-text">ยกเลิก</span></a>';
 
+$arr['is_close_bg'] = true;
+
 echo json_encode($arr);

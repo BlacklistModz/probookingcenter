@@ -1,6 +1,6 @@
 <?php
-
-class Booking extends Controller {
+ 
+ class Booking extends Controller {
 
     public function __construct() {
         parent::__construct();
@@ -39,15 +39,11 @@ class Booking extends Controller {
 
         $item = $this->model->query('products')->period( $period );
         if( empty($item) ) $this->error();
-         print_r($period); die;
+        // print_r($item); die;
 
         // จำนวน ที่นั่ง ที่จองไปแล้ว
         $seatBooked = $this->model->query('products')->seatBooked( $period );
         $availableSeat = $item['per_qty_seats']-$seatBooked['booking'];
-        echo(date('Y-m-d')); die;
-                    // switch (date() - (strtotime($item['per_date_start'])()){
-                    
-                    // }
 
         $settings = array(
             'trave' => array(
@@ -60,10 +56,15 @@ class Booking extends Controller {
             
         );
 
+        $DayOfGo = $this->fn->q('time')->DateDiff( date("Y-m-d"), $item['per_date_start'] );
+        if( $DayOfGo > 30 ){
+            $settings['deposit']['date'] = date("Y-m-d", strtotime("+2 day"));
+        }
+
         $settings['trave']['date'] = date('Y-m-d', strtotime("-1 day", strtotime($settings['trave']['date'])));
 
         $settings['fullPayment']['date'] = date('Y-m-d', strtotime("-21 day", strtotime($settings['trave']['date'])));
-//print_r($settings); die;
+
         if( strtotime($settings['fullPayment']['date']) < strtotime(date('Y-m-d')) ){
             $settings['fullPayment']['date'] = date("Y-m-d", strtotime('tomorrow'));
             $settings['deposit']['date'] = '-';
@@ -77,12 +78,13 @@ class Booking extends Controller {
             $_SUM = array('subtotal'=>0, 'discount'=>0, 'total'=>0); $seats = array(); $n = 0;
             foreach ($_POST['seat'] as $key => $value) {
                 $n ++;
-                if( empty($value) ) continue;
+                if( empty($value) ) $value = 0;
+                // if( empty($value) ) continue;
 
                 switch ($key) {
                     case 'adult': $name='Adult'; $price=$item['per_price_1']; break;
                     case 'child': $name='Child'; $price=$item['per_price_2']; break;
-                    case 'child_bed': $name='Child no bed'; $price=$item['per_price_3']; break;
+                    case 'child_bed': $name='Child No bed'; $price=$item['per_price_3']; break;
                     case 'infant': $name='Infant'; $price=$item['per_price_4']; break;
                     case 'joinland': $name='Joinland'; $price=$item['per_price_5']; break;
                     
@@ -126,7 +128,7 @@ class Booking extends Controller {
                
                 $running_booking = sprintf("%04s", $booking);
                 $running_invoice = sprintf("%04s", $invoice);
-
+                $month = sprintf("%02d", $month);
                 $bookCode = "B{$year}/{$month}{$running_booking}";
 
                 
@@ -239,6 +241,7 @@ class Booking extends Controller {
         if( !empty($_POST) ){
             
             $this->model->update($id, array('status'=>40));
+            $this->model->updateWaitingList( $item['per_id'] );
 
             if( $item['permit']['cancel'] ){
                 $arr['message'] = 'ยกเลิกการจองเรียบร้อย';
@@ -254,4 +257,5 @@ class Booking extends Controller {
             $this->view->render('forms/booking/cancel');
         }
     }
+
 }

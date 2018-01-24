@@ -14,22 +14,22 @@ class Profile extends Controller {
         if( empty($this->me) || empty($this->me['company_id']) ) $this->error();
         $this->view->setPage('title', "Booking History");
 
-        /* GET BOOKING */
+         /* GET BOOKING */
         $options = array(
             "company"=>$this->me["company_id"],
             "unlimit"=>true,
             "agency"=>$id
         );
         $booking = $this->model->query("booking")->lists( $options );
-
         /* GET SALES */
         $s_options = array(
             "company"=>$this->me["company_id"],
             "unlimit"=>true
         );
         $agency = $this->model->query("agency")->lists( $s_options );
-        $this->view->setData('results', $booking);
+
         $this->view->setData('sales', $agency);
+        $this->view->setData('results', $booking);
         $this->view->setData('agen_id', $id);
         $this->view->render('profile/history');
     }
@@ -44,32 +44,5 @@ class Profile extends Controller {
         $agency = $this->model->query("agency")->lists( $options );
         $this->view->setData("results", $agency);
         $this->view->render('profile/manage');
-    }
-    public function change_password($id=null){
-        $id = isset($_REQUEST["id"]) ? $_REQUEST["id"] : $id;
-
-        $item = $this->model->query("agency")->get($this->me['id']);
-        if( empty($item) ) $this->error();
-
-        if( empty($this->me) || $this->format!='json' ) $this->error();
-
-        if( !empty($_POST) ){
-
-        }
-        else{
-            $this->view->render("profile/forms/change_password");
-        }
-    }
-    public function manage_profile($id=null){
-        $id = isset($_REQUEST["id"]) ? $_REQUEST["id"] : $id;
-        $item =  $this->model->query("agency")->get($this->me['id']);
-        if (empty($item)) $this->error();
-        if( empty($this->me) || $this->format!='json' ) $this->error();
-
-        if( !empty($_POST) ){
-
-        }else {
-            $this->view->render("profile/account");
-        }
     }
 }

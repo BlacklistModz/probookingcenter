@@ -28,7 +28,7 @@ class Agency_Model extends Model {
     private $_cutNamefield = "agen_";
 
     public function lists($options=array()){
-    	$options = array_merge(array(
+        $options = array_merge(array(
             'pager' => isset($_REQUEST['pager'])? $_REQUEST['pager']:1,
             'limit' => isset($_REQUEST['limit'])? $_REQUEST['limit']:50,
             'more' => true,

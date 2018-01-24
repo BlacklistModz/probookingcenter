@@ -14,6 +14,8 @@ class Index extends Controller {
 
         $this->view->setData('popularList', $this->model->query('products')->popularList() );
 
+        $this->view->setData('slideList', $this->model->query('products')->slideList( 9 ) );
+
 
         $categoryList = $this->model->query('products')->categoryList();
         foreach ($categoryList as $key => $value) {
@@ -29,7 +31,7 @@ class Index extends Controller {
         $this->view->render("home/display");
     }
 
-    public function search($param=array()) {
+    public function search($param=null) {
 
         $categoryList = $this->model->query('products')->categoryList();
         foreach ($categoryList as $key => $value) {

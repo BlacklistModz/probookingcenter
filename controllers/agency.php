@@ -7,7 +7,7 @@ class agency extends Controller {
     }
 
     public function index(){
-        $this->error();
+    	$this->error();
     }
     public function add($company=null){
         // $company = isset($_REQUEST["company"]) ? $_REQUEST["company"] : $company;
@@ -47,10 +47,17 @@ class agency extends Controller {
                     ->post('agen_tel')
                     ->post('agen_line_id')
                     ->post('agen_skype')
-                    ->post('agen_user_name')->val('is_empty')
+                    // ->post('agen_user_name')->val('is_empty')
                     ->post('status');
             $form->submit();
             $postData = $form->fetch();
+
+            if( empty($item) ){
+                $postData["agen_user_name"] = $_POST["agen_user_name"];
+                if( empty($postData["agen_user_name"]) ){
+                    $arr["error"]["user_name"] = "กรุณากรอกข้อมูล";
+                }
+            }
 
             $has_user = true;
             $has_email = true;
@@ -58,12 +65,7 @@ class agency extends Controller {
                 if( $item['user_name'] == $postData['agen_user_name'] ) $has_user = false;
                 if( $item['email'] == $postData["agen_email"] ) $has_email = false;
             }
-
-            $firstUser = substr($postData['agen_user_name'], 0,1);
-            if( is_numeric($firstUser) ){
-                $arr['error']['agen_user_name'] = 'Username ต้องไม่ใช้ตัวเลขนำหน้า';
-            }
-            elseif( $this->model->is_username($postData["agen_user_name"]) && $has_user ){
+            if( $this->model->is_username($postData["agen_user_name"]) && $has_user ){
                 $arr['error']['agen_user_name'] = 'มีชื่อผู้ใช้นี้ในระบบแล้ว';
             }
             if( $this->model->is_email($postData["agen_email"]) && $has_email ){
@@ -284,5 +286,41 @@ class agency extends Controller {
     public function listsCompany(){
         if( $this->format!='json' ) $this->error();
         echo json_encode( $this->model->query('agency_company')->lists() );
+    }
+
+    public function change_password($id=null){
+        $id = isset($_REQUEST["id"]) ? $_REQUEST["id"] : $id;
+        if( empty($id) || empty($this->me) || $this->format!='json' ) $this->error();
+
+        $item = $this->model->query("agency")->get($id);
+        if( empty($item) ) $this->error();
+
+        if( !empty($_POST) ){
+            $form = new Form();
+            $form   ->post("new_password")->val('is_empty')
+                    ->post("new_password2")->val('is_empty');
+            $form->submit();
+            $postData = $form->fetch();
+
+            if( strlen($postData["new_password"]) < 6 ){
+                $arr['error']["new_password"] = "รหัสผ่านต้องมีความยาว 6 ตัวอักษรขึ้นไป";
+            }
+            elseif( $postData["new_password"] != $postData["new_password2"] ){
+                $arr['error']["new_password2"] = "กรุณากรอกรหัสผ่านให้ตรงกัน";
+            }
+
+            if( empty($arr['error']) ){
+                $password = substr(trim(md5($postData["new_password"])), 0, 20);
+                $this->model->update($id, array("agen_password"=>$password));
+
+                $arr["message"] = "เปลี่ยนรหัสผ่านเรียบร้อย";
+            }
+
+            echo json_encode($arr);
+        }
+        else{
+            $this->view->setData('item', $item);
+            $this->view->render("forms/agency/change_password");
+        }
     }
 }

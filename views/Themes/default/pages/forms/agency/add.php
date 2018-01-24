@@ -2,11 +2,14 @@
 
 $title = "เซลล์";
 $arr["title"] = "เพิ่ม {$title}";
+
 if( !empty($this->item) ){
 	$arr['title'] = "แก้ไข {$title}";
 	$arr['hiddenInput'][] = array('name'=>'id','value'=>$this->item['id']);
 }
-
+if(!empty($this->item) && $this->item['id'] == $this->me['id']){
+    $arr["title"] = "จัดการโปรไฟล์";
+}
 $form = new Form();
 $form = $form ->create()
 			  ->elem('div')
@@ -76,35 +79,34 @@ $form   ->field("agen_skype")
          ->attr('style', 'color:black;')
          ->value( !empty($this->item['skype']) ? $this->item['skype'] : '' );
 
-$form   ->field("agen_user_name")
-         ->label("ชื่อเข้าใช้งาน*")      
-        ->addClass('inputtext')
-         ->autocomplete('off')
-         ->placeholder('Username')
-         ->attr('style', 'color:black;')
-         ->value( !empty($this->item['user_name']) ? $this->item['user_name'] : '' );
-
          if( empty($this->item) ) { 
+            $form    ->field("agen_user_name")
+                     ->label("ชื่อเข้าใช้งาน*")      
+                     ->addClass('inputtext')
+                     ->autocomplete('off')
+                     ->placeholder('Username')
+                     ->attr('style', 'color:black;')
+                     ->value( !empty($this->item['user_name']) ? $this->item['user_name'] : '' );
          	$form   ->field("agen_password")
-         			->label("รหัสผ่าน*")		
-         			->addClass('inputtext')
-         			->autocomplete('off')
-         			->type('password')
-         			->placeholder('Password')
-         			->attr('style', 'color:black;')
-         			->value('');
+         			   ->label("รหัสผ่าน*")		
+         			   ->addClass('inputtext')
+         			   ->autocomplete('off')
+         			   ->type('password')
+         			   ->placeholder('Password')
+         			   ->attr('style', 'color:black;')
+         			   ->value('');
          	$form   ->hr('<h4 class="fwb">กรุณากรอกอย่างน้อย 6 ตัวอักษร</h4>');
 
          	$form   ->field("agen_password2")
-         			->label("ยืนยันรหัสผ่าน*")        		
-         			->addClass('inputtext')
-         			->autocomplete('off')
-         			->type('password')
-         			->placeholder('ยืนยันรหัสผ่าน')
-         			->attr('style', 'color:black;')
-         			->value('');
+         			   ->label("ยืนยันรหัสผ่าน*")        		
+         			   ->addClass('inputtext')
+         			   ->autocomplete('off')
+         			   ->type('password')
+         			   ->placeholder('ยืนยันรหัสผ่าน')
+         			   ->attr('style', 'color:black;')
+         			   ->value('');
          }
-
+if(empty($this->item) || (!empty($this->item) && $this->item['id'] != $this->me['id']) ){
 $status = '';
 foreach ($this->status as $key => $value) {
    $ck = '';
@@ -122,7 +124,7 @@ foreach ($this->status as $key => $value) {
 $form    ->field('status')
          ->label("สถานะ*")
          ->text( $status );
-
+}
 # set form
 $arr['form'] = '<form class="js-submit-form" style="color:#000;" method="post" action="'.URL. 'agency/save"></form>';
 

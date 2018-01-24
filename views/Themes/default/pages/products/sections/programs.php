@@ -6,9 +6,11 @@
 				<th class="price">ราคา</th>
 
 				<?php if ( !empty($this->me) ) { ?>
-                <th class="qty">ที่นั้ง</th>
+				<th class="qty">ที่นั้ง</th>
+				<?php } ?>
 				<th class="qty">รับได้</th>
-				<th class="status"> ใบเตรียมตัว </th>
+				<?php if( !empty($this->me) ) { ?>
+				<th class="status">ใบเตรียมตัว</th>
                 <th class="actions"></th>
                 <?php } ?>
                 
@@ -24,17 +26,32 @@
 
 				<?php if ( !empty($this->me) ) { ?>
 				<td class="qty"><?=number_format($value['seats'])?></td>
-                <td class="qty fwb"><?=$value['balance']<=0  ? 'เต็ม': number_format($value['balance']) ?></td> 
+				<?php } ?>
+                <td class="qty fwb"><?php
+									
+                                    	if( $value['booking']['payed'] < $value['seats'] ){
+											echo $value['balance']<=0  ? '<span class="">W/L</span>': number_format($value['balance']);
+                                    	}
+                                    	else{
+											
+											echo '<span class="fcr">เต็ม</span>';
+										}
+										
+                                    	?></td> 
 				<!-- <td class="actions"><a>ดาวน์โหลด</a></td> -->
-               
+				<?php if ( !empty($this->me) ) { ?>
+				<td class="tac">
+                	<a<?=$url_pdf?> class="btn-icon" target="_blank"><i class="icon-file-pdf-o"></i></a>
+            	</td>
                 <td style="white-space: nowrap;">
-					
-            		<?php print_r($value);die; if ($value['balance']==0){ 
+
+            		<?php if ($value['balance']<=0){ 
 
             			if( $value['booking']['payed'] < $value['seats'] ){
 
             				echo '<a href="'.URL.'booking/register/'.$value['id'].'" class="btn btn-orange btn-submit">W/L</a>';
-            			}
+						}
+							
             			else{
             				echo '<span class="btn btn-danger disabled">เต็ม</span>';
             			}
@@ -46,7 +63,8 @@
 
             		} ?>
 
-            	</td>
+				</td>
+				
                 <?php } // end: if login ?>
 			</tr>
 			<?php } // end: for period ?>

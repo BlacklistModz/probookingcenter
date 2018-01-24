@@ -3,10 +3,10 @@
 class Booking_Model extends Model {
 
 
-    public function __construct()
-    {
-        parent::__construct();
-    }
+	public function __construct()
+	{
+		parent::__construct();
+	}
 
     private $_objName = "booking";
     private $_table = "booking b 
@@ -72,30 +72,30 @@ class Booking_Model extends Model {
         return $arr;
     }
 
-    public function prefixNumber()
-    {
-        $sth = $this->db->prepare("SELECT * FROM prefixnumber LIMIT 1");
+	public function prefixNumber()
+	{
+		$sth = $this->db->prepare("SELECT * FROM prefixnumber LIMIT 1");
         $sth->execute();
 
         return $sth->fetch( PDO::FETCH_ASSOC );
-    }
-    public function prefixNumberUpdate($id, $data) {
-        $this->db->update('prefixnumber', $data, "`prefix_id`={$id}");
-    }
+	}
+	public function prefixNumberUpdate($id, $data) {
+		$this->db->update('prefixnumber', $data, "`prefix_id`={$id}");
+	}
 
 
-    public function get($id, $options=array())
-    {
-        $sth = $this->db->prepare("SELECT {$this->_field} FROM {$this->_table} WHERE book_id=:id LIMIT 1");
+	public function get($id, $options=array())
+	{
+		$sth = $this->db->prepare("SELECT * FROM booking WHERE book_id=:id LIMIT 1");
         $sth->execute( array( ':id' => $id ) );
 
         if( $sth->rowCount()==1 ){
             return $this->convert( $sth->fetch( PDO::FETCH_ASSOC ), $options );
         } return array();
-    }
-    public function insert(&$data){
-        $this->db->insert('booking', $data);
-        $data['id'] = $this->db->lastInsertId();
+	}
+	public function insert(&$data){
+    	$this->db->insert('booking', $data);
+    	$data['id'] = $this->db->lastInsertId();
     }
     public function update($id, $data){
         $this->db->update($this->_objName, $data, "{$this->_cutNamefield}id={$id}");
@@ -111,13 +111,13 @@ class Booking_Model extends Model {
     }
     public function convert($data, $options=array()){
 
-        // $data = $this->_cutFirstFieldName($this->_cutNamefield, $data);
+    	// $data = $this->_cutFirstFieldName($this->_cutNamefield, $data);
         
         $total_qty = 0;
         $booking_list = $this->db->select("SELECT * FROM booking_list WHERE `book_code`=:code ORDER BY book_list_code ASC", array(':code'=>$data['book_code']));
         $items = array();
         foreach ($booking_list as $key => $value) {
-            $items[$value['book_list_code']] = $value;
+        	$items[$value['book_list_code']] = $value;
             $total_qty += $value["book_list_qty"];
         }
         $data['book_qty'] = $total_qty;
@@ -134,21 +134,20 @@ class Booking_Model extends Model {
 
 
     public function detailInsert(&$data){
-        $this->db->insert('booking_list', $data);
-        $data['id'] = $this->db->lastInsertId();
+    	$this->db->insert('booking_list', $data);
+    	$data['id'] = $this->db->lastInsertId();
     }
 
     /* STATUS */
     public function status(){
-        $a[] = array('id'=>0, 'name'=>'จอง');
-        $a[] = array('id'=>10, 'name'=>'แจ้ง Invoice');
-        $a[] = array('id'=>20, 'name'=>'DEP(PT)');
-        $a[] = array('id'=>25, 'name'=>'DEP');
-        $a[] = array('id'=>30, 'name'=>'Full payment(PT)');
-        $a[] = array('id'=>35, 'name'=>'Full payment');
-        $a[] = array('id'=>40, 'name'=>'CXL');
-        $a[] = array('id'=>5, 'name'=>'W/L');
-        $a[] = array('id'=>50, 'name'=>'รอติดต่อกลับ');
+        $a[] = array('id'=>0, 'name'=>'จอง', 'detail'=>"จอง");
+        $a[] = array('id'=>10, 'name'=>'แจ้ง Invoice', 'detail'=>"แจ้ง quatation");
+        $a[] = array('id'=>20, 'name'=>'มัดจำบางส่วน', 'detail'=>"มัดจำบางส่วน");
+        $a[] = array('id'=>25, 'name'=>'มัดจำเต็มจำนวน', 'detail'=>"มัดจำต็มจำนวน");
+        $a[] = array('id'=>30, 'name'=>'จ่ายเต็มจำนวน บางส่วน', 'detail'=>"ชำระเต็มจำนวน บางส่วน");
+        $a[] = array('id'=>35, 'name'=>'จ่ายเต็มจำนวน', 'detail'=> "ชำระเต็มจำนวน แบบเต็มจำนวน");
+        $a[] = array('id'=>40, 'name'=>'ยกเลิก', "detail"=> "Cancel");
+        $a[] = array('id'=>5, 'name'=>'Waiting List', 'detail'=>"Waiting List");
 
         return $a;
     }
@@ -163,4 +162,49 @@ class Booking_Model extends Model {
         return $data;
     }
 
+    public function updateWaitingList($per_id){
+        /* GET Waiting List */
+        $waiting = $this->db->select("SELECT book_id,user_id,COALESCE(SUM(booking_list.book_list_qty)) AS qty FROM booking LEFT JOIN booking_list ON booking.book_code=booking_list.book_code WHERE per_id={$per_id} AND status=5 ORDER BY booking.create_date ASC");
+        if( !empty($waiting) ){
+            /* จำนวนทีนั่งทั้งหมด */
+            $seats = $this->db->select("SELECT per_qty_seats FROM period WHERE per_id={$per_id} LIMIT 1");
+
+            /* จำนวนคนจองทั้งหมด (ตัด Waiting กับ ยกเลิกแล้ว) */
+            $book = $this->db->select("SELECT COALESCE(SUM(booking_list.book_list_qty),0) as qty FROM booking_list
+                    LEFT JOIN booking ON booking_list.book_code=booking.book_code
+                  WHERE booking.per_id={$per_id} AND booking.status!=5 AND booking.status!=40");
+            $BalanceSeats = $seats[0]["per_qty_seats"] - $book[0]["qty"];
+            if( $BalanceSeats > 0 ){
+                foreach ($waiting as $key => $value) {
+                    if( !empty($BalanceSeats) ){
+                        if( $value["qty"] <= $BalanceSeats ){
+                            /* SET STATUS BOOKING */
+                            $this->db->update("booking", array("status"=>"00"), "book_id={$value["book_id"]}");
+                            $BalanceSeats -= $value["qty"];
+                        }
+                    }
+                    else{
+                        if( $BalanceSeats > 0 ){
+                            /* SET STATUS BOOKING */
+                            $this->db->update("booking", array("status"=>"00"), "book_id={$value["book_id"]}");
+
+                            /* SET ALERT FOR SALE */
+                            $alert = array(
+                                "user_id"=>$value["user_id"],
+                                "book_id"=>$value["book_id"],
+                                "detail"=>"ที่นั่งไม่เพียงพอ",
+                                "source"=>"150booking",
+                                "log_date"=>date("c")
+                            );
+                            $this->db->insert("alert_msg", $alert);
+
+                            /* EXIT LOOP */
+                            $BalanceSeats = 0;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

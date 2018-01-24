@@ -11,7 +11,7 @@
 					<li>
 						<label for="status" class="label fwb">เซลล์ : </label>
 						<select ref="selector" class="inputtext" name="agency" style="display:inline;">
-							<option value="">-- เลือกเซลล์--</option>
+							<option value="">-- ทั้งหมด --</option>
 							<?php foreach ($this->sales['lists'] as $key => $value) {
 								$sel = '';
 								if( $this->agen_id == $value["id"] ) $sel = ' selected="1"';
@@ -21,7 +21,7 @@
 					</li>
 				</ul>
 				<div class="clearfix">
-					<table class="table-bordered" style="color:#000;">
+					<table class="table-bordered"  style="color:#000; overflow-x:auto; display: block; width: 100%;-webkit-overflow-scrolling: touch;  -ms-overflow-style: -ms-autohiding-scrollbar;">
 						<thead>
 							<tr style="color:#fff; background-color: #003;">
 								<th width="10%">วันที่</th>
@@ -46,13 +46,9 @@
 
 									$timeStr = date("H:i:s", strtotime($value["book_date"]));
 									$dateTime = "{$dayStr} {$monthStr} {$yearStr}";
-
-									$dDaystr = date("d", strtotime($value['book_due_date_deposit']));
-									$dMonthStr = $this->fn->q('time')->month( date("n", strtotime($value["book_due_date_deposit"])) );
-									$dYearStr = date("Y", strtotime($value["book_due_date_deposit"])) + 543;
-									$DepositStr = "{$dDaystr} {$dMonthStr} {$dYearStr}";
 									//print_r($value); die;
 									$fullPaymentStr = "-";
+									$DepositStr = "-";
 									$fullPaymenting ="";
 									$deposited="";
 									
@@ -61,11 +57,18 @@
 										$fMonthStr = $this->fn->q('time')->month( date("n", strtotime($value["book_due_date_full_payment"])) );
 										$fYearStr = date("Y", strtotime($value["book_due_date_full_payment"])) + 543;
 										$fullPaymentStr = "{$fDaystr} {$fMonthStr} {$fYearStr}";
-										$deposited = $value['book_master_full_payment'];
+										
 									}
-									if ($value["book_due_date_deposit"] !="0000-00-00 00:00:00"){
-										$fullPaymenting = $value["book_master_deposit"];
+
+									if( $value["book_due_date_deposit"] != "0000-00-00 00:00:00" ){
+										$dDaystr = date("d", strtotime($value['book_due_date_deposit']));
+										$dMonthStr = $this->fn->q('time')->month( date("n", strtotime($value["book_due_date_deposit"])) );
+										$dYearStr = date("Y", strtotime($value["book_due_date_deposit"])) + 543;
+										$DepositStr = "{$dDaystr} {$dMonthStr} {$dYearStr}";
 									}
+										$deposited = $value['book_master_deposit'];
+										$fullPaymenting = $value["book_master_full_payment"];
+								
 									
 									?>
 									<tr>
@@ -77,11 +80,11 @@
 										</td>
 										<td class="tac"><?=$value["book_qty"]?></td>
 										<td class="tar" style="padding-right: 2mm;"><?=number_format($value['book_amountgrandtotal'])?></td>
-										<td class="tac"><?=$DepositStr?><?= $deposited ==""? "" :'<br>'.'<span class="fwb status_95">('.number_format($deposited).')</span>'   ?></td>
-										<td class="tac"><?=$fullPaymentStr?><?=$fullPaymenting ==""? "" : '<br>'.'<span class="fwb status_96">('.number_format($fullPaymenting).')</span>'?> </td>
+										<td class="tac"><?=$DepositStr?><?= $deposited ==0? "" :'<br>'.'<span class="fwb status_95">('. number_format($deposited).')</span>'   ?></td>
+										<td class="tac"><?=$fullPaymentStr?><?=$fullPaymenting ==0? "" : '<br>'.'<span class="fwb status_96">('. number_format($fullPaymenting).')</span>'?> </td>
 										<td class="tac"><?=$value['agen_fname']?></td>
 										<td class="tac">
-											<span class="fwb status_<?=$value['status']?>"><?=$value["book_status"]['name']=="Full payment"?"FP":$value["book_status"]['name']?></span>
+											<span class="fwb fz_11 status_<?=$value['status']?>"><?=$value["book_status"]['name']=="Full payment"?"FP":$value["book_status"]['name']?></span>
 										</td>
 										<td class="tac">
 											<?php
