@@ -137,15 +137,26 @@ class Booking_Model extends Model {
     	$this->db->insert('booking_list', $data);
     	$data['id'] = $this->db->lastInsertId();
     }
-
+    public function crons(){
+        $time_now = date('Y-m-d H:i:s');
+        $booking_list = $this->db->select("SELECT `book_id`, `book_due_date_deposit`,`book_due_date_full_payment`,`status` FROM booking WHERE  (`book_due_date_deposit`!= '0000-00-00 00:00:00' && `book_due_date_deposit` < '$time_now' ||  `book_due_date_full_payment`<= '$time_now') &&`status`=00");
+        //return $booking_list;
+        //return("SELECT `book_id`, `book_due_date_deposit`,`book_due_date_full_payment`,`status` FROM booking WHERE  (`book_due_date_deposit`!= '0000-00-00 00:00:00' && `book_due_date_deposit` < '$time_now' ||  `book_due_date_full_payment`<= '$time_now') &&`status`=00");
+            if(!empty($booking_list)){
+                return $booking_list;
+            }
+            else{
+                return'empty row';
+        }
+    }
     /* STATUS */
     public function status(){
         $a[] = array('id'=>0, 'name'=>'จอง', 'detail'=>"จอง");
         $a[] = array('id'=>10, 'name'=>'แจ้ง Invoice', 'detail'=>"แจ้ง quatation");
-        $a[] = array('id'=>20, 'name'=>'มัดจำบางส่วน', 'detail'=>"มัดจำบางส่วน");
-        $a[] = array('id'=>25, 'name'=>'มัดจำเต็มจำนวน', 'detail'=>"มัดจำต็มจำนวน");
-        $a[] = array('id'=>30, 'name'=>'จ่ายเต็มจำนวน บางส่วน', 'detail'=>"ชำระเต็มจำนวน บางส่วน");
-        $a[] = array('id'=>35, 'name'=>'จ่ายเต็มจำนวน', 'detail'=> "ชำระเต็มจำนวน แบบเต็มจำนวน");
+        $a[] = array('id'=>20, 'name'=>'มัดจำ', 'detail'=>"มัดจำบางส่วน");
+        $a[] = array('id'=>25, 'name'=>'มัดจำบางส่วน', 'detail'=>"มัดจำต็มจำนวน");
+        $a[] = array('id'=>30, 'name'=>'ชำระเต็มจำนวน (บางส่วน)', 'detail'=>"ชำระเต็มจำนวน บางส่วน");
+        $a[] = array('id'=>35, 'name'=>'ชำระเต็มจำนวน', 'detail'=> "ชำระเต็มจำนวน แบบเต็มจำนวน");
         $a[] = array('id'=>40, 'name'=>'ยกเลิก', "detail"=> "Cancel");
         $a[] = array('id'=>5, 'name'=>'Waiting List', 'detail'=>"Waiting List");
 

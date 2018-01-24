@@ -59,17 +59,28 @@
         $DayOfGo = $this->fn->q('time')->DateDiff( date("Y-m-d"), $item['per_date_start'] );
         if( $DayOfGo > 30 ){
             $settings['deposit']['date'] = date("Y-m-d", strtotime("+2 day"));
-        }
+            
+        }else if ($DayOfGo >8 && $DayOfGo <=30){
+            $settings['fullPayment']['date'] = date("Y-m-d 18:00:00", strtotime("tomorrow"));
+            $settings['deposit']['date'] = '-';
+            $settings['deposit']['price'] = 0;
 
-        $settings['trave']['date'] = date('Y-m-d', strtotime("-1 day", strtotime($settings['trave']['date'])));
-
-        $settings['fullPayment']['date'] = date('Y-m-d', strtotime("-21 day", strtotime($settings['trave']['date'])));
-
-        if( strtotime($settings['fullPayment']['date']) < strtotime(date('Y-m-d')) ){
-            $settings['fullPayment']['date'] = date("Y-m-d", strtotime('tomorrow'));
+        }else if ($DayOfGo >=1 || $DayOfGo <=1  && $DayOfGo <=8){
+            $settings['fullPayment']['date'] = date("Y-m-d H:i:s", strtotime("+1 min"));
             $settings['deposit']['date'] = '-';
             $settings['deposit']['price'] = 0;
         }
+       
+        // $settings['trave']['date'] = date('Y-m-d', strtotime("-1 day", strtotime($settings['trave']['date'])));
+
+        // $settings['fullPayment']['date'] = date('Y-m-d', strtotime("-21 day", strtotime($settings['trave']['date'])));
+
+        // if( strtotime($settings['fullPayment']['date']) < strtotime(date('Y-m-d')) ){
+        //     $settings['fullPayment']['date'] = date("Y-m-d 18:00:00", strtotime('tomorrow'));
+        //     $settings['deposit']['date'] = '-';
+        //     $settings['deposit']['price'] = 0;
+        // }
+        
 
         if( !empty($_POST) ){
 
@@ -256,6 +267,15 @@
             $this->view->setData('item', $item);
             $this->view->render('forms/booking/cancel');
         }
+    }
+    public function crons_booking_cencel(){
+       // $date = date();
+        $dayofweek = date('w');
+        //$dayofweek 
+       print_r($dayofweek );die;
+       $response =  $this->model->crons();
+      
+       
     }
 
 }
