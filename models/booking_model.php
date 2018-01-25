@@ -139,14 +139,14 @@ class Booking_Model extends Model {
     }
     public function crons(){
         $time_now = date('Y-m-d H:i:s');
-        $booking_list = $this->db->select("SELECT `book_id`, `book_due_date_deposit`,`book_due_date_full_payment`,`status` FROM booking WHERE  (`book_due_date_deposit`!= '0000-00-00 00:00:00' && `book_due_date_deposit` < '$time_now' ||  `book_due_date_full_payment`<= '$time_now') &&`status`=00");
-        //return $booking_list;
+        $booking_list = $this->db->select("SELECT`book_id`, `book_due_date_deposit`,`book_master_deposit`,`book_due_date_full_payment`,`book_master_full_payment`,`status` FROM booking WHERE  (`book_due_date_deposit`!= '0000-00-00 00:00:00' && `book_due_date_deposit` < '$time_now' OR  `book_due_date_full_payment`<= '$time_now') AND status` IN (0, 5, 10) AND book_receipt =0");
+    //    print_r("SELECT `book_id`, `book_due_date_deposit`,`book_due_date_full_payment`,`status` FROM booking WHERE  (`book_due_date_deposit`!= '0000-00-00 00:00:00' && `book_due_date_deposit` < '$time_now' ||  `book_due_date_full_payment`<= '$time_now') &&`status` IN (0, 5, 10)");
+    //  die;
+       //return $booking_list;
         //return("SELECT `book_id`, `book_due_date_deposit`,`book_due_date_full_payment`,`status` FROM booking WHERE  (`book_due_date_deposit`!= '0000-00-00 00:00:00' && `book_due_date_deposit` < '$time_now' ||  `book_due_date_full_payment`<= '$time_now') &&`status`=00");
-            if(!empty($booking_list)){
-                return $booking_list;
-            }
-            else{
-                return'empty row';
+
+        foreach($booking_list AS $value){
+            $this->db->update("booking", array("status"=>40, "book_log"=>"UPDATE BY SYSTEM"), "book_id={$value["book_id"]}");
         }
     }
     /* STATUS */
