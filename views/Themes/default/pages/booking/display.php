@@ -96,9 +96,9 @@ if( $this->item['per_com_agency']>0 ){
                         <div class="uiBoxWhite pam">
                         <table><tbody>
                             <tr><td class="clearfix fwb pbm"><i class="icon-address-book-o mrs"></i>ข้อมูลผู้จอง</td></tr>
-                            <tr><td><?=$this->me['fullname']?></td></tr>
-                            <tr><td><?=$this->me['email']?></td></tr>
-                            <tr><td><?=$this->me['tel']?></td></tr>
+                            <tr><td><?=$this->book['agen_fname'].' '.$this->book['agen_lname']?></td></tr>
+                            <tr><td><?=$this->book['agen_email']?></td></tr>
+                            <tr><td><?=$this->book['agen_tel']?></td></tr>
                             <tr><td><?=$this->me['company_name']?></td></tr>
                         </tbody></table>
                         </div>

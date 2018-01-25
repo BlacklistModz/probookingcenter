@@ -254,4 +254,39 @@ class Booking extends Controller {
             $this->view->render('forms/booking/cancel');
         }
     }
+
+    public function payment($id=null){
+        $id = isset($_REQUEST["id"]) ? $_REQUEST["id"] : $id;
+        if( empty($id) || empty($this->me) ) $this->error();
+
+        $item = $this->model->get($id, array('payment'=>true));
+        if( empty($item) ) $this->error();
+
+        $this->view->setData('item', $item);
+        $this->view->render("booking/payment");
+    }
+
+    public function profile($id=null){
+        $id = isset($_REQUEST["id"]) ? $_REQUEST["id"] : $id;
+        if( empty($id) || empty($this->me) || $this->format!='json' ) $this->error();
+
+        $book = $this->model->get( $id );
+        if( empty($book) ) $this->error();
+        // print_r($book); die;
+
+        $period = $book['per_id'];
+        $item = $this->model->query('products')->period( $period );
+        if( empty($item) ) $this->error();
+        // print_r($item); die;
+        $this->view->setData( 'busList', $this->model->query('products')->busList( $period ) );
+        $this->view->setData( 'salesList', $this->model->query('products')->salesList( $period ) );
+
+        // จำนวน ที่นั่ง ที่จองไปแล้ว
+        $seatBooked = $this->model->query('products')->seatBooked( $period );
+        $this->view->setData( 'seatBooked', $seatBooked );
+
+        $this->view->setData( 'item', $item );
+        $this->view->setData( 'book', $book );
+        $this->view->render("forms/booking/profile");
+    }
 }

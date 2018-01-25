@@ -70,7 +70,7 @@
 									?>
 									<tr>
 										<td class="tac"><?=$dateTime?><br/><?=$timeStr?></td>
-										<td class="tac"><a target="_blank" style="color:blue; text-decoration: none;" href="<?=URL?>booking/<?=$value["book_id"]?>"><?=$value["book_code"]?></a></td>
+										<td class="tac"><a data-plugins="dialog" style="color:blue; text-decoration: none;" href="<?=URL?>booking/profile/<?=$value["book_id"]?>"><?=$value["book_code"]?></a></td>
 										<td class="tac">
 											<a href="<?=URL?>tour/<?=$value["ser_id"]?>" style="color:blue; text-decoration: none;" target="_blank">
 											<span class="fwb"><?=$value['ser_code']?></a>
@@ -85,18 +85,18 @@
 										</td>
 										<td class="tac">
 											<?php
-											echo '<span>N/A</span>'; 
-											// if( $value['status'] == 35 || $value['status'] == 40 || $value['status'] == 50 ){
-											// 	echo '<a class="btn btn-blue disabled">LOCK</a>';
-											// }
-											// else{
-											// 	echo '<a href="'.URL.'booking/payment/'.$value['book_id'].'" class="btn btn-blue" data-plugins="dialog">แจ้งโอนเงิน</a>';
-											// }
+											// echo '<span>N/A</span>'; 
+											if( $value['status'] == 5 || $value['status'] == 35 || $value['status'] == 40 || $value['status'] == 50 ){
+												echo '<a class="btn btn-blue disabled">LOCK</a>';
+											}
+											else{
+												echo '<a href="'.URL.'booking/payment/'.$value['book_id'].'" class="btn btn-blue">แจ้งโอนเงิน</a>';
+											}
 											?>
 										</td>
 										<td class="tac">
 											<?php 
-											if( ($value['status'] == 0 || $value['status'] == 5) && $value['agen_id'] == $this->me['id'] ) {
+											if( ($value['status'] == 0 || $value['status'] == 5 || $value['status'] == 10 ) && $value['agen_id'] == $this->me['id'] ) {
 												echo '<a href="'.URL.'booking/booking_cancel/'.$value['book_id'].'" class="btn btn-red" data-plugins="dialog">ยกเลิก</a>';
 											}
 											else{
