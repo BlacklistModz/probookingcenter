@@ -180,6 +180,7 @@ class Booking_Model extends Model {
 
     public function updateWaitingList($per_id){
         /* GET Waiting List */
+
         $waiting = $this->db->select("SELECT book_id,user_id,COALESCE(SUM(booking_list.book_list_qty)) AS qty FROM booking LEFT JOIN booking_list ON booking.book_code=booking_list.book_code WHERE per_id={$per_id} AND status=5 ORDER BY booking.create_date ASC");
         if( !empty($waiting) ){
             /* จำนวนทีนั่งทั้งหมด */
@@ -197,6 +198,16 @@ class Booking_Model extends Model {
                             /* SET STATUS BOOKING */
                             $this->db->update("booking", array("status"=>"00"), "book_id={$value["book_id"]}");
                             $BalanceSeats -= $value["qty"];
+
+                            /* SET ALERT FOR SALE */
+                            $alert = array(
+                                "user_id"=>$value["user_id"],
+                                "book_id"=>$value["book_id"],
+                                "detail"=>"ที่นั่งไม่เพียงพอ",
+                                "source"=>"150booking",
+                                "log_date"=>date("c")
+                            );
+                            $this->db->insert("alert_msg", $alert);
                         }
                     }
                     else{
