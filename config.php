@@ -76,5 +76,5 @@ define('HASH_PASSWORD_KEY', 'catsFLYhigh2000miles');
 
 define('RECAPTCHA_SITE_KEY', '6LfPBxMTAAAAALX9MpBvvR2sjCKZidyhU-YXYHCY');
 define('RECAPTCHA_SECRET_KEY', '6LfPBxMTAAAAACav7aO-axpuFK6r_fDphq6gAs4i');
-
+define('PATH_TRAVEL', ".." . DS . "probookingcenter.admin" . DS . "admin" . DS . "upload" . DS . "travel" . DS);
 define('PATH_PAYMENT', ".." . DS . "probookingcenter.admin" . DS . "admin" . DS . "upload" . DS . "payment" . DS);
