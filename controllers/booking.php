@@ -207,8 +207,10 @@
                     "book_room_double"=>$_POST['room']['double'], 
                     "book_room_triple"=>$_POST['room']['triple'], 
                     "book_room_single"=>$_POST['room']['single'], 
-
+                    
                     "create_date"=>date('c'),
+                    "book_cus_name"=>$_POST['customername'],
+                    "book_cus_tel"=>$_POST['customertel'],
                 );
                 // print_r($book); die;
                 $this->model->insert($book);

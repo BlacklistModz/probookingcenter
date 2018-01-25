@@ -35,6 +35,8 @@ $form->field("seat")->text('<div class="clearfix"><label for="seat" class="contr
 $form->field("sgent")->label('Agent Company:')->autocomplete('off')->attr('disabled', 1)->addClass('inputtext disabled')->value( $this->me['company_name'] );
 $form->field("sale")->label('Agent Name:')->autocomplete('off')->attr('disabled', 1)->addClass('inputtext disabled')->value( $this->me['fullname'] );
 $form->field("comment")->label('คำขอพิเศษ:')->autocomplete('off')->placeholder('สำหรับคำขอพิเศษต่างๆ หรือชื่อลูกค้า')->addClass('inputtext')->attr('data-plugins','autosize')->type('textarea');
+$form->field("customername")->label('ชื่อลูกค้า')->addClass('inputtext')->type('text')->placeholder('สำหรับกรอกชื่อลูกค้า');
+$form->field("customertel")->label('เบอร์โทรลูกค้า')->addClass('inputtext')->type('text')->placeholder('สำหรับกรอกเบอร์โทรของลูกค้า');
 
 $contactFrom = $form->html();
 
