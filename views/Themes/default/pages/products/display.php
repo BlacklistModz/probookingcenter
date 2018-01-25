@@ -16,9 +16,7 @@
 
 		
 		<div class="card">
-			
 			<?php require_once 'sections/content.php';?>
-			
 		</div>
 
 		<?php /* require_once 'sections/booking.php'; */ ?>

@@ -69,6 +69,16 @@ class Products_Model extends Model{
         	$params[":show"] = $options["show"];
         }
 
+        if( !empty($options["promote"]) ){
+            $condition .= !empty($condition) ? " AND " : "";
+            $condition .= "s.ser_is_promote=:promote";
+            $params[":promote"] = 1;
+        }
+        if( !empty($options["recommend"]) ){
+            $condition .= !empty($condition) ? " AND " : "";
+            $condition .= "s.ser_is_recommend=:recommend";
+            $params[":recommend"] = 1;
+        }
         /*$condition .= !empty($condition) ? " AND " : "";
         $condition .= "s.ser_url_img_1!=:img";
         $params[":img"] = '';*/
@@ -76,6 +86,7 @@ class Products_Model extends Model{
         /*$condition .= !empty($condition) ? " AND " : "";
         $condition .= "s.ser_deposit>:deposit";
         $params[":deposit"] = 0;*/
+
 
         $arr['total'] = $this->db->count($this->_table, $condition, $params);
 
@@ -157,14 +168,26 @@ class Products_Model extends Model{
 
 
         if( !empty($data['url_word']) ){
+            $file = substr(strrchr($data['url_word'],"/"),1);
 
-            $data['url_word'] = 'http://admin.probookingcenter.com/admin/upload/travel/'.substr(strrchr($data['url_word'],"/"),1);
+            if( file_exists(PATH_TRAVEL.$file) ){
+                $data['url_word'] = 'http://admin.probookingcenter.com/admin/upload/travel/'.$file;
+            }
+            else{
+                $data['url_word'] = '';
+            }
         }
 
 
         if( !empty($data['url_pdf']) ){
+            $file = substr(strrchr($data['url_pdf'],"/"),1);
 
-            $data['url_pdf'] = 'http://admin.probookingcenter.com/admin/upload/travel/'.substr(strrchr($data['url_pdf'],"/"),1);
+            if( file_exists(PATH_TRAVEL.$file) ){
+                $data['url_pdf'] = 'http://admin.probookingcenter.com/admin/upload/travel/'.$file;
+            }
+            else{
+                $data['url_pdf'] = '';
+            }
         }
 
         return $data;
@@ -175,14 +198,26 @@ class Products_Model extends Model{
     public function recommendList( $limit=9 ){
 
         $results = $this->lists( array(
-            'show' => 1,
+            // 'show' => 1,
             'limit' => $limit,
-            'status' => 1
+            'status' => 1,
+            'recommend' => true
         ) );
 
         return $results['lists'];
 
     	// return $this->buildFrag( $this->db->select("SELECT {$this->_field} FROM {$this->_table} WHERE s.status=:status AND ser_url_img_1!='' ORDER BY RAND() LIMIT {$limit}", array(':status' => 1) ) );
+    }
+
+    #Slide
+    public function slideList( $limit=9 ){
+        $results = $this->lists( array(
+            'limit' => $limit,
+            'status' => 1,
+            'promote' => true
+        ) );
+
+        return $results['lists'];
     }
 
 
@@ -239,10 +274,14 @@ class Products_Model extends Model{
         , p.single_charge
         
         , p.per_qty_seats
-        , p.status
 
         , p.per_com_agency
         , p.per_com_company_agency
+
+        , p.per_url_word
+        , p.per_url_pdf
+
+        , p.status
     ";
     private $_periodTable = "period p";
     public function period($id)
@@ -313,6 +352,17 @@ class Products_Model extends Model{
 
             $data[$key]['balance'] = $value['per_qty_seats'] - $booking['booking'];
             // $data[$key]['bb'] = $rr;
+
+            if( !empty($data[$key]['url_pdf']) ){
+                $file = substr(strrchr($data[$key]['url_pdf'],"/"),1);
+
+                if( file_exists(PATH_TRAVEL.$file) ){
+                    $data[$key]['url_pdf'] = 'http://admin.probookingcenter.com/admin/upload/travel/'.$file;
+                }
+                else{
+                    $data[$key]['url_pdf'] = '';
+                }
+            }
 
 
             $data[$key]['booking'] = $booking;

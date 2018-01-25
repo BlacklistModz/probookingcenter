@@ -3,10 +3,10 @@
 class Booking_Model extends Model {
 
 
-    public function __construct()
-    {
-        parent::__construct();
-    }
+	public function __construct()
+	{
+		parent::__construct();
+	}
 
     private $_objName = "booking";
     private $_table = "booking b 
@@ -74,30 +74,30 @@ class Booking_Model extends Model {
         return $arr;
     }
 
-    public function prefixNumber()
-    {
-        $sth = $this->db->prepare("SELECT * FROM prefixnumber LIMIT 1");
+	public function prefixNumber()
+	{
+		$sth = $this->db->prepare("SELECT * FROM prefixnumber LIMIT 1");
         $sth->execute();
 
         return $sth->fetch( PDO::FETCH_ASSOC );
-    }
-    public function prefixNumberUpdate($id, $data) {
-        $this->db->update('prefixnumber', $data, "`prefix_id`={$id}");
-    }
+	}
+	public function prefixNumberUpdate($id, $data) {
+		$this->db->update('prefixnumber', $data, "`prefix_id`={$id}");
+	}
 
 
-    public function get($id, $options=array())
-    {
-        $sth = $this->db->prepare("SELECT {$this->_field} FROM {$this->_table} WHERE book_id=:id LIMIT 1");
+	public function get($id, $options=array())
+	{
+		$sth = $this->db->prepare("SELECT * FROM booking WHERE book_id=:id LIMIT 1");
         $sth->execute( array( ':id' => $id ) );
 
         if( $sth->rowCount()==1 ){
             return $this->convert( $sth->fetch( PDO::FETCH_ASSOC ), $options );
         } return array();
-    }
-    public function insert(&$data){
-        $this->db->insert('booking', $data);
-        $data['id'] = $this->db->lastInsertId();
+	}
+	public function insert(&$data){
+    	$this->db->insert('booking', $data);
+    	$data['id'] = $this->db->lastInsertId();
     }
     public function update($id, $data){
         $this->db->update($this->_objName, $data, "{$this->_cutNamefield}id={$id}");
@@ -113,13 +113,13 @@ class Booking_Model extends Model {
     }
     public function convert($data, $options=array()){
 
-        // $data = $this->_cutFirstFieldName($this->_cutNamefield, $data);
+    	// $data = $this->_cutFirstFieldName($this->_cutNamefield, $data);
         
         $total_qty = 0;
         $booking_list = $this->db->select("SELECT * FROM booking_list WHERE `book_code`=:code ORDER BY book_list_code ASC", array(':code'=>$data['book_code']));
         $items = array();
         foreach ($booking_list as $key => $value) {
-            $items[$value['book_list_code']] = $value;
+        	$items[$value['book_list_code']] = $value;
             $total_qty += $value["book_list_qty"];
         }
         $data['book_qty'] = $total_qty;
@@ -137,23 +137,32 @@ class Booking_Model extends Model {
 
         return $data;
     }
-
-
+    
     public function detailInsert(&$data){
-        $this->db->insert('booking_list', $data);
-        $data['id'] = $this->db->lastInsertId();
+    	$this->db->insert('booking_list', $data);
+    	$data['id'] = $this->db->lastInsertId();
     }
-
+    public function crons(){
+        $time_now = date('Y-m-d H:i:s');
+        $booking_list = $this->db->select("SELECT `book_id`, `book_due_date_deposit`,`book_due_date_full_payment`,`status` FROM booking WHERE  (`book_due_date_deposit`!= '0000-00-00 00:00:00' && `book_due_date_deposit` < '$time_now' ||  `book_due_date_full_payment`<= '$time_now') &&`status`=00");
+        //return $booking_list;
+        //return("SELECT `book_id`, `book_due_date_deposit`,`book_due_date_full_payment`,`status` FROM booking WHERE  (`book_due_date_deposit`!= '0000-00-00 00:00:00' && `book_due_date_deposit` < '$time_now' ||  `book_due_date_full_payment`<= '$time_now') &&`status`=00");
+            if(!empty($booking_list)){
+                return $booking_list;
+            }
+            else{
+                return'empty row';
+        }
+    }
     /* STATUS */
     public function status(){
         $a[] = array('id'=>0, 'name'=>'จอง', 'detail'=>"จอง");
         $a[] = array('id'=>10, 'name'=>'แจ้ง Invoice', 'detail'=>"แจ้ง quatation");
-        $a[] = array('id'=>20, 'name'=>'มัดจำบางส่วน', 'detail'=>"มัดจำบางส่วน");
-        $a[] = array('id'=>25, 'name'=>'มัดจำเต็มจำนวน', 'detail'=>"มัดจำต็มจำนวน");
-        $a[] = array('id'=>30, 'name'=>'จ่ายเต็มจำนวน บางส่วน', 'detail'=>"ชำระเต็มจำนวน บางส่วน");
-        $a[] = array('id'=>35, 'name'=>'จ่ายเต็มจำนวน', 'detail'=> "ชำระเต็มจำนวน แบบเต็มจำนวน");
+        $a[] = array('id'=>20, 'name'=>'มัดจำ', 'detail'=>"มัดจำบางส่วน");
+        $a[] = array('id'=>25, 'name'=>'มัดจำบางส่วน', 'detail'=>"มัดจำต็มจำนวน");
+        $a[] = array('id'=>30, 'name'=>'ชำระเต็มจำนวน (บางส่วน)', 'detail'=>"ชำระเต็มจำนวน บางส่วน");
+        $a[] = array('id'=>35, 'name'=>'ชำระเต็มจำนวน', 'detail'=> "ชำระเต็มจำนวน แบบเต็มจำนวน");
         $a[] = array('id'=>40, 'name'=>'ยกเลิก', "detail"=> "Cancel");
-        $a[] = array('id'=>50, 'name'=>'รอเซลล์ติดต่อ', "detail"=> "Cancel");
         $a[] = array('id'=>5, 'name'=>'Waiting List', 'detail'=>"Waiting List");
 
         return $a;
@@ -214,7 +223,6 @@ class Booking_Model extends Model {
             }
         }
     }
-
     /* PAYMENT */
     public function listsPayment($id){
         $data = array();

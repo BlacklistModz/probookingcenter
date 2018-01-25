@@ -35,23 +35,24 @@ class Me extends Controller {
         if( $avtive=='account' ){
             try {
                 $form = new Form();
-                $form   ->post('user_name')->val('username');
+                $form   ->post('user_login')->val('username')
+                        ->post('user_lang');
 
                 $form->submit();
                 $dataPost = $form->fetch();
 
-                if( $this->model->query('user')->is_user( $dataPost['user_name'] ) && $this->me['name']!=$dataPost['user_name'] ){
-                    $arr['error']['user_name'] = 'ชื่อผู้ใช้นี้ถูกใช้ไปแล้ว';
+                if( $this->model->query('users')->is_user( $dataPost['user_login'] ) && $this->me['login']!=$dataPost['user_login'] ){
+                    $arr['error']['user_login'] = 'ชื่อผู้ใช้นี้ถูกใช้ไปแล้ว';
                 }
 
                 // Your username must be longer than 4 characters.
 
                 if( empty($arr['error']) ){
 
-                    $this->model->query('user')->update( $this->me['id'], $dataPost );
+                    $this->model->query('users')->update( $this->me['id'], $dataPost );
   
                     $arr['url'] = 'refresh';
-                    $arr['message'] = 'บันทึกเรียบร้อย';
+                    $arr['message'] = 'Thanks, your settings have been saved.';
                 }
                 
             } catch (Exception $e) {
@@ -67,21 +68,20 @@ class Me extends Controller {
 
             try {
                 $form = new Form();
-                $form   ->post('user_fname')->val('is_empty')
-                        ->post('user_lname')
-                        ->post('user_nickname')
-                        ->post('user_email');
+                $form   ->post('user_name')->val('maxlength', 45)->val('is_empty')
+                        ->post('user_email')
+                        // ->post('user_color')
+                        ->post('user_mode');
 
                 $form->submit();
                 $dataPost = $form->fetch();
 
                 if( empty($arr['error']) ){
 
-                    $dataPost["update_user_id"] = $this->me['id'];
-                    $this->model->query('user')->update( $this->me['id'], $dataPost );
+                    $this->model->query('users')->update( $this->me['id'], $dataPost );
   
                     $arr['url'] = 'refresh';
-                    $arr['message'] = 'บันทึกเรียบร้อย';
+                    $arr['message'] = 'Thanks, your settings have been saved.';
                 }
                 
             } catch (Exception $e) {
@@ -98,10 +98,10 @@ class Me extends Controller {
 
             $data = $_POST;
             $arr = array();
-            if( !$this->model->query('user')->login($this->me['name'], $data['password_old']) ){
+            if( !$this->model->query('users')->login($this->me['login'], $data['password_old']) ){
                 $arr['error']['password_old'] = "รหัสผ่านไม่ถูกต้อง";
-            } elseif ( strlen($data['password_new']) < 4 ){
-                $arr['error']['password_new'] = "รหัสผ่านสั้นเกินไป อย่างน้อย 4 ตัวอักษรขึ้นไป";
+            } elseif ( strlen($data['password_new']) < 8 ){
+                $arr['error']['password_new'] = "รหัสผ่านสั้นเกินไป อย่างน้อย 8 ตัวอักษรขึ้นไป";
 
             } elseif ($data['password_new'] == $data['password_old']){
                 $arr['error']['password_new'] = "รหัสผ่านต้องต่างจากรหัสผ่านเก่า";
@@ -114,12 +114,12 @@ class Me extends Controller {
                 $this->view->error = $arr['error'];
             }
             else{
-                $this->model->query('user')->update($this->me['id'], array(
-                    'user_password' => substr(md5(trim($pass)),0,20)
+                $this->model->query('users')->update($this->me['id'], array(
+                    'user_pass' => Hash::create('sha256', $_POST['password_new'], HASH_PASSWORD_KEY)
                 ));
 
                 $arr['url'] = 'refresh';
-                $arr['message'] = 'บันทึกเรียบร้อย';
+                $arr['message'] = 'Thanks, your settings have been saved.';
             }
 
             echo json_encode($arr);
