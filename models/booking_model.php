@@ -88,7 +88,7 @@ class Booking_Model extends Model {
 
 	public function get($id, $options=array())
 	{
-		$sth = $this->db->prepare("SELECT * FROM booking WHERE book_id=:id LIMIT 1");
+		$sth = $this->db->prepare("SELECT {$this->_field} FROM {$this->_table} WHERE book_id=:id LIMIT 1");
         $sth->execute( array( ':id' => $id ) );
 
         if( $sth->rowCount()==1 ){
