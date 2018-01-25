@@ -14,6 +14,7 @@
 							<option value="">-- ทั้งหมด --</option>
 							<?php foreach ($this->sales['lists'] as $key => $value) {
 								$sel = '';
+								
 								if( $this->agen_id == $value["id"] ) $sel = ' selected="1"';
 								echo '<option'.$sel.' value="'.$value["id"].'">'.$value["fullname"].'</option>';
 							} ?>
@@ -25,20 +26,23 @@
 						<thead>
 							<tr style="color:#fff; background-color: #003;">
 								<th width="10%">วันที่</th>
-								<th width="8%">รหัส</th>
-								<th width="5%">CODE</th>
-								<th width="5%">ที่นั่ง</th>
-								<th width="7%">ยอดสุทธิ</th>
+								<th width="8%">Booking no.</th>
+								<!-- <th width="5%">CODE</th> -->
+								<th width="5%">Seats</th>
+								<th width="7%">Total Amount</th>
 								<th width="10%">Deposit Date</th>
 								<th width="10%">Full Payment Date</th>
-								<th width="10%">เซลล์</th>
-								<th width="10%">สถานะ</th>
-								<th width="10%">แจ้งโอนเงิน</th>
-								<th width="10%">ยกเลิก</th>
+								<th width="10%">Sales</th>
+								<th width="10%">Status</th>
+								<th width="5%">Quatation</th>
+								<th width="10%">Payment</th>
+								<th width="5%">Cancel</th>
+								
 							</tr>
 						</thead>
 						<tbody>
 							<?php if( !empty($this->results["lists"]) ) { 
+								//print_r($this->results['lists']);
 								foreach ($this->results["lists"] as $key => $value) {
 									$dayStr = date("d", strtotime($value["book_date"]));
 									$monthStr =  $this->fn->q('time')->month( date("n", strtotime($value["book_date"])) );
@@ -74,10 +78,10 @@
 									<tr>
 										<td class="tac"><?=$dateTime?><br/><?=$timeStr?></td>
 										<td class="tac"><a data-plugins="dialog" style="color:blue; text-decoration: none;" href="<?=URL?>booking/profile/<?=$value["book_id"]?>"><?=$value["book_code"]?></a></td>
-										<td class="tac">
+										<!-- <td class="tac">
 											<a href="<?=URL?>tour/<?=$value["ser_id"]?>" style="color:blue; text-decoration: none;" target="_blank">
 											<span class="fwb"><?=$value['ser_code']?></a>
-										</td>
+										</td> -->
 										<td class="tac"><?=$value["book_qty"]?></td>
 										<td class="tar" style="padding-right: 2mm;"><?=number_format($value['book_amountgrandtotal'])?></td>
 										<td class="tac"><?=$DepositStr?><?= $deposited ==0? "" :'<br>'.'<span class="fwb status_95">('. number_format($deposited).')</span>'   ?></td>
@@ -85,6 +89,17 @@
 										<td class="tac"><?=$value['agen_fname']?></td>
 										<td class="tac">
 											<span class="fwb fz_11 status_<?=$value['status']?>"><?=$value["book_status"]['name']=="Full payment"?"FP":$value["book_status"]['name']?></span>
+										</td>
+										<td class="tac">
+											<?php 
+											
+											if( ($value['status'] >5 && $value['status'] <40)  && (!empty($this->me) || $this->me['role']=="admin")  )  {
+												echo '<a target="_blank" href="//admin.probookingcenter.com/admin/print/pdf_invoice.php?book_id='.$value['book_id'].'&book_code='.$value['book_code'].'" class=" btn"><i class="icon-file-pdf-o"></i></a>';
+											}
+											else{
+												echo '<a class="disabled btn"><i class="icon-file-pdf-o"></i></a>';
+											}
+											?>
 										</td>
 										<td class="tac">
 											<?php

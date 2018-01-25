@@ -55,22 +55,44 @@
             ),
             
         );
-
         $DayOfGo = $this->fn->q('time')->DateDiff( date("Y-m-d"), $item['per_date_start'] );
-        if( $DayOfGo > 30 ){
-            $settings['deposit']['date'] = date("Y-m-d", strtotime("+2 day"));
-            
-        }else if ($DayOfGo >8 && $DayOfGo <=30){
-            $settings['fullPayment']['date'] = date("Y-m-d 18:00:00", strtotime("tomorrow"));
-            $settings['deposit']['date'] = '-';
-            $settings['deposit']['price'] = 0;
+        $dw = date('w');
+    
+            if($this->me['company_id'] == 44){
+                //speacial case booking
+                if( $DayOfGo > 30){
+                    $settings['deposit']['date'] = date("Y-m-d", strtotime("+2 day"));
+                    $settings['fullPayment']['date'] = date('Y-m-d 18:00:00', strtotime("-14 day", strtotime($settings['trave']['date'])));
+                }else if($dw <= 3){
+                      $ofWeek =  (3-$dw) +7;
+                      $settings['fullPayment']['date'] = date("Y-m-d 18:00:00", strtotime("+{$ofWeek} day"));
+                      $settings['deposit']['date'] = '-';
+                      $settings['deposit']['price'] = 0;
+                }else{
+                        $ofWeek =  ($dw-3) +7;
+                        $settings['fullPayment']['date'] = date("Y-m-d 18:00:00", strtotime("+{$ofWeek} day"));
+                        $settings['deposit']['date'] = '-';
+                        $settings['deposit']['price'] = 0;
+                    }
+            }else{
 
-        }else if ($DayOfGo >=1 || $DayOfGo <=1  && $DayOfGo <=8){
-            $settings['fullPayment']['date'] = date("Y-m-d H:i:s", strtotime("+1 min"));
-            $settings['deposit']['date'] = '-';
-            $settings['deposit']['price'] = 0;
-        }
-       
+                 
+                    if( $DayOfGo > 30 ){
+                        $settings['deposit']['date'] = date("Y-m-d 18:00:00", strtotime("+2 day"));
+                        $settings['fullPayment']['date'] = date('Y-m-d 18:00:00', strtotime("-30 day", strtotime($settings['trave']['date'])));
+                    }else if ($DayOfGo >8 && $DayOfGo <=30){
+                        $settings['fullPayment']['date'] = date("Y-m-d 18:00:00", strtotime("tomorrow"));
+                        $settings['deposit']['date'] = '-';
+                        $settings['deposit']['price'] = 0;
+
+                    }else if ($DayOfGo >=1 || $DayOfGo <=1  && $DayOfGo <=8){
+                            $settings['fullPayment']['date'] = date("Y-m-d H:i:s", strtotime("+3 hour"));
+                        $settings['deposit']['date'] = '-';
+                        $settings['deposit']['price'] = 0;
+                    }
+            }
+      
+           
         // $settings['trave']['date'] = date('Y-m-d', strtotime("-1 day", strtotime($settings['trave']['date'])));
 
         // $settings['fullPayment']['date'] = date('Y-m-d', strtotime("-21 day", strtotime($settings['trave']['date'])));
@@ -305,12 +327,6 @@
     }
 
     public function crons_booking_cencel(){
-       // $date = date();
-        $dayofweek = date('w');
-        //$dayofweek 
-       print_r($dayofweek );die;
-       $response =  $this->model->crons();
-      
-       
+        $this->model->crons(); 
     }
 }
