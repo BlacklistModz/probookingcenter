@@ -233,10 +233,9 @@ class Booking extends Controller {
         if( empty($item) ) $this->error();
 
         if( !empty($_POST) ){
-            
-            $this->model->update($id, array('status'=>40));
-
             if( $item['permit']['cancel'] ){
+                $this->model->update($id, array('status'=>40));
+                $this->model->updateWaitingList( $item['per_id'] );
                 $arr['message'] = 'ยกเลิกการจองเรียบร้อย';
                 $arr['url'] = 'refresh';
             }

@@ -156,5 +156,49 @@ class Booking_Model extends Model {
         }
         return $data;
     }
+    public function updateWaitingList($per_id){
+        /* GET Waiting List */
+        $waiting = $this->db->select("SELECT book_id,user_id,COALESCE(SUM(booking_list.book_list_qty)) AS qty FROM booking LEFT JOIN booking_list ON booking.book_code=booking_list.book_code WHERE per_id={$per_id} AND status=5 ORDER BY booking.create_date ASC");
+        if( !empty($waiting) ){
+            /* จำนวนทีนั่งทั้งหมด */
+            $seats = $this->db->select("SELECT per_qty_seats FROM period WHERE per_id={$per_id} LIMIT 1");
 
+            /* จำนวนคนจองทั้งหมด (ตัด Waiting กับ ยกเลิกแล้ว) */
+            $book = $this->db->select("SELECT COALESCE(SUM(booking_list.book_list_qty),0) as qty FROM booking_list
+                    LEFT JOIN booking ON booking_list.book_code=booking.book_code
+                  WHERE booking.per_id={$per_id} AND booking.status!=5 AND booking.status!=40");
+            $BalanceSeats = $seats[0]["per_qty_seats"] - $book[0]["qty"];
+            if( $BalanceSeats > 0 ){
+                foreach ($waiting as $key => $value) {
+                    if( !empty($BalanceSeats) ){
+                        if( $value["qty"] <= $BalanceSeats ){
+                            /* SET STATUS BOOKING */
+                            $this->db->update("booking", array("status"=>"00"), "book_id={$value["book_id"]}");
+                            $BalanceSeats -= $value["qty"];
+                        }
+                    }
+                    else{
+                        if( $BalanceSeats > 0 ){
+                            /* SET STATUS BOOKING */
+                            $this->db->update("booking", array("status"=>"50"), "book_id={$value["book_id"]}");
+
+                            /* SET ALERT FOR SALE */
+                            $alert = array(
+                                "user_id"=>$value["user_id"],
+                                "book_id"=>$value["book_id"],
+                                "detail"=>"ที่นั่งไม่เพียงพอ",
+                                "source"=>"150booking",
+                                "log_date"=>date("c")
+                            );
+                            $this->db->insert("alert_msg", $alert);
+
+                            /* EXIT LOOP */
+                            $BalanceSeats = 0;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
