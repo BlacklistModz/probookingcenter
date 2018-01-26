@@ -14,7 +14,6 @@
 							<option value="">-- ทั้งหมด --</option>
 							<?php foreach ($this->sales['lists'] as $key => $value) {
 								$sel = '';
-								
 								if( $this->agen_id == $value["id"] ) $sel = ' selected="1"';
 								echo '<option'.$sel.' value="'.$value["id"].'">'.$value["fullname"].'</option>';
 							} ?>
@@ -25,25 +24,31 @@
 					<table class="table-bordered"  style="color:#000; overflow-x:auto; display: block; width: 100%;-webkit-overflow-scrolling: touch;  -ms-overflow-style: -ms-autohiding-scrollbar;">
 						<thead>
 							<tr style="color:#fff; background-color: #003;">
-								<th width="10%">วันที่</th>
-								<th width="8%">Booking no.</th>
+								<th width="10%">Date</th>
+								<th width="8%">Booking No.</th>
 								<!-- <th width="5%">CODE</th> -->
-								<th width="5%">Seats</th>
-								<th width="7%">Total Amount</th>
+								<th width="5%">Pax</th>
+								<th width="7%">Total</th>
 								<th width="10%">Deposit Date</th>
 								<th width="10%">Full Payment Date</th>
 								<th width="10%">Sales</th>
 								<th width="10%">Status</th>
-								<th width="5%">Quatation</th>
-								<th width="10%">Payment</th>
-								<th width="5%">Cancel</th>
+								<th width="5%">Quotation</th>
+								<?php
+											if( $this->me['company_id'] ==  44 && $value['status'] !=40){
+												echo '<th width="5%">Guarantee</th>';
+											}
+											
+								?>
 								
+								<th width="5%">Payment</th>
+								<th width="5%">Cancel</th>
 							</tr>
 						</thead>
 						<tbody>
-							<?php if( !empty($this->results["lists"]) ) { 
-								//print_r($this->results['lists']);
+							<?php  if( !empty($this->results["lists"]) ) { 
 								foreach ($this->results["lists"] as $key => $value) {
+									
 									$dayStr = date("d", strtotime($value["book_date"]));
 									$monthStr =  $this->fn->q('time')->month( date("n", strtotime($value["book_date"])) );
 									$yearStr = date("Y", strtotime($value["book_date"])) + 543;
@@ -77,7 +82,7 @@
 									?>
 									<tr>
 										<td class="tac"><?=$dateTime?><br/><?=$timeStr?></td>
-										<td class="tac"><a data-plugins="dialog" style="color:blue; text-decoration: none;" href="<?=URL?>booking/profile/<?=$value["book_id"]?>"><?=$value["book_code"]?></a></td>
+										<td class="tac"><a data-plugins="dialog" target="_blank" style="color:blue; text-decoration: none;" href="<?=URL?>booking/profile/<?=$value["book_id"]?>"><?=$value["book_code"]?></a></td>
 										<!-- <td class="tac">
 											<a href="<?=URL?>tour/<?=$value["ser_id"]?>" style="color:blue; text-decoration: none;" target="_blank">
 											<span class="fwb"><?=$value['ser_code']?></a>
@@ -86,7 +91,7 @@
 										<td class="tar" style="padding-right: 2mm;"><?=number_format($value['book_amountgrandtotal'])?></td>
 										<td class="tac"><?=$DepositStr?><?= $deposited ==0? "" :'<br>'.'<span class="fwb status_95">('. number_format($deposited).')</span>'   ?></td>
 										<td class="tac"><?=$fullPaymentStr?><?=$fullPaymenting ==0? "" : '<br>'.'<span class="fwb status_96">('. number_format($fullPaymenting).')</span>'?> </td>
-										<td class="tac"><?=$value['agen_fname']?></td>
+										<td class="tac"><?= $value['agen_fname'] ?></td>
 										<td class="tac">
 											<span class="fwb fz_11 status_<?=$value['status']?>"><?=$value["book_status"]['name']=="Full payment"?"FP":$value["book_status"]['name']?></span>
 										</td>
@@ -100,25 +105,33 @@
 												echo '<a class="disabled btn"><i class="icon-file-pdf-o"></i></a>';
 											}
 											?>
-										</td>
+										</td>		
+											<?php
+											// echo '<span>N/A</span>'; 
+											if( $this->me['company_id'] ==  44){
+												
+												echo '<td class="tac"><a href="'.URL.'booking/guarantee/'.$value['book_id'].'" data-plugins="dialog" class="btn btn '.($value['status']==40 ? 'disabled' : '').'"><i class="icon-upload"></i></a></td>'; 
+											}				
+											?>
+							
 										<td class="tac">
 											<?php
 											// echo '<span>N/A</span>'; 
 											if( $value['status'] == 5 || $value['status'] == 35 || $value['status'] == 40 || $value['status'] == 50 ){
-												echo '<a class="btn btn-blue disabled">LOCK</a>';
+												echo '<a class="btn btn-blue disabled"><i class="icon-lock"></i></a>';
 											}
 											else{
-												echo '<a href="'.URL.'booking/payment/'.$value['book_id'].'" class="btn btn-blue">แจ้งโอนเงิน</a>';
+												echo '<a href="'.URL.'booking/payment/'.$value['book_id'].'" class="btn btn-blue"><i class="icon-money"></i></a>';
 											}
 											?>
 										</td>
 										<td class="tac">
 											<?php 
 											if( ($value['status'] == 0 || $value['status'] == 5 || $value['status'] == 10 ) && $value['agen_id'] == $this->me['id'] ) {
-												echo '<a href="'.URL.'booking/booking_cancel/'.$value['book_id'].'" class="btn btn-red" data-plugins="dialog">ยกเลิก</a>';
+												echo '<a href="'.URL.'booking/booking_cancel/'.$value['book_id'].'" class="btn btn-red" data-plugins="dialog"><i class="icon-remove"></i></a>';
 											}
 											else{
-												echo '<a class="disabled btn btn-red">LOCK</a>';
+												echo '<a class="disabled btn btn-red"><i class="icon-lock"></i></a>';
 											}
 											?>
 										</td>

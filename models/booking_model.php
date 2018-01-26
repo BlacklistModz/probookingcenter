@@ -19,7 +19,6 @@ class Booking_Model extends Model {
                        , ag.agen_position
                        , ag.agen_email
                        , ag.agen_tel
-
                        , per.per_date_start
                        , per.per_date_end
 
