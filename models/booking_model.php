@@ -143,7 +143,8 @@ class Booking_Model extends Model {
     }
     public function crons(){
         $time_now = date('Y-m-d H:i:s');
-        $booking_list = $this->db->select("SELECT`book_id`, `book_due_date_deposit`,`book_master_deposit`,`book_due_date_full_payment`,`book_master_full_payment`,`status` FROM booking WHERE  (`book_due_date_deposit`!= '0000-00-00 00:00:00' && `book_due_date_deposit` < '$time_now' OR  `book_due_date_full_payment`<= '$time_now') AND status` IN (0, 5, 10) AND book_receipt =0");
+        return("SELECT `book_id`, `book_due_date_deposit`,`book_master_deposit`,`book_due_date_full_payment`,`book_master_full_payment`,`status` FROM booking WHERE  (`book_due_date_deposit`!= '0000-00-00 00:00:00' && `book_due_date_deposit` < '$time_now' OR  `book_due_date_full_payment`<= '$time_now') AND status` IN (0, 5, 10) AND book_receipt =0 AND book_is_guarantee <> 1");
+        //$booking_list = $this->db->select("SELECT`book_id`, `book_due_date_deposit`,`book_master_deposit`,`book_due_date_full_payment`,`book_master_full_payment`,`status` FROM booking WHERE  (`book_due_date_deposit`!= '0000-00-00 00:00:00' && `book_due_date_deposit` < '$time_now' OR  `book_due_date_full_payment`<= '$time_now') AND status` IN (0, 5, 10) AND book_receipt =0 AND book_is_guarantee <> 1");
     //    print_r("SELECT `book_id`, `book_due_date_deposit`,`book_due_date_full_payment`,`status` FROM booking WHERE  (`book_due_date_deposit`!= '0000-00-00 00:00:00' && `book_due_date_deposit` < '$time_now' ||  `book_due_date_full_payment`<= '$time_now') &&`status` IN (0, 5, 10)");
     //  die;
        //return $booking_list;

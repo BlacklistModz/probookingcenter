@@ -369,6 +369,6 @@
     }
 
     public function crons_booking_cencel(){
-        $this->model->crons(); 
+       print_r($this->model->crons()); 
     }
 }
