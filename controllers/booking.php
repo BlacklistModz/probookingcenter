@@ -297,7 +297,6 @@
         if( empty($this->me) || empty($id) || $this->format != 'json' ) $this->error();
 
         $item = $this->model->get($id);
-      
         if( empty($item) ) $this->error();
 
         if( !empty($_POST) ){
