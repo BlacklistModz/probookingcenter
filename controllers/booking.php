@@ -292,7 +292,47 @@
             $this->view->render('forms/booking/cancel');
         }
     }
+    public function guarantee($id=null){
+        $id = isset($_REQUEST["id"]) ? $_REQUEST["id"] : $id;
+        if( empty($this->me) || empty($id) || $this->format != 'json' ) $this->error();
 
+        $item = $this->model->get($id);
+      
+        if( empty($item) ) $this->error();
+
+        if( !empty($_POST) ){
+
+            if( !empty($id) && !empty($_FILES["book_guarantee_file"]) ){
+
+        		if( !empty($item["book_guarantee_file"]) ){
+        			$file = substr(strrchr($item['book_guarantee_file'],"/"),1);
+        			if( file_exists(PATH_GUARANTEE.$file) ){
+        				@unlink(PATH_GUARANTEE.$file);
+        			}
+        		}
+
+        		$i = mt_rand(10, 99);
+        		$type = strrchr($_FILES["book_guarantee_file"]['name'],".");
+        		$name = 'gua_'.$i.'_'.date('Y_m_d_H_i_s').$type;
+        		if( move_uploaded_file($_FILES["book_guarantee_file"]["tmp_name"], PATH_GUARANTEE.$name) ){
+                    $this->model->update($id, array("book_guarantee_file"=>"../upload/guarantee/{$name}"));
+                    $arr['message'] = 'อัพโหลดเรียบร้อย';
+                }
+                else{
+                    $arr['message'] = 'อัพโหลดไฟล์ไม่สำเร็จ กรุณาลองอีกครั้ง';
+                }
+            }
+            else{
+                $arr['message'] = 'เกิดข้อผิดพลาด กรุณาลองอีกครั้ง...';
+            }
+            echo json_encode($arr);
+        }
+        else{
+            $this->view->setData('item', $item);
+            $this->view->render('forms/booking/guarantee');
+        }
+    }
+ 
     public function payment($id=null){
         $id = isset($_REQUEST["id"]) ? $_REQUEST["id"] : $id;
         if( empty($id) || empty($this->me) ) $this->error();
