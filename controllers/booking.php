@@ -1,6 +1,6 @@
 <?php
-
-class Booking extends Controller {
+ 
+ class Booking extends Controller {
 
     public function __construct() {
         parent::__construct();
@@ -55,16 +55,54 @@ class Booking extends Controller {
             ),
             
         );
+        $DayOfGo = $this->fn->q('time')->DateDiff( date("Y-m-d"), $item['per_date_start'] );
+        $dw = date('w');
+    
+            if($this->me['company_id'] == 44){
+                //speacial case booking
+                if( $DayOfGo > 30){
+                    $settings['deposit']['date'] = date("Y-m-d", strtotime("+2 day"));
+                    $settings['fullPayment']['date'] = date('Y-m-d 18:00:00', strtotime("-14 day", strtotime($settings['trave']['date'])));
+                }else if($dw <= 3){
+                      $ofWeek =  (3-$dw) +7;
+                      $settings['fullPayment']['date'] = date("Y-m-d 18:00:00", strtotime("+{$ofWeek} day"));
+                      $settings['deposit']['date'] = '-';
+                      $settings['deposit']['price'] = 0;
+                }else{
+                        $ofWeek =  ($dw-3) +7;
+                        $settings['fullPayment']['date'] = date("Y-m-d 18:00:00", strtotime("+{$ofWeek} day"));
+                        $settings['deposit']['date'] = '-';
+                        $settings['deposit']['price'] = 0;
+                    }
+            }else{
 
-        $settings['trave']['date'] = date('Y-m-d', strtotime("-1 day", strtotime($settings['trave']['date'])));
+                 
+                    if( $DayOfGo > 30 ){
+                        $settings['deposit']['date'] = date("Y-m-d 18:00:00", strtotime("+2 day"));
+                        $settings['fullPayment']['date'] = date('Y-m-d 18:00:00', strtotime("-30 day", strtotime($settings['trave']['date'])));
+                    }else if ($DayOfGo >8 && $DayOfGo <=30){
+                        $settings['fullPayment']['date'] = date("Y-m-d 18:00:00", strtotime("tomorrow"));
+                        $settings['deposit']['date'] = '-';
+                        $settings['deposit']['price'] = 0;
 
-        $settings['fullPayment']['date'] = date('Y-m-d', strtotime("-21 day", strtotime($settings['trave']['date'])));
+                    }else if ($DayOfGo >=1 || $DayOfGo <=1  && $DayOfGo <=8){
+                            $settings['fullPayment']['date'] = date("Y-m-d H:i:s", strtotime("+3 hour"));
+                        $settings['deposit']['date'] = '-';
+                        $settings['deposit']['price'] = 0;
+                    }
+            }
+      
+           
+        // $settings['trave']['date'] = date('Y-m-d', strtotime("-1 day", strtotime($settings['trave']['date'])));
 
-        if( strtotime($settings['fullPayment']['date']) < strtotime(date('Y-m-d')) ){
-            $settings['fullPayment']['date'] = date("Y-m-d", strtotime('tomorrow'));
-            $settings['deposit']['date'] = '-';
-            $settings['deposit']['price'] = 0;
-        }
+        // $settings['fullPayment']['date'] = date('Y-m-d', strtotime("-21 day", strtotime($settings['trave']['date'])));
+
+        // if( strtotime($settings['fullPayment']['date']) < strtotime(date('Y-m-d')) ){
+        //     $settings['fullPayment']['date'] = date("Y-m-d 18:00:00", strtotime('tomorrow'));
+        //     $settings['deposit']['date'] = '-';
+        //     $settings['deposit']['price'] = 0;
+        // }
+        
 
         if( !empty($_POST) ){
 
@@ -73,12 +111,13 @@ class Booking extends Controller {
             $_SUM = array('subtotal'=>0, 'discount'=>0, 'total'=>0); $seats = array(); $n = 0;
             foreach ($_POST['seat'] as $key => $value) {
                 $n ++;
-                if( empty($value) ) continue;
+                if( empty($value) ) $value = 0;
+                // if( empty($value) ) continue;
 
                 switch ($key) {
                     case 'adult': $name='Adult'; $price=$item['per_price_1']; break;
                     case 'child': $name='Child'; $price=$item['per_price_2']; break;
-                    case 'child_bed': $name='Child no bed'; $price=$item['per_price_3']; break;
+                    case 'child_bed': $name='Child No bed'; $price=$item['per_price_3']; break;
                     case 'infant': $name='Infant'; $price=$item['per_price_4']; break;
                     case 'joinland': $name='Joinland'; $price=$item['per_price_5']; break;
                     
@@ -122,7 +161,7 @@ class Booking extends Controller {
                
                 $running_booking = sprintf("%04s", $booking);
                 $running_invoice = sprintf("%04s", $invoice);
-
+                $month = sprintf("%02d", $month);
                 $bookCode = "B{$year}/{$month}{$running_booking}";
 
                 
@@ -168,8 +207,10 @@ class Booking extends Controller {
                     "book_room_double"=>$_POST['room']['double'], 
                     "book_room_triple"=>$_POST['room']['triple'], 
                     "book_room_single"=>$_POST['room']['single'], 
-
+                    
                     "create_date"=>date('c'),
+                    "book_cus_name"=>$_POST['customername'],
+                    "book_cus_tel"=>$_POST['customertel'],
                 );
                 // print_r($book); die;
                 $this->model->insert($book);
@@ -233,6 +274,10 @@ class Booking extends Controller {
         if( empty($item) ) $this->error();
 
         if( !empty($_POST) ){
+            
+            $this->model->update($id, array('status'=>40));
+            $this->model->updateWaitingList( $item['per_id'] );
+
             if( $item['permit']['cancel'] ){
                 $this->model->update($id, array('status'=>40));
                 $this->model->updateWaitingList( $item['per_id'] );
@@ -248,5 +293,83 @@ class Booking extends Controller {
             $this->view->setData('item', $item);
             $this->view->render('forms/booking/cancel');
         }
+    }
+    public function guarantee($id=null){
+        $id = isset($_REQUEST["id"]) ? $_REQUEST["id"] : $id;
+        if( empty($this->me) || empty($id) || $this->format != 'json' ) $this->error();
+
+        $item = $this->model->get($id);
+        if( empty($item) ) $this->error();
+
+        if( !empty($_POST) ){
+
+            if( !empty($id) && !empty($_FILES["book_guarantee_file"]) ){
+
+        		if( !empty($item["book_guarantee_file"]) ){
+        			$file = substr(strrchr($item['book_guarantee_file'],"/"),1);
+        			if( file_exists(PATH_GUARANTEE.$file) ){
+        				@unlink(PATH_GUARANTEE.$file);
+        			}
+        		}
+
+        		$i = mt_rand(10, 99);
+        		$type = strrchr($_FILES["book_guarantee_file"]['name'],".");
+        		$name = 'gua_'.$i.'_'.date('Y_m_d_H_i_s').$type;
+        		if( move_uploaded_file($_FILES["book_guarantee_file"]["tmp_name"], PATH_GUARANTEE.$name) ){
+                    $this->model->update($id, array("book_guarantee_file"=>"../upload/guarantee/{$name}"));
+                    $arr['message'] = 'อัพโหลดเรียบร้อย';
+                }
+                else{
+                    $arr['message'] = 'อัพโหลดไฟล์ไม่สำเร็จ กรุณาลองอีกครั้ง';
+                }
+            }
+            else{
+                $arr['message'] = 'เกิดข้อผิดพลาด กรุณาลองอีกครั้ง...';
+            }
+            echo json_encode($arr);
+        }
+        else{
+            $this->view->setData('item', $item);
+            $this->view->render('forms/booking/guarantee');
+        }
+    }
+ 
+    public function payment($id=null){
+        $id = isset($_REQUEST["id"]) ? $_REQUEST["id"] : $id;
+        if( empty($id) || empty($this->me) ) $this->error();
+
+        $item = $this->model->get($id, array('payment'=>true));
+        if( empty($item) ) $this->error();
+
+        $this->view->setData('item', $item);
+        $this->view->render("booking/payment");
+    }
+
+    public function profile($id=null){
+        $id = isset($_REQUEST["id"]) ? $_REQUEST["id"] : $id;
+        if( empty($id) || empty($this->me) || $this->format!='json' ) $this->error();
+
+        $book = $this->model->get( $id );
+        if( empty($book) ) $this->error();
+        // print_r($book); die;
+
+        $period = $book['per_id'];
+        $item = $this->model->query('products')->period( $period );
+        if( empty($item) ) $this->error();
+        // print_r($item); die;
+        $this->view->setData( 'busList', $this->model->query('products')->busList( $period ) );
+        $this->view->setData( 'salesList', $this->model->query('products')->salesList( $period ) );
+
+        // จำนวน ที่นั่ง ที่จองไปแล้ว
+        $seatBooked = $this->model->query('products')->seatBooked( $period );
+        $this->view->setData( 'seatBooked', $seatBooked );
+
+        $this->view->setData( 'item', $item );
+        $this->view->setData( 'book', $book );
+        $this->view->render("forms/booking/profile");
+    }
+
+    public function crons_booking_cencel(){
+       print_r($this->model->crons()); 
     }
 }

@@ -3,10 +3,10 @@
 class Booking_Model extends Model {
 
 
-    public function __construct()
-    {
-        parent::__construct();
-    }
+	public function __construct()
+	{
+		parent::__construct();
+	}
 
     private $_objName = "booking";
     private $_table = "booking b 
@@ -17,7 +17,8 @@ class Booking_Model extends Model {
                        , ag.agen_fname
                        , ag.agen_lname
                        , ag.agen_position
-
+                       , ag.agen_email
+                       , ag.agen_tel
                        , per.per_date_start
                        , per.per_date_end
 
@@ -52,6 +53,12 @@ class Booking_Model extends Model {
             $where_arr[":company"] = $options["company"];
         }
 
+        if( !empty($options["agency"]) ){
+            $where_str .= !empty($where_str) ? " AND " : "";
+            $where_str .= "b.agen_id=:agency";
+            $where_arr[":agency"] = $options["agency"];
+        }
+
         $arr['total'] = $this->db->count($this->_table, $where_str, $where_arr);
 
         $limit = $this->limited( $options['limit'], $options['pager'] );
@@ -66,30 +73,30 @@ class Booking_Model extends Model {
         return $arr;
     }
 
-    public function prefixNumber()
-    {
-        $sth = $this->db->prepare("SELECT * FROM prefixnumber LIMIT 1");
+	public function prefixNumber()
+	{
+		$sth = $this->db->prepare("SELECT * FROM prefixnumber LIMIT 1");
         $sth->execute();
 
         return $sth->fetch( PDO::FETCH_ASSOC );
-    }
-    public function prefixNumberUpdate($id, $data) {
-        $this->db->update('prefixnumber', $data, "`prefix_id`={$id}");
-    }
+	}
+	public function prefixNumberUpdate($id, $data) {
+		$this->db->update('prefixnumber', $data, "`prefix_id`={$id}");
+	}
 
 
-    public function get($id, $options=array())
-    {
-        $sth = $this->db->prepare("SELECT {$this->_field} FROM {$this->_table} WHERE book_id=:id LIMIT 1");
+	public function get($id, $options=array())
+	{
+		$sth = $this->db->prepare("SELECT {$this->_field} FROM {$this->_table} WHERE book_id=:id LIMIT 1");
         $sth->execute( array( ':id' => $id ) );
 
         if( $sth->rowCount()==1 ){
             return $this->convert( $sth->fetch( PDO::FETCH_ASSOC ), $options );
         } return array();
-    }
-    public function insert(&$data){
-        $this->db->insert('booking', $data);
-        $data['id'] = $this->db->lastInsertId();
+	}
+	public function insert(&$data){
+    	$this->db->insert('booking', $data);
+    	$data['id'] = $this->db->lastInsertId();
     }
     public function update($id, $data){
         $this->db->update($this->_objName, $data, "{$this->_cutNamefield}id={$id}");
@@ -105,18 +112,22 @@ class Booking_Model extends Model {
     }
     public function convert($data, $options=array()){
 
-        // $data = $this->_cutFirstFieldName($this->_cutNamefield, $data);
+    	// $data = $this->_cutFirstFieldName($this->_cutNamefield, $data);
         
         $total_qty = 0;
         $booking_list = $this->db->select("SELECT * FROM booking_list WHERE `book_code`=:code ORDER BY book_list_code ASC", array(':code'=>$data['book_code']));
         $items = array();
         foreach ($booking_list as $key => $value) {
-            $items[$value['book_list_code']] = $value;
+        	$items[$value['book_list_code']] = $value;
             $total_qty += $value["book_list_qty"];
         }
         $data['book_qty'] = $total_qty;
         $data['book_status'] = $this->getStatus($data['status']);
         $data['items'] = $items;
+
+        if( !empty($options["payment"]) ){
+            $data["payment"] = $this->listsPayment($data["book_id"]);
+        }
 
         $data["permit"]["cancel"] = false;
         if( $data["status"] == 0 || $data["status"] == 5 ){
@@ -125,24 +136,34 @@ class Booking_Model extends Model {
 
         return $data;
     }
-
-
+    
     public function detailInsert(&$data){
-        $this->db->insert('booking_list', $data);
-        $data['id'] = $this->db->lastInsertId();
+    	$this->db->insert('booking_list', $data);
+    	$data['id'] = $this->db->lastInsertId();
     }
+    public function crons(){
+        $time_now = date('Y-m-d H:i:s');
+        return("SELECT `book_id`, `book_due_date_deposit`,`book_master_deposit`,`book_due_date_full_payment`,`book_master_full_payment`,`status` FROM booking WHERE  (`book_due_date_deposit`!= '0000-00-00 00:00:00' && `book_due_date_deposit` < '$time_now' OR  `book_due_date_full_payment`<= '$time_now') AND status` IN (0, 5, 10) AND book_receipt =0 AND book_is_guarantee <> 1");
+        //$booking_list = $this->db->select("SELECT`book_id`, `book_due_date_deposit`,`book_master_deposit`,`book_due_date_full_payment`,`book_master_full_payment`,`status` FROM booking WHERE  (`book_due_date_deposit`!= '0000-00-00 00:00:00' && `book_due_date_deposit` < '$time_now' OR  `book_due_date_full_payment`<= '$time_now') AND status` IN (0, 5, 10) AND book_receipt =0 AND book_is_guarantee <> 1");
+    //    print_r("SELECT `book_id`, `book_due_date_deposit`,`book_due_date_full_payment`,`status` FROM booking WHERE  (`book_due_date_deposit`!= '0000-00-00 00:00:00' && `book_due_date_deposit` < '$time_now' ||  `book_due_date_full_payment`<= '$time_now') &&`status` IN (0, 5, 10)");
+    //  die;
+       //return $booking_list;
+        //return("SELECT `book_id`, `book_due_date_deposit`,`book_due_date_full_payment`,`status` FROM booking WHERE  (`book_due_date_deposit`!= '0000-00-00 00:00:00' && `book_due_date_deposit` < '$time_now' ||  `book_due_date_full_payment`<= '$time_now') &&`status`=00");
 
+        foreach($booking_list AS $value){
+            $this->db->update("booking", array("status"=>40, "book_log"=>"UPDATE BY SYSTEM"), "book_id={$value["book_id"]}");
+        }
+    }
     /* STATUS */
     public function status(){
-        $a[] = array('id'=>0, 'name'=>'จอง');
-        $a[] = array('id'=>10, 'name'=>'แจ้ง Invoice');
-        $a[] = array('id'=>20, 'name'=>'DEP(PT)');
-        $a[] = array('id'=>25, 'name'=>'DEP');
-        $a[] = array('id'=>30, 'name'=>'Full payment(PT)');
-        $a[] = array('id'=>35, 'name'=>'Full payment');
-        $a[] = array('id'=>40, 'name'=>'CXL');
-        $a[] = array('id'=>5, 'name'=>'W/L');
-        $a[] = array('id'=>50, 'name'=>'รอติดต่อกลับ');
+        $a[] = array('id'=>0, 'name'=>'จอง', 'detail'=>"จอง");
+        $a[] = array('id'=>10, 'name'=>'แจ้ง Invoice', 'detail'=>"แจ้ง quatation");
+        $a[] = array('id'=>20, 'name'=>'มัดจำ', 'detail'=>"มัดจำบางส่วน");
+        $a[] = array('id'=>25, 'name'=>'มัดจำบางส่วน', 'detail'=>"มัดจำต็มจำนวน");
+        $a[] = array('id'=>30, 'name'=>'ชำระเต็มจำนวน (บางส่วน)', 'detail'=>"ชำระเต็มจำนวน บางส่วน");
+        $a[] = array('id'=>35, 'name'=>'ชำระเต็มจำนวน', 'detail'=> "ชำระเต็มจำนวน แบบเต็มจำนวน");
+        $a[] = array('id'=>40, 'name'=>'ยกเลิก', "detail"=> "Cancel");
+        $a[] = array('id'=>5, 'name'=>'Waiting List', 'detail'=>"Waiting List");
 
         return $a;
     }
@@ -156,8 +177,10 @@ class Booking_Model extends Model {
         }
         return $data;
     }
+
     public function updateWaitingList($per_id){
         /* GET Waiting List */
+
         $waiting = $this->db->select("SELECT book_id,user_id,COALESCE(SUM(booking_list.book_list_qty)) AS qty FROM booking LEFT JOIN booking_list ON booking.book_code=booking_list.book_code WHERE per_id={$per_id} AND status=5 ORDER BY booking.create_date ASC");
         if( !empty($waiting) ){
             /* จำนวนทีนั่งทั้งหมด */
@@ -175,12 +198,21 @@ class Booking_Model extends Model {
                             /* SET STATUS BOOKING */
                             $this->db->update("booking", array("status"=>"00"), "book_id={$value["book_id"]}");
                             $BalanceSeats -= $value["qty"];
+
+                             /* SET ALERT FOR SALE */
+                            $alert = array(
+                                "user_id"=>$value["user_id"],
+                                "book_id"=>$value["book_id"],
+                                "detail"=>"ปรับสถานะ (W/L) เป็น (จอง) แล้ว",
+                                "source"=>"100booking",
+                            );
+                            $this->db->insert("alert_msg", $alert);
                         }
                     }
                     else{
                         if( $BalanceSeats > 0 ){
                             /* SET STATUS BOOKING */
-                            $this->db->update("booking", array("status"=>"50"), "book_id={$value["book_id"]}");
+                            $this->db->update("booking", array("status"=>"00"), "book_id={$value["book_id"]}");
 
                             /* SET ALERT FOR SALE */
                             $alert = array(
@@ -200,5 +232,38 @@ class Booking_Model extends Model {
                 }
             }
         }
+    }
+
+    /* PAYMENT */
+    public function listsPayment($id){
+        $data = array();
+        $data["pay_total"] = 0 ;
+        $results = $this->db->select("SELECT p.*
+                                            , b.bank_name
+                                            , b.bankbook_code
+                                            , b.bankbook_name
+                                            , b.bankbook_branch 
+                                    FROM payment p LEFT JOIN bankbook b 
+                                    ON p.bankbook_id=b.bankbook_id WHERE book_id={$id}");
+        foreach ($results as $key => $value) {
+            $data['lists'][$key] = $value;
+            $data['lists'][$key]["book_status"] = $this->getStatus( $value["book_status"] );
+            $data['lists'][$key]["status"] = $this->query('payment')->getStatus( $value["status"] );
+            if( !empty($value['pay_url_file']) ){
+                $file = substr(strrchr($value['pay_url_file'],"/"),1);
+                $data[$key]['pay_url_file'] = 'http://admin.probookingcenter.com/admin/upload/payment/'.$file;
+                // if( file_exists(PATH_TRAVEL.$file) ){
+                //     $data[$key]['pay_url_file'] = 'http://admin.probookingcenter.com/admin/upload/payment/'.$file;
+                // }
+                // else{
+                //     $data[$key]['pay_url_file'] = '';
+                // }
+            }
+
+            if( $value["status"] == 1 ){
+                $data["pay_total"] += $value["pay_received"];
+            }
+        }
+        return $data;
     }
 }

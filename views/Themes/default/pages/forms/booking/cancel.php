@@ -7,8 +7,8 @@ if( $this->item['permit']['cancel'] ){
 	$arr['hiddenInput'][] = array('name'=>'id','value'=>$this->item['book_id']);
 	$arr['body'] = "คุณต้องการยกเลิก <span class=\"fwb\">\"{$this->item['book_code']}\"</span> หรือไม่?";
 	
-	$arr['button'] = '<button type="submit" class="btn btn-danger btn-submit"><span class="btn-text">ลบ</span></button>';
-	$arr['bottom_msg'] = '<a class="btn" role="dialog-close"><span class="btn-text">ยกเลิก</span></a>';
+	$arr['button'] = '<button type="submit" class="btn btn-danger btn-submit"><span class="btn-text">ใช่</span></button>';
+	$arr['bottom_msg'] = '<a class="btn" role="dialog-close"><span class="btn-text">ไม่</span></a>';
 }
 else{
 

@@ -17,15 +17,15 @@
 
 			if( empty($item['period']) )  continue;
 
-			$url_word = ' disabled';
+			$item_url_word = '';
             if(!empty($item['url_word'])){
-                $url_word = ' href="'.$item['url_word'].'"';
+                $item_url_word = ' href="'.$item['url_word'].'"';
             }
 
-            $url_pdf = ' disabled';
+            $item_url_pdf = '';
             if(!empty($item['url_pdf'])){
-                $url_pdf = ' href="'.$item['url_pdf'].'"';
-            }
+                $item_url_pdf = ' href="'.$item['url_pdf'].'"';
+            } 
 
 		?>
 		<div class="clearfix product-item product-period-item" style="background-color: #fff;padding: 12px;border-radius: 10px;margin-top: 40px;margin-bottom: 40px;color: #000">
@@ -40,7 +40,7 @@
 						</li>
 						<?php 
 						$midDay = $this->fn->q('time')->DateDiff($item['first_start_date'], $item['first_end_date'])+1;
-						$nightDay = $midDay - 1;
+						$nightDay = $midDay - 2;
 						if( empty($nightDay) ){
 							$nightDay = "-";
 						}
@@ -80,6 +80,20 @@
 					</div>
 					<?php } ?>
 
+					<?php if( !empty($item_url_word) || !empty($item_url_pdf) ) { ?>
+					<div class="pam" style="background-color: #fff;color: #000">
+						<h4 class="fwb">* ดาวโหลด</h4>
+						<?php if( !empty($this->me) && !empty($item_url_word) ) { ?>
+						<a<?=$item_url_word?> target="_blank" class="btn btn-blue btn-jumbo btn-block"><i class="icon-file-word-o"></i> WORD</a>
+						<?php } ?>
+						
+						<?php 
+						if( !empty($item_url_pdf) ) { ?>
+						<a<?=$item_url_pdf?> target="_blank" class="btn btn-blue btn-jumbo btn-block"><i class="icon-file-pdf-o"></i> PDF</a>
+						<?php } ?>
+					</div>
+					<?php } ?>
+
 					<div class="product-plan">
 						<h3>แผนการเดินทาง</h3>
 						<ul class="travel-plan">
@@ -103,7 +117,7 @@
 				<div class="product-content">
 
 					<div class="product-program">
-						<table>
+						<table class="product-program-tabel">
 							<thead>
 								<tr>
 									<th class="name">ช่วงเวลาเดินทาง</th>
@@ -111,33 +125,48 @@
 
 									<?php if ( !empty($this->me) ) { ?>
                                     <th class="qty">ที่นั่ง</th>
-                                    <th class="qty">รับได้</th>
                                     <?php } ?>
+                                    <th class="qty">รับได้</th>
+                                    <?php if ( !empty($this->me) ) { ?>
                                     <th class="actions"></th>
+									<?php } ?>
+									<?php if (!empty($this->me)) {?> 
+										<th class="status">ใบเตรียมตัว</th>
+									<?php } ?>
+                                    
 								</tr>
 							</thead>
 
-
 							<tbody>
 								<?php foreach ($item['period'] as $key => $value) {
-
+										
 									// $url_pdf = ' disabled';
 									// if(!empty($value['url_pdf'])){
 									// 	$url_pdf = ' href="'.$value['url_pdf'].'"';
 									// }
 								?>
 								<tr>
-									<td class="name"><?=$this->fn->q('time')->str_event_date($value['date_start'], $value['date_end'])?></td>
+									<td class="name<?=$value['booking']['payed'] == $value['seats'] ? " fcr": "" ?>"><?=$this->fn->q('time')->str_event_date($value['date_start'], $value['date_end'])?></td>
 									<td class="price"><?=number_format($value['price_1'])?>.-</td>
 				
 									<?php if ( !empty($this->me) ) { ?>
 									<td class="qty"><?=number_format($value['seats'])?></td>
-                                    <td class="qty fwb"><?=$value['balance']==0  ? '-': number_format($value['balance']) ?></td> 
+									<?php } ?>
+                                    <td class="qty fwb">
+                                    	<?php
+                                    	if( $value['status'] == 1 ){
+                                    		echo $value['balance']<=0  ? '<span class="">W/L</span>': number_format($value['balance']);
+                                    	}
+                                    	else{
+                                    		echo '<span class="fcr">เต็ม</span>';
+                                    	}
+                                    	?>
+                                    </td> 
 									<!-- <td class="actions"><a>ดาวน์โหลด</a></td> -->
-                                   
+                                   <?php if ( !empty($this->me) ) { ?>
                                     <td style="white-space: nowrap;">
 
-                                		<?php if ($value['balance']==0){ 
+                                		<?php if ($value['balance']<=0){ 
 
                                 			if( $value['booking']['payed'] < $value['seats'] ){
 
@@ -150,15 +179,26 @@
 
                                         } else {
                                     		
-                                    		echo '<a href="'.URL.'booking/register/'.$value['id'].'" class="btn btn-success btn-submit">จอง</a>';
+                                    		if( $value['status'] == 1  ){
+                                    			echo '<a href="'.URL.'booking/register/'.$value['id'].'" class="btn btn-success btn-submit">จอง</a>';
+                                    		}
+                                    		else{
+                                    			echo '<span class="btn btn-danger disabled">เต็ม</span>';
+                                    		}
 
                                 		} ?>
-
-                                		<a<?=$url_pdf?> class="btn-icon" target="_blank"><i class="icon-file-pdf-o"></i></a>
-                                  		<a<?=$url_word?> class="btn-icon" target="_blank"><i class="icon-file-word-o"></i></a>
+                                  		<!-- <a<?=$url_word?> class="btn-icon" target="_blank"><i class="icon-file-word-o"></i></a> -->
+                                	</td>
+                                	<td class="tac">
+                                		<?php if( $value['url_pdf'] != "http://admin.probookingcenter.com/admin/upload/travel/" ) { ?>
+                                		<a href="<?=$value['url_pdf']?>" class="btn-icon" target="_blank"><i class="icon-file-pdf-o"></i></a>
+                                		<?php }
+                                		else{
+                                			echo "-";
+                                		} ?>
                                 	</td>
                                     <?php }else{
-                                    	echo '<td style="white-space: nowrap;"><a'.$url_pdf.' class="btn-icon" target="_blank"><i class="icon-file-pdf-o"></i></a></td>';
+                                    	//echo '<td class="tac" style="white-space: nowrap;"><a'.$url_pdf.' class="btn-icon" target="_blank"><i class="icon-file-pdf-o"></i></a></td>';
                                     } // end: if login ?>
 								</tr>
 								<?php } // end: for period ?>
@@ -189,3 +229,4 @@
 	</div>
 	</div>
 </section>
+						

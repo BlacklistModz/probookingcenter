@@ -24,11 +24,12 @@ class Agency_Model extends Model {
 
         , agency_company.agen_com_id as company_id
         , agency_company.agen_com_name as company_name
+        , agency_company.agen_com_guarantee as company_guarantee
     ";
     private $_cutNamefield = "agen_";
 
     public function lists($options=array()){
-    	$options = array_merge(array(
+        $options = array_merge(array(
             'pager' => isset($_REQUEST['pager'])? $_REQUEST['pager']:1,
             'limit' => isset($_REQUEST['limit'])? $_REQUEST['limit']:50,
             'more' => true,

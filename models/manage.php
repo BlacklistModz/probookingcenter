@@ -14,7 +14,7 @@
 						<?php } ?>
 					</div>
 					<div class="mtm">
-						<table class="table-bordered" style="color:#000;">
+						<table class="table-bordered" style="color:#000; overflow-x:auto; display: block; -webkit-overflow-scrolling: touch;  -ms-overflow-style: -ms-autohiding-scrollbar;">
 							<thead style="color:#fff; background-color: #003;">
 								<tr>
 									<th width="5%">ลำดับ</th>

@@ -24,31 +24,45 @@ class Login extends Controller {
 			try {
 				$form = new Form();
 
-				$form->post('user')->val('is_empty')
-				     ->post('pass')->val('is_empty');
+				$form->post( 'user' )->val( 'is_empty' )
+				     ->post( 'pass' )->val( 'is_empty' );
 
 				$form->submit();
 				$post = $form->fetch();
 
-				$id = $this->model->query('agency')->login( $post['user'], $post['pass'] );
+				$id = $this->model->query( 'agency' )->login( $post['user'], $post['pass'] );
 
 				if ( ! empty( $id ) ) {
 					Cookie::set( COOKIE_KEY_AGENCY, $id, time() + ( 3600 * 24 ) );
 					Session::set( 'isPushedLeft', 1 );
 
-					$redirect = URL;
-					$arr['message'] = 'เข้าสู่ระบบเรียบร้อย';
-					$arr['url'] = $redirect;
+					$redirect = 'refresh';
+				//	$result['message'] =$_SERVER['REQUEST_URI'];
+					$result['message'] = 'เข้าสู่ระบบเรียบร้อย';
+					$result['url'] = $redirect;
+					
 				} else {
-					$arr['error']['user'] = 'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง';
-					$arr['error']['pass'] = 'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง';
+					$result['error']['user'] = 'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง';
+					$result['error']['pass'] = 'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง';
 				}
 
 			} catch ( Exception $e ) {
-				$arr['error'] = $this->_getError( $e->getMessage() );
+				$result['error'] = $this->_getError( $e->getMessage() );
 			}
 		}
-		echo json_encode($arr);
+
+//		if(!empty($result['error'])){
+//
+//			if( isset($attempt) ){
+//				$attempt++;
+//				Session::set('login_attempt', $attempt);
+//			}
+//
+//		}
+
+
+		echo json_encode($result);
+		exit;
 	}
 
 }

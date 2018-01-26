@@ -96,10 +96,17 @@ if( $this->item['per_com_agency']>0 ){
                         <div class="uiBoxWhite pam">
                         <table><tbody>
                             <tr><td class="clearfix fwb pbm"><i class="icon-address-book-o mrs"></i>ข้อมูลผู้จอง</td></tr>
-                            <tr><td><?=$this->me['fullname']?></td></tr>
-                            <tr><td><?=$this->me['email']?></td></tr>
-                            <tr><td><?=$this->me['tel']?></td></tr>
+<<<<<<< HEAD
+                            <tr><td><?=$this->book['agen_fname'].' '.$this->book['agen_lname']?></td></tr>
+                            <tr><td><?=$this->book['agen_email']?></td></tr>
+                            <tr><td><?=$this->book['agen_tel']?></td></tr>
                             <tr><td><?=$this->me['company_name']?></td></tr>
+=======
+                            <tr><td>ชื่อเซลล์ : <?=$this->me['fullname']?></td></tr>
+                            <tr><td>อีเมลล์ : <?=$this->me['email']?></td></tr>
+                            <tr><td>เบอร์โทร : <?=$this->me['tel']?></td></tr>
+                            <tr><td>บริษัท : <?=$this->me['company_name']?></td></tr>
+>>>>>>> 493df9125d6bd8cd8c5a5788caba023d6c0122ee
                         </tbody></table>
                         </div>
                     </div>
@@ -108,10 +115,10 @@ if( $this->item['per_com_agency']>0 ){
                         <div class="uiBoxWhite pam">
                         <table><tbody>
                             <tr><td class="clearfix fwb pbm"><i class="icon-plane mrs"></i>ข้อมูลการเดินทาง</td></tr>
-                            <tr><td>Code: <span class="text-blue"><?=$this->item['code']?></span></td></tr>
-                            <tr><td><?=$this->item['name']?></td></tr>
-                            <tr><td><?=$this->fn->q('time')->str_event_date($this->item['per_date_start'], $this->item['per_date_end'])?></td></tr>
-                            <tr><td><span class="text-red"><?=$this->item['air_name']?></span> เส้นทาง <?=$this->item['ser_route'];?></td></tr>
+                            <tr><td>Code : <span class="text-blue"><?=$this->item['code']?></span></td></tr>
+                            <tr><td>ชื่อโปรแกรม : <?=$this->item['name']?></td></tr>
+                            <tr><td>วันเดือนทาง : <?=$this->fn->q('time')->str_event_date($this->item['per_date_start'], $this->item['per_date_end'])?></td></tr>
+                            <tr><td>สายการบิน : <span class="text-red"><?=$this->item['air_name']?></span> เส้นทาง <?=$this->item['ser_route'];?></td></tr>
                         </tbody></table>
                         </div>
                     </div>
@@ -121,16 +128,16 @@ if( $this->item['per_com_agency']>0 ){
                         <div class="uiBoxWhite pam">
                         <table><tbody>
                             <tr>
-                                <td colspan="2" class="clearfix fwb pbm"><i class="icon-money mrs"></i>INVOICE</td>
+                                <td colspan="2" class="clearfix fwb pbm"><i class="icon-money mrs"></i>QUOTATION</td>
                             </tr>
                             <tr>
-                                <td>Code:</td>
+                                <td>Quotation No.:</td>
                                 <td><?=$this->book['invoice_code']?></td>
                             </tr>
 
                             <tr>
                                 <td>Deposit Date:</td>
-                                <td> <?= $this->book['book_due_date_deposit']=='0000-00-00 00:00:00' ? '-': date('Y-m-d', strtotime($this->book['book_due_date_deposit'])) ?></td>
+                                <td class="fwb"> <?= $this->book['book_due_date_deposit']=='0000-00-00 00:00:00' ? '-': date('Y-m-d', strtotime($this->book['book_due_date_deposit'])) ?></td>
                             </tr>
 
                             <tr>
@@ -139,11 +146,11 @@ if( $this->item['per_com_agency']>0 ){
                             </tr>
                             <tr>
                                 <td>Full Payment Date:</td>
-                                <td style="color: #9e0000;font-size: 18px"><?= date('Y-m-d', strtotime($this->book['book_due_date_full_payment']))?></td>
+                                <td style="color: #9e0000;" class="fwb"><?= date('Y-m-d', strtotime($this->book['book_due_date_full_payment']))?></td>
                             </tr>
                             <tr>
                                 <td>Full Payment Price:</td>
-                                <td style="color: #0a0b92;font-size: 18px"><?= number_format($this->book['book_master_full_payment'])?>.-</td>
+                                <td style="color: #0a0b92;"><?= number_format($this->book['book_master_full_payment'])?>.-</td>
                             </tr>
 
                         </tbody></table>
