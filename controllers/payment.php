@@ -98,4 +98,22 @@ class Payment extends Controller {
         }
         echo json_encode($arr);
     }
+    public function del($id=null){
+        $id = isset($_POST["id"]) ? $_POST["id"] : $id;
+        if( empty($id) || empty($this->me) || $this->format!='json' ) $this->error();
+
+        $item = $this->model->get($id);
+        if( empty($item) ) $this->error();
+    }
+
+    public function show($id=null){
+        $id = isset($_POST["id"]) ? $_POST["id"] : $id;
+        if( empty($id) || empty($this->me) || $this->format!='json' ) $this->error();
+
+        $item = $this->model->get($id);
+        if( empty($item) ) $this->error();
+
+        $this->view->setData('item', $item);
+        $this->view->render('forms/payment/show');
+    }
 }

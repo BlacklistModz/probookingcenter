@@ -197,6 +197,16 @@ class Booking_Model extends Model {
                             /* SET STATUS BOOKING */
                             $this->db->update("booking", array("status"=>"00"), "book_id={$value["book_id"]}");
                             $BalanceSeats -= $value["qty"];
+
+                             /* SET ALERT FOR SALE */
+                            $alert = array(
+                                "user_id"=>$value["user_id"],
+                                "book_id"=>$value["book_id"],
+                                "detail"=>"ปรับสถานะ (W/L) เป็น (จอง) แล้ว",
+                                "source"=>"100booking",
+                                "log_date"=>date("c")
+                            );
+                            $this->db->insert("alert_msg", $alert);
                         }
                     }
                     else{

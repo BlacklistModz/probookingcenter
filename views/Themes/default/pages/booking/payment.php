@@ -90,7 +90,8 @@ $totalBalance = $this->item["book_amountgrandtotal"] - $this->item["payment"]["p
 									<td class="tac fwb"><?=$no?></td>
 									<td class="tac"><?=$value["book_status"]["name"]?></td>
 									<td class="tac">
-										<a href="<?=$value["pay_url_file"]?>" target="_blank" class="btn" style="color:#fff; background-color: #003;"><i class="icon-download"></i></a>
+										<!-- <a href="<?=$value["pay_url_file"]?>" target="_blank" class="btn" style="color:#fff; background-color: #003;"><i class="icon-download"></i></a> -->
+										<a data-plugins="dialog" href="<?=URL?>payment/show/<?=$value["pay_id"]?>" class="btn" style="color:#fff; background-color: #003;"><i class="icon-download"></i></a>
 									</td>
 									<td class="tac"><?=$value["bank_name"]?></td>
 									<td class="tac"><?=$value["bankbook_branch"]?></td>

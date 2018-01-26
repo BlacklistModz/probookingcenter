@@ -66,6 +66,38 @@ $html = '<div class="clearfix">
                         </div>
                     </div>
 
+                    <div class="span4" style="margin-left: 25px;">
+                        <div class="uiBoxWhite pam">
+                        <table><tbody>
+                            <tr>
+                                <td colspan="2" class="clearfix fwb pbm"><i class="icon-info mrs"></i>ข้อมูลลูกค้า</td>
+                            </tr>
+                            <tr>
+                                <td>ชื่อลูกค้า</div>
+                                <td>'.(!empty($this->book['book_cus_name']) ? $this->book['book_cus_name'] : "-").'</td>
+                            </tr>
+                            <tr>
+                                <td>เบอร์โทรลูกค้า</div>
+                                <td>'.(!empty($this->book['book_cus_tel']) ? $this->book['book_cus_tel'] : "-").'</td>
+                            </tr>
+                        </tbody></table>
+                        </div>
+                    </div>
+
+                    <div class="span4" style="margin-left: 25px;">
+                        <div class="uiBoxWhite pam">
+                        <table><tbody>
+                            <tr>
+                                <td colspan="2" class="clearfix fwb pbm"><i class="icon-info mrs"></i>หมายเหตุ</td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" class="clearfix">'.(!empty($this->book['book_comment']) ? $this->book['book_comment'] : "-").'</td>
+                            </tr>
+                        </tbody></table>
+                        </div>
+                    </div>
+
+
         		</div>
 
         </div>';
