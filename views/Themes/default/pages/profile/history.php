@@ -35,12 +35,10 @@
 								<th width="10%">Status</th>
 								<th width="5%">Quotation</th>
 								<?php
-											if( $this->me['company_id'] ==  44 && $value['status'] !=40){
-												echo '<th width="5%">Guarantee</th>';
-											}
-											
+								if( !empty($this->me['company_guarantee']) ){
+									echo '<th width="5%">Guarantee</th>';
+								}
 								?>
-								
 								<th width="5%">Payment</th>
 								<th width="5%">Cancel</th>
 							</tr>
@@ -77,12 +75,17 @@
 									}
 										$deposited = $value['book_master_deposit'];
 										$fullPaymenting = $value["book_master_full_payment"];
+
+									$guarantee = "";
+									if( !empty($value["book_is_guarantee"]) ){
+										$guarantee = '<i class="icon-thumbs-up"></i>';
+									}
 								
 									
 									?>
 									<tr>
 										<td class="tac"><?=$dateTime?><br/><?=$timeStr?></td>
-										<td class="tac"><a data-plugins="dialog" target="_blank" style="color:blue; text-decoration: none;" href="<?=URL?>booking/profile/<?=$value["book_id"]?>"><?=$value["book_code"]?></a></td>
+										<td class="tac"><a data-plugins="dialog" target="_blank" style="color:blue; text-decoration: none;" href="<?=URL?>booking/profile/<?=$value["book_id"]?>"><?=$guarantee?> <?=$value["book_code"]?></a></td>
 										<!-- <td class="tac">
 											<a href="<?=URL?>tour/<?=$value["ser_id"]?>" style="color:blue; text-decoration: none;" target="_blank">
 											<span class="fwb"><?=$value['ser_code']?></a>
@@ -108,9 +111,14 @@
 										</td>		
 											<?php
 											// echo '<span>N/A</span>'; 
-											if( $this->me['company_id'] ==  44){
-												
-												echo '<td class="tac"><a href="'.URL.'booking/guarantee/'.$value['book_id'].'" data-plugins="dialog" class="btn btn '.($value['status']==40 ? 'disabled' : '').'"><i class="icon-upload"></i></a></td>'; 
+											if( !empty($this->me['company_guarantee'])  ){
+												$cls = '';
+												if( $value["status"] == 40 || $value["status"] == 5 || $value["book_is_guarantee"] == 1 ){
+													$cls = 'disabled';
+												}
+												echo '<td class="tac">
+														<a href="'.URL.'booking/guarantee/'.$value['book_id'].'" data-plugins="dialog" class="btn btn '.$cls.'"><i class="icon-upload"></i></a>
+													  </td>'; 
 											}				
 											?>
 							

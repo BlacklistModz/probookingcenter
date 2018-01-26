@@ -24,6 +24,7 @@ class Agency_Model extends Model {
 
         , agency_company.agen_com_id as company_id
         , agency_company.agen_com_name as company_name
+        , agency_company.agen_com_guarantee as company_guarantee
     ";
     private $_cutNamefield = "agen_";
 

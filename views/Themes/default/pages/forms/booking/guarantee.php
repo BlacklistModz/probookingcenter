@@ -11,9 +11,10 @@ $form 	->field("book_guarantee_file")
         ->addClass("inputtext")
         ->attr('accept', 'application/pdf, image/*')
         ->type('file');
+
 $form 	->field("book_file")
-		->label("Old file")
-		->text( empty($this->item['book_guarantee_file']) ? '-': '<a href="'.$this->item['book_guarantee_file'].'" target="_blank" class="btn btn-blue"><i class="icon-download"></i> Download</a>' );
+		->label("File")
+		->text( empty($this->item['book_guarantee_file']) ? '<span class="fwb" style="color:red;">ไม่มีการอัพโหลดไฟล์</span>': '<a href="'.$this->item['book_guarantee_file'].'" target="_blank" class="btn btn-blue"><i class="icon-download"></i> Download</a>' );
 		
 
 # set form
