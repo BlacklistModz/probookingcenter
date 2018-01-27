@@ -143,13 +143,13 @@ class Booking_Model extends Model {
     }
     public function crons(){
         $time_now = date('Y-m-d H:i:s');
-        return("SELECT `book_id`, `book_due_date_deposit`,`book_master_deposit`,`book_due_date_full_payment`,`book_master_full_payment`,`status` FROM booking WHERE  (`book_due_date_deposit`!= '0000-00-00 00:00:00' && `book_due_date_deposit` < '$time_now' OR  `book_due_date_full_payment`<= '$time_now') AND status` IN (0, 5, 10) AND book_receipt =0 AND book_is_guarantee <> 1");
+        return("SELECT B.`book_id` as `id`, B.`book_code`as `Book code` , B.`book_due_date_deposit` as `Due date deposit`,B.`book_master_deposit` as `Deposit`  ,B.`book_due_date_full_payment` as `Due date fullpayment`,B.`book_master_full_payment`as `Total Amount Fullpayment`, B.`status`, B.`book_is_guarantee`as guarantee FROM booking B LEFT JOIN  payment P ON B.book_id = P.book_id WHERE (B.`book_due_date_deposit`!= '0000-00-00 00:00:00' && B.`book_due_date_deposit` < '2018-01-26 16:08:17' OR B.`book_due_date_full_payment`<= '2018-01-26 16:08:17') AND B.status IN (0, 5, 10) AND B.book_receipt =0 AND B.book_is_guarantee <> 1");
         //$booking_list = $this->db->select("SELECT`book_id`, `book_due_date_deposit`,`book_master_deposit`,`book_due_date_full_payment`,`book_master_full_payment`,`status` FROM booking WHERE  (`book_due_date_deposit`!= '0000-00-00 00:00:00' && `book_due_date_deposit` < '$time_now' OR  `book_due_date_full_payment`<= '$time_now') AND status` IN (0, 5, 10) AND book_receipt =0 AND book_is_guarantee <> 1");
     //    print_r("SELECT `book_id`, `book_due_date_deposit`,`book_due_date_full_payment`,`status` FROM booking WHERE  (`book_due_date_deposit`!= '0000-00-00 00:00:00' && `book_due_date_deposit` < '$time_now' ||  `book_due_date_full_payment`<= '$time_now') &&`status` IN (0, 5, 10)");
     //  die;
        //return $booking_list;
         //return("SELECT `book_id`, `book_due_date_deposit`,`book_due_date_full_payment`,`status` FROM booking WHERE  (`book_due_date_deposit`!= '0000-00-00 00:00:00' && `book_due_date_deposit` < '$time_now' ||  `book_due_date_full_payment`<= '$time_now') &&`status`=00");
-
+        //SELECT B.`book_id`,B.`book_code`, B.`book_due_date_deposit`,B.`book_master_deposit`,B.`book_due_date_full_payment`,B.`book_master_full_payment`as `Total Amount Fullpayment`, B.`status`, B.`book_is_guarantee`as การันตี FROM booking B LEFT JOIN  payment P ON B.book_id = P.book_id WHERE (B.`book_due_date_deposit`!= '0000-00-00 00:00:00' && B.`book_due_date_deposit` < '2018-01-26 16:08:17' OR B.`book_due_date_full_payment`<= '2018-01-26 16:08:17') AND B.status IN (0, 5, 10) AND B.book_receipt =0 AND B.book_is_guarantee <> 1
         foreach($booking_list AS $value){
             $this->db->update("booking", array("status"=>40, "book_log"=>"UPDATE BY SYSTEM"), "book_id={$value["book_id"]}");
         }
