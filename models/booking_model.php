@@ -233,6 +233,7 @@ class Booking_Model extends Model {
             }
         }
     }
+
     /* PAYMENT */
     public function listsPayment($id){
         $data = array();

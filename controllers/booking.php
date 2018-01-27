@@ -279,6 +279,8 @@
             $this->model->updateWaitingList( $item['per_id'] );
 
             if( $item['permit']['cancel'] ){
+                $this->model->update($id, array('status'=>40));
+                $this->model->updateWaitingList( $item['per_id'] );
                 $arr['message'] = 'ยกเลิกการจองเรียบร้อย';
                 $arr['url'] = 'refresh';
             }
