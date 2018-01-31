@@ -55,28 +55,10 @@
             ),
             
         );
-        $DayOfGo = $this->fn->q('time')->DateDiff( date("Y-m-d"), $item['per_date_start'] );
+        $DayOfGo = $this->fn->q('time')->DateDiff( date("Y-m-d"), $item['per_date_start'] ); // ระยะเวลา ระหว่าง วันนี้ กับ วันเดินทาง
         $dw = date('w');
     
-            if($this->me['company_id'] == 44){
-                //speacial case booking
-                if( $DayOfGo > 30){
-                    $settings['deposit']['date'] = date("Y-m-d", strtotime("+2 day"));
-                    $settings['fullPayment']['date'] = date('Y-m-d 18:00:00', strtotime("-14 day", strtotime($settings['trave']['date'])));
-                }else if($dw <= 3){
-                      $ofWeek =  (3-$dw) +7;
-                      $settings['fullPayment']['date'] = date("Y-m-d 18:00:00", strtotime("+{$ofWeek} day"));
-                      $settings['deposit']['date'] = '-';
-                      $settings['deposit']['price'] = 0;
-                }else{
-                        $ofWeek =  ($dw-3) +7;
-                        $settings['fullPayment']['date'] = date("Y-m-d 18:00:00", strtotime("+{$ofWeek} day"));
-                        $settings['deposit']['date'] = '-';
-                        $settings['deposit']['price'] = 0;
-                    }
-            }else{
-
-                 
+     
                     if( $DayOfGo > 30 ){
                         $settings['deposit']['date'] = date("Y-m-d 18:00:00", strtotime("+2 day"));
                         $settings['fullPayment']['date'] = date('Y-m-d 18:00:00', strtotime("-30 day", strtotime($settings['trave']['date'])));
@@ -90,8 +72,7 @@
                         $settings['deposit']['date'] = '-';
                         $settings['deposit']['price'] = 0;
                     }
-            }
-      
+           
            
         // $settings['trave']['date'] = date('Y-m-d', strtotime("-1 day", strtotime($settings['trave']['date'])));
 

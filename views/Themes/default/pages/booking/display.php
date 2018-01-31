@@ -96,17 +96,17 @@ if( $this->item['per_com_agency']>0 ){
                         <div class="uiBoxWhite pam">
                         <table><tbody>
                             <tr><td class="clearfix fwb pbm"><i class="icon-address-book-o mrs"></i>ข้อมูลผู้จอง</td></tr>
-<<<<<<< HEAD
+
                             <tr><td><?=$this->book['agen_fname'].' '.$this->book['agen_lname']?></td></tr>
                             <tr><td><?=$this->book['agen_email']?></td></tr>
                             <tr><td><?=$this->book['agen_tel']?></td></tr>
                             <tr><td><?=$this->me['company_name']?></td></tr>
-=======
+
                             <tr><td>ชื่อเซลล์ : <?=$this->me['fullname']?></td></tr>
                             <tr><td>อีเมลล์ : <?=$this->me['email']?></td></tr>
                             <tr><td>เบอร์โทร : <?=$this->me['tel']?></td></tr>
                             <tr><td>บริษัท : <?=$this->me['company_name']?></td></tr>
->>>>>>> 493df9125d6bd8cd8c5a5788caba023d6c0122ee
+
                         </tbody></table>
                         </div>
                     </div>
