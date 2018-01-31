@@ -29,7 +29,7 @@ class Profile extends Controller {
         $agency = $this->model->query("agency")->lists( $s_options );
 
         $this->view->setData('sales', $agency);
-        $this->view->setData('results', $booking);
+        $this->view->setData('results', $booking); 
         $this->view->setData('agen_id', $id);
         $this->view->render('profile/history');
     }

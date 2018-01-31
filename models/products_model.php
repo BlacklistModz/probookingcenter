@@ -309,16 +309,16 @@ class Products_Model extends Model{
     public function busList($id)
     {
         $busList = $this->db->select("SELECT bus_id, bus_no, bus_qty FROM bus_list WHERE per_id=:id ORDER BY bus_no", array(':id'=>$id ));
-
+        //    AND booking_list.book_list_code IN ('1','2','3','4','5')
         foreach ($busList as $key => $value) {
-            
+        
             $sth = $this->db->prepare("
                 SELECT COALESCE(SUM(booking_list.book_list_qty),0) as qty
                 FROM booking_list LEFT JOIN booking ON booking.book_code=booking_list.book_code 
                 WHERE 
                         booking.per_id=:id
                     AND booking.bus_no=:bus_no
-                    AND booking_list.book_list_code IN ('1','2','3','4','5')
+                    AND booking_list.book_list_code IN ('1','2','3')
                     AND booking.status != 40
             ");
             $sth->execute( array( ':id'=> $id, ':bus_no'=> $value['bus_no']) );

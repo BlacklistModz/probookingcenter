@@ -21,7 +21,7 @@ class Booking_Model extends Model {
                        , ag.agen_tel
                        , per.per_date_start
                        , per.per_date_end
-
+                       , per.per_url_pdf 
                        , ser.ser_id
                        , ser.ser_name
                        , ser.ser_code";
@@ -128,6 +128,18 @@ class Booking_Model extends Model {
         if( !empty($options["payment"]) ){
             $data["payment"] = $this->listsPayment($data["book_id"]);
         }
+
+        if( !empty($data['url_pdf']) ){
+            $file = substr(strrchr($data['url_pdf'],"/"),1);
+
+            if( file_exists(PATH_TRAVEL.$file) ){
+                $data['url_pdf'] = 'http://admin.probookingcenter.com/admin/upload/travel/'.$file;
+            }
+            else{
+                $data['url_pdf'] = '';
+            }
+        }
+
 
         $data["permit"]["cancel"] = false;
         if( $data["status"] == 0 || $data["status"] == 5 ){
