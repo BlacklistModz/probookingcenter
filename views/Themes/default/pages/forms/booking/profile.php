@@ -5,7 +5,7 @@ $this->book['agen_lname'] = str_replace("-", "", $this->book['agen_lname']);
 if( !empty($this->book['agen_lname']) ){
 	$fullname .= ' '.$this->book['agen_lname'];
 }
-
+//
 $html = '<div class="clearfix">
  
         		<div id="" class="" style="">
@@ -96,7 +96,7 @@ $html = '<div class="clearfix">
                         </tbody></table>
                         </div>
                     </div>
-
+                    <div class="clearfix" style="margin-top:1rem;"><span></span></div>
 
         		</div>
 
@@ -105,8 +105,11 @@ $html = '<div class="clearfix">
 $arr['form'] = '<div style="color:#000;"></div>';
 $arr['title'] = $this->book['book_code'];
 $arr['body'] = $html;
-// $arr['width'] = 1270;
 
+// $arr['button'] = '<a href="" class="btn btn-cancel" role="dialog-close"><i class="icon-remove"></i></a>';
+$arr['bottom_msg'] = '<a href="'.URL.'/booking/passport/'.$this->book['book_id'].'" role="dialog-close" data-plugins="dialog" class="btn btn-blue"><i class="icon-upload"></i></a>';
+// $arr['width'] = 1270;
 $arr['is_close_bg'] = true;
 
 echo json_encode($arr);
+

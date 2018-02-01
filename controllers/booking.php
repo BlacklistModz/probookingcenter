@@ -314,7 +314,7 @@
             $this->view->render('forms/booking/guarantee');
         }
     }
- 
+    
     public function payment($id=null){
         $id = isset($_REQUEST["id"]) ? $_REQUEST["id"] : $id;
         if( empty($id) || empty($this->me) ) $this->error();
@@ -350,7 +350,42 @@
         $this->view->render("forms/booking/profile");
     }
 
-    public function crons_booking_cencel(){
-       print_r($this->model->crons()); 
+    public function passport($id=null){
+        $id = isset($_REQUEST["id"]) ? $_REQUEST["id"] : $id;
+        if( empty($this->me) || empty($id) || $this->format != 'json' ) $this->error();
+
+        $item = $this->model->get($id);
+        if( empty($item) ) $this->error();
+
+        if( !empty($_POST) ){   
+            if( !empty($id) && !empty($_FILES["book_passport_file"]) ){
+                for($i=0;$i<count($_FILES["book_passport_file"]["name"]);$i++){
+                    $type = strrchr($_FILES["book_passport_file"]['name'][$i],".");
+                    $ii = mt_rand(10, 999989);
+                    $type = strrchr($_FILES["book_passport_file"]['name'][$i],".");
+                    $name = 'pass_'.$ii.'_'.date('Y_m_d_H_i_s').$type;
+                    move_uploaded_file($_FILES["book_passport_file"]["tmp_name"][$i], PATH_PASSPORT.$name);
+                    // $this->model->update($id, array("book_passport_file"=>"../upload/passport/{$name}"));
+                }
+                $arr['message'] = 'อัพโหลดเรียบร้อย';   
+        		// if( !empty($item["book_passport_file"][]) ){
+        		// 	$file = substr(strrchr($item['book_passport_file'],"/"),1);
+        		// 	if( file_exists(PATH_PASSPORT.$file) ){
+        		// 		@unlink(PATH_PASSPROT.$file);
+        		// 	}
+        		// }
+        	
+            
+           
+        }
+            else{
+                $arr['message'] = 'เกิดข้อผิดพลาด กรุณาลองอีกครั้ง...';
+            }
+            echo json_encode($arr);
+        }
+        else{
+            $this->view->setData('item', $item);
+            $this->view->render('forms/booking/passport');
+        }
     }
 }
