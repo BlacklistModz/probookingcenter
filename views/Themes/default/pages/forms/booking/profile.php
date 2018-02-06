@@ -5,6 +5,12 @@ $this->book['agen_lname'] = str_replace("-", "", $this->book['agen_lname']);
 if( !empty($this->book['agen_lname']) ){
 	$fullname .= ' '.$this->book['agen_lname'];
 }
+
+$button="";
+if(($this->me['role']=="admin" || $this->me['id'] == $this->book['agen_id']) &&!empty($this->book['passport'])){
+    $button = '<a href="'.URL.'/booking/passport_view/'.$this->book['book_id'].'"class="btn btn-blue"><i class="icon-eye"></i></a> <a href="'.URL.'/booking/passport_view/'.$this->book['book_id'].'"class="btn btn-blue"><i class="icon-book"> ดู Passport</i></a>';
+}
+
 //
 $html = '<div class="clearfix">
  
@@ -93,11 +99,14 @@ $html = '<div class="clearfix">
                             <tr>
                                 <td colspan="2" class="clearfix">'.(!empty($this->book['book_comment']) ? $this->book['book_comment'] : "-").'</td>
                             </tr>
+                            <tr>
+                            <a></a>
+                            </tr>
                         </tbody></table>
                         </div>
                     </div>
                     <div class="clearfix" style="margin-top:1rem;"><span></span></div>
-
+                    
         		</div>
 
         </div>';
@@ -107,7 +116,7 @@ $arr['title'] = $this->book['book_code'];
 $arr['body'] = $html;
 
 // $arr['button'] = '<a href="" class="btn btn-cancel" role="dialog-close"><i class="icon-remove"></i></a>';
-$arr['bottom_msg'] = '<a href="'.URL.'/booking/passport/'.$this->book['book_id'].'" role="dialog-close" data-plugins="dialog" class="btn btn-blue"><i class="icon-upload"></i></a>';
+//$arr['bottom_msg'] = '<a href="'.URL.'/booking/passport/'.$this->book['book_id'].'" role="dialog-close" data-plugins="dialog" class="btn btn-blue"><i class="icon-upload"></i> Passport upload</a> '.$button;
 // $arr['width'] = 1270;
 $arr['is_close_bg'] = true;
 

@@ -24,9 +24,10 @@ class Booking_Model extends Model {
                        , per.per_url_pdf 
                        , ser.ser_id
                        , ser.ser_name
-                       , ser.ser_code";
+                       , ser.ser_code
+                       ";
     private $_cutNamefield = "book_";
-
+    
     public function lists($options=array()){
         $options = array_merge(array(
             'pager' => isset($_REQUEST['pager'])? $_REQUEST['pager']:1,
@@ -101,6 +102,19 @@ class Booking_Model extends Model {
     public function update($id, $data){
         $this->db->update($this->_objName, $data, "{$this->_cutNamefield}id={$id}");
     }
+    public function setPassport($data){
+        if( !empty($data["id"]) ){
+            $id = $data["id"];
+            unset($data["id"]);
+            $this->db->update("passport", $data, "pass_id={$id}");
+        }
+        else{
+            $this->db->insert("passport", $data);
+        }
+    }
+    public function unsetPassport($id){
+        $this->db->delete("passport", "pass_id={$id}");
+    }
     public function buildFrag($results, $options=array()) {
         $data = array();
         foreach ($results as $key => $value) {
@@ -116,6 +130,7 @@ class Booking_Model extends Model {
         
         $total_qty = 0;
         $booking_list = $this->db->select("SELECT * FROM booking_list WHERE `book_code`=:code ORDER BY book_list_code ASC", array(':code'=>$data['book_code']));
+        
         $items = array();
         foreach ($booking_list as $key => $value) {
         	$items[$value['book_list_code']] = $value;
@@ -127,6 +142,10 @@ class Booking_Model extends Model {
 
         if( !empty($options["payment"]) ){
             $data["payment"] = $this->listsPayment($data["book_id"]);
+        }
+
+        if( !empty($options["passport"]) ){
+            $data["passport"] = $this->listsPassport($data["book_id"]);
         }
 
         if( !empty($data['url_pdf']) ){
@@ -153,19 +172,7 @@ class Booking_Model extends Model {
     	$this->db->insert('booking_list', $data);
     	$data['id'] = $this->db->lastInsertId();
     }
-    public function crons(){
-        $time_now = date('Y-m-d H:i');
-        return("SELECT B.`book_id` as `id`, B.`book_code`as `Book code` , B.`book_due_date_deposit` as `Due date deposit`,B.`book_master_deposit` as `Deposit`  ,B.`book_due_date_full_payment` as `Due date fullpayment`,B.`book_master_full_payment`as `Total Amount Fullpayment`, B.`status`, B.`book_is_guarantee`as guarantee FROM booking B LEFT JOIN  payment P ON B.book_id = P.book_id WHERE (B.`book_due_date_deposit`!= '0000-00-00 00:00:00' && B.`book_due_date_deposit` < $time_now OR B.`book_due_date_full_payment`<= $time_now) AND B.status IN (0, 5, 10) AND B.book_receipt =0 AND B.book_is_guarantee <> 1");
-        //$booking_list = $this->db->select("SELECT`book_id`, `book_due_date_deposit`,`book_master_deposit`,`book_due_date_full_payment`,`book_master_full_payment`,`status` FROM booking WHERE  (`book_due_date_deposit`!= '0000-00-00 00:00:00' && `book_due_date_deposit` < '$time_now' OR  `book_due_date_full_payment`<= '$time_now') AND status` IN (0, 5, 10) AND book_receipt =0 AND book_is_guarantee <> 1");
-    //    print_r("SELECT `book_id`, `book_due_date_deposit`,`book_due_date_full_payment`,`status` FROM booking WHERE  (`book_due_date_deposit`!= '0000-00-00 00:00:00' && `book_due_date_deposit` < '$time_now' ||  `book_due_date_full_payment`<= '$time_now') &&`status` IN (0, 5, 10)");
-    //  die;
-       //return $booking_list;
-        //return("SELECT `book_id`, `book_due_date_deposit`,`book_due_date_full_payment`,`status` FROM booking WHERE  (`book_due_date_deposit`!= '0000-00-00 00:00:00' && `book_due_date_deposit` < '$time_now' ||  `book_due_date_full_payment`<= '$time_now') &&`status`=00");
-        //SELECT B.`book_id`,B.`book_code`, B.`book_due_date_deposit`,B.`book_master_deposit`,B.`book_due_date_full_payment`,B.`book_master_full_payment`as `Total Amount Fullpayment`, B.`status`, B.`book_is_guarantee`as การันตี FROM booking B LEFT JOIN  payment P ON B.book_id = P.book_id WHERE (B.`book_due_date_deposit`!= '0000-00-00 00:00:00' && B.`book_due_date_deposit` < '2018-01-26 16:08:17' OR B.`book_due_date_full_payment`<= '2018-01-26 16:08:17') AND B.status IN (0, 5, 10) AND B.book_receipt =0 AND B.book_is_guarantee <> 1
-        foreach($booking_list AS $value){
-            $this->db->update("booking", array("status"=>40, "book_log"=>"UPDATE BY SYSTEM"), "book_id={$value["book_id"]}");
-        }
-    }
+
     /* STATUS */
     public function status(){
         $a[] = array('id'=>0, 'name'=>'จอง', 'detail'=>"จอง");
@@ -189,7 +196,7 @@ class Booking_Model extends Model {
         }
         return $data;
     }
-
+   
     public function updateWaitingList($per_id){
         /* GET Waiting List */
 
@@ -278,4 +285,23 @@ class Booking_Model extends Model {
         }
         return $data;
     }
+    public function getPassport($id){
+        $sth = $this->db->prepare("SELECT * FROM passport WHERE pass_id=:id LIMIT 1");
+        $sth->execute( array( ':id' => $id ) );
+
+        if( $sth->rowCount()==1 ){
+            return $sth->fetch( PDO::FETCH_ASSOC );
+        } return array();
+    }
+    public function listsPassport($id){
+        $data = array();
+        $results = $this->db->select("SELECT * from passport WHERE pass_book_id={$id}");
+        foreach ($results as $key => $value){
+            $data[$key] =$value;
+            $file = substr(strrchr($value['pass_url'],"/"),1);
+            $data[$key]['pass_file_url']= $file;   
+        }
+        return$data;
+    }
+    
 }

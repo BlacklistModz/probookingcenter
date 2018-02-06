@@ -218,7 +218,7 @@
             }
 
            echo json_encode( $arr );
-           die;
+        //    die;
         }
         else{
             $this->view->setData( 'busList', $this->model->query('products')->busList( $period ) );
@@ -250,7 +250,6 @@
     public function booking_cancel($id=null){
         $id = isset($_REQUEST["id"]) ? $_REQUEST["id"] : $id;
         if( empty($this->me) || empty($id) || $this->format!='json' ) $this->error();
-
         $item = $this->model->get($id);
         if( empty($item) ) $this->error();
 
@@ -258,7 +257,7 @@
             
             $this->model->update($id, array('status'=>40));
             $this->model->updateWaitingList( $item['per_id'] );
-
+        
             if( $item['permit']['cancel'] ){
                 $this->model->update($id, array('status'=>40));
                 $this->model->updateWaitingList( $item['per_id'] );
@@ -330,7 +329,7 @@
         $id = isset($_REQUEST["id"]) ? $_REQUEST["id"] : $id;
         if( empty($id) || empty($this->me) || $this->format!='json' ) $this->error();
 
-        $book = $this->model->get( $id );
+        $book = $this->model->get( $id, array('passport'=>true ));
         if( empty($book) ) $this->error();
         // print_r($book); die;
 
@@ -349,23 +348,93 @@
         $this->view->setData( 'book', $book );
         $this->view->render("forms/booking/profile");
     }
-
-    public function passport($id=null){
-        $id = isset($_REQUEST["id"]) ? $_REQUEST["id"] : $id;
-        if( empty($this->me) || empty($id) || $this->format != 'json' ) $this->error();
-
-        $item = $this->model->get($id);
+    public function passport_view($id=null){
+        if(empty($id) ) $this->error();    
+        $item = $this->model->get($id, array("passport"=>true));
+        $booking = $this->model->get($id);
+        // authentication page !!
+        //print_r($this->me['role']);die;
+        if($this->me['id']!= $booking['agen_id'] && $this->me['role']!='admin') $this->error();
+       // print_r($this->me);die;
         if( empty($item) ) $this->error();
+        $this->view->setData('item', $item);
+        $this->view->setData('booking', $booking);
+        $this->view->render('booking/passport');
+        
+    }
+    public function passport_insert($id=null){  
+        $id = isset($_REQUEST["id"]) ? $_REQUEST["id"] : $id;   
+        if( empty($this->me) || empty($id) || $this->format != 'json' ) $this->error();
+        $item = $this->model->get($id, array("passport"=>true));
+        if(!empty($_POST)){
+        if(!empty($_FILES["book_passport_file"])){
+            for($i=0;$i<count($_FILES["book_passport_file"]["name"]);$i++){     
+                $type = strrchr($_FILES["book_passport_file"]['name'][$i],".");
+                $ii = mt_rand(10, 999989);
+                $type = strrchr($_FILES["book_passport_file"]['name'][$i],".");
+                $name = 'pass_'.$ii.'_'.date('Y_m_d_H_i_s').$type;
+                move_uploaded_file($_FILES["book_passport_file"]["tmp_name"][$i], PATH_PASSPORT.$name);   
+                $passport = array(
+                    "pass_url"=>"../upload/passport/{$name}",
+                    "pass_book_id"=>$id
+                    );
+                
+                $this->model->setPassport($passport);    
+            }
+                 $arr['message'] = 'อัพโหลดเรียบร้อย';  
+                 $arr['url']='refresh';
 
-        if( !empty($_POST) ){   
-            if( !empty($id) && !empty($_FILES["book_passport_file"]) ){
-                for($i=0;$i<count($_FILES["book_passport_file"]["name"]);$i++){
+        }else{
+            $arr['message'] = 'เกิดข้อผิดพลาด กรุณาลองอีกครั้ง';    
+        }
+        echo json_encode($arr);  
+     }else{
+                $this->view->setData('item', $item);
+                $this->view->render('forms/booking/passportinsert');
+            }
+         
+    }
+    // manage passpart insert / delete /update / 1 times
+    public function passport($id=null){
+        $id = isset($_REQUEST["id"]) ? $_REQUEST["id"] : $id;   
+        if( empty($this->me) || empty($id) || $this->format != 'json' ) $this->error();
+        $item = $this->model->get($id, array("passport"=>true));
+        if( empty($item) ) $this->error();
+        if( !empty($_POST) ){
+            $_passport = array();
+            if( !empty($item["passport"]) ){
+                foreach($item["passport"] AS $pass){
+                    $_passport[] = $pass["pass_id"];
+                    unlink(PATH_PASSPORT.$pass["pass_file_url"]);
+
+                }
+            }
+            
+            if( !empty($_FILES["book_passport_file"]) ){
+                for($i=0;$i<count($_FILES["book_passport_file"]["name"]);$i++){     
                     $type = strrchr($_FILES["book_passport_file"]['name'][$i],".");
                     $ii = mt_rand(10, 999989);
                     $type = strrchr($_FILES["book_passport_file"]['name'][$i],".");
                     $name = 'pass_'.$ii.'_'.date('Y_m_d_H_i_s').$type;
                     move_uploaded_file($_FILES["book_passport_file"]["tmp_name"][$i], PATH_PASSPORT.$name);
-                    // $this->model->update($id, array("book_passport_file"=>"../upload/passport/{$name}"));
+                    $passport = array(
+                                     "pass_url"=>"../upload/passport/{$name}",
+                                     "pass_book_id"=>$id
+                    );
+
+                    if( !empty($_passport[$i]) ){
+                        $passport["id"] = $_passport[$i];
+                        unset($_passport[$i]);
+                    }
+
+                    $this->model->setPassport($passport);    
+                }
+                $arr['message'] = 'อัพโหลดเรียบร้อย';   
+
+                if( !empty($_passport) ){
+                    foreach($_passport AS $id){
+                        $this->model->unsetPassport($id);
+                    }
                 }
                 $arr['message'] = 'อัพโหลดเรียบร้อย';   
         		// if( !empty($item["book_passport_file"][]) ){
@@ -373,10 +442,8 @@
         		// 	if( file_exists(PATH_PASSPORT.$file) ){
         		// 		@unlink(PATH_PASSPROT.$file);
         		// 	}
-        		// }
-        	
-            
-           
+                // }
+                
         }
             else{
                 $arr['message'] = 'เกิดข้อผิดพลาด กรุณาลองอีกครั้ง...';
@@ -388,4 +455,65 @@
             $this->view->render('forms/booking/passport');
         }
     }
+    public function delete_passport($id=null){
+        $id = isset($_REQUEST["id"]) ? $_REQUEST["id"] : $id;
+        if( empty($this->me) || empty($id)) $this->error();
+        $item = $this->model->getPassport($id);
+            if(!empty($_POST)){          
+                $file = substr(strrchr($item['pass_url'],"/"),1);
+                unlink(PATH_PASSPORT.$file);
+                $this->model->unsetPassport($_POST['id']);
+                $arr['message'] = 'ลบไฟล์เรียบร้อยแล้ว';
+                $arr['url'] = 'refresh';
+                echo json_encode($arr);
+            }else{  
+                $this->view->setData('item', $item);
+                $this->view->render('forms/booking/passport_del');
+            }
+           
+      //  $this->model->unsetPassport($id);
+    }
+    public function zip_passport($id=null){
+        $id = isset($_REQUEST['id']) ? $_REQUEST['$ID'] : $id;
+       // if(empty($_POST['Authentication'])) $this->error();
+        $item = $this->model->get($id, array("passport"=>true));
+        foreach($item['passport'] as $key => $value){
+            $file = substr(strrchr($value['pass_url'],"/"),1);
+            copy(PATH_PASSPORT.$file, PATH_ZIP.$file);
+            $files[$key] = PATH_ZIP.$file;
+        }
+        $i = mt_rand(10, 999989);
+        $zipname = 'zip_passport'.$i.'.zip';
+        $zip = new ZipArchive;
+        $zip->open($zipname, ZipArchive::CREATE);
+        foreach ($files as $file) {
+            $zip->addFile($file);
+          }
+          $zip->close();
+          header('Content-Type: application/zip');
+          header('Content-disposition: attachment; filename='.$zipname);
+          header('Content-Length: ' . filesize($zipname));
+          readfile($zipname);
+          foreach($files as $file){
+            unlink(PATH_ZIP.$file);
+            
+          //  echo('/probookingcenter/'.$zipname);
+         } 
+         unlink(PATH_ROOT.$zipname);
+    }
+public function passport_update($id=null){
+    $id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $id;
+  
+    if( empty($this->me) || empty($id)) $this->error();
+    if(!empty($_POST)){
+        
+        $this->model->update($_POST['id'], array('booking_passport'=>1));
+        $arr['message'] = 'บันทึกเรียบร้อยแล้ว';
+        $arr['url'] = 'refresh';
+        echo json_encode($arr); 
+    }else{
+        $this->view->setData('id', $id);
+        $this->view->render('forms/booking/updatepassport');
+    }
+}
 }
