@@ -402,5 +402,59 @@ class Products_Model extends Model{
         } return array();
     }
 
+    /* Hot Sale */
+    public function hotsaleList(){
+        $data = array();
+        //,bl.`bus_qty` AS 'per_qty_seats'
+        $results = $this->db->select("SELECT  
+                a.`per_id`
+                ,c.`ser_id`
+                ,c.`ser_name`
+                ,c.`ser_code`
+                ,d.`country_name`
+                ,a.`per_date_start`
+                ,a.`per_date_end`
+                ,a.`per_price_1`
+                ,a.`per_price_2`
+                ,a.`per_price_3`
+                ,a.`per_price_4`
+                ,a.`per_price_5`
+                ,a.`per_qty_seats`
+                ,a.`per_com_agency`
+                ,a.`per_com_company_agency`
+                ,a.`single_charge`
+                ,(SELECT  COALESCE(SUM(b.`book_list_qty`),0) FROM `booking_list` b LEFT OUTER JOIN `booking` e on b.`book_code` = e.`book_code` WHERE e.`per_id` =  a.`per_id` 
+                AND e.`bus_no` = bl.`bus_no` 
+                AND b.`book_list_code` IN ('1','2','3')
+                AND e.`status` != 40 )  AS 'qty_book'
+                ,bl.`bus_qty` - (SELECT  COALESCE(SUM(b.`book_list_qty`),0) FROM `booking_list` b LEFT OUTER JOIN `booking` e on b.`book_code` = e.`book_code` 
+                WHERE e.`per_id` =  a.`per_id` AND e.`bus_no` = bl.`bus_no` 
+                AND b.`book_list_code` IN ('1','2','3')
+                AND e.`status` != 40)  AS 'qty_receipt'
+                ,a.`status`
+                ,bl.`bus_no`
+                ,e.`air_name`
+                FROM `period` a
+                LEFT OUTER JOIN `series` c
+                on a.`ser_id` = c.`ser_id`
+                LEFT OUTER JOIN `bus_list` bl
+                on a.`per_id` = bl.`per_id`
+                LEFT OUTER JOIN `country` d
+                on c.`country_id` = d.`country_id`
+                 LEFT OUTER JOIN `airline` e
+                on c.`air_id` = e.`air_id`
+                WHERE  a.`status` NOT IN ('2','3','9','10') 
+                AND CURDATE() BETWEEN DATE_ADD(a.per_date_start, INTERVAL -22 DAY) AND a.per_date_start
+                ORDER BY a.`per_date_start`, c.`ser_id`, bl.`bus_no`");
+
+        foreach ($results as $key => $value) {
+            $data[$key] = $this->_cutFirstFieldName("per_", $value);
+            $data[$key]['booking'] = $booking = $this->seatBooked( $value['per_id'] );
+            $data[$key]['seats'] = $value['per_qty_seats'];
+            $data[$key]['balance'] = $value['per_qty_seats'] - $booking['booking'];
+        }
+
+        return $data;
+    }
 
 }

@@ -211,7 +211,7 @@ li .part{
     height: 48px;
     margin-left: -25px;
 }
-part.active .back .arrowBorder{
+.part.active .back .arrowBorder{
     top: 0;
     border-color: #3b5998 transparent;
     border-style: solid;
@@ -361,7 +361,12 @@ ul.breadcrumb{
     color:#fff; 
     padding: 1mm; 
     border-radius:1mm;
-
+}
+.status_55{
+    background-color:#ff902b; 
+    color:#fff; 
+    padding: 1mm; 
+    border-radius:1mm;
 }
 .agen_status_0{
     background-color:#2f80e7; 

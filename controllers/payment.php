@@ -68,8 +68,11 @@ class Payment extends Controller {
         			$this->model->update($id, $postData);
         		}
         		else{
+                    $postData["user_action"] = $this->me["company_id"];
         			$this->model->insert($postData);
         			$id = $postData["id"];
+
+                    $this->model->query('booking')->update($postData["book_id"], array("status"=>55));
         		}
         	}
 

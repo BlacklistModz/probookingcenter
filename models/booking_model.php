@@ -175,7 +175,9 @@ class Booking_Model extends Model {
         $a[] = array('id'=>30, 'name'=>'ชำระเต็มจำนวน (บางส่วน)', 'detail'=>"ชำระเต็มจำนวน บางส่วน");
         $a[] = array('id'=>35, 'name'=>'ชำระเต็มจำนวน', 'detail'=> "ชำระเต็มจำนวน แบบเต็มจำนวน");
         $a[] = array('id'=>40, 'name'=>'ยกเลิก', "detail"=> "Cancel");
+        $a[] = array('id'=>50, 'name'=>'จอง/WL', "detail"=> "จอง/Waiting");
         $a[] = array('id'=>5, 'name'=>'Waiting List', 'detail'=>"Waiting List");
+        $a[] = array('id'=>55, 'name'=>'แจ้งชำระเงิน', 'detail'=>"แจ้งชำระเงิน");
 
         return $a;
     }

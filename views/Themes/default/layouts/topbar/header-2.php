@@ -28,6 +28,10 @@ echo '<div id="header-2" class="header-2"><div class="container clearfix">';
 		if( $value['id'] == 'contact-us' && empty($this->me) ) continue;
 		echo '<li '.$cls.'><a href="'.$value['url'].'">'.$value['name'].'</a>'.$div.'</li>';
 	}
+
+	if( !empty($this->me) ) {
+		echo '<li style="background-color:yellow;"><a href="'.URL.'series" style="color:#000;">Series Online</a></li>';
+	}
 	
 	echo '</ul><nav>';
 
