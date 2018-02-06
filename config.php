@@ -80,3 +80,6 @@ define('PATH_TRAVEL', ".." . DS . "probookingcenter.admin" . DS . "admin" . DS .
 
 define('PATH_PAYMENT', ".." . DS . "probookingcenter.admin" . DS . "admin" . DS . "upload" . DS . "payment" . DS);
 define('PATH_GUARANTEE', ".." . DS . "probookingcenter.admin" . DS . "admin" . DS . "upload" . DS . "guarantee" . DS);
+define('PATH_PASSPORT',"..".DS."probookingcenter.admin".DS."admin". DS ."upload".DS."passport".DS);
+define('PATH_ZIP',"..".DS."probookingcenter.admin".DS."passport".DS);
+define("PATH_ROOT", "..".DS."probookingcenter".DS);

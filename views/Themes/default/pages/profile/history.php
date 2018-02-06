@@ -39,6 +39,7 @@
 									echo '<th width="5%">Guarantee</th>';
 								}
 								?>
+								<th width="5%">Passport</th>
 								<th width="5%">Payment</th>
 								<th width="5%">Cancel</th>
 							</tr>
@@ -121,7 +122,17 @@
 													  </td>'; 
 											}				
 											?>
-							
+										<td class="tac">
+											<?php
+											// passport ; 
+											if( $value['status'] == 5 || $value['status'] == 10 || $value['status'] == 15 || $value['status'] == 40 ) {
+												echo '<p class="fca lock"><i class="icon-lock"></i></p>';
+											}
+											else{
+												echo '<a href="'.URL.'/booking/passport/'.$value['book_id'].'" role="dialog-close" data-plugins="dialog" class="fcb"><i class="icon-upload"></i></a>&nbsp;<a href="'.URL.'/booking/passport_view/'.$value['book_id'].'"class="fcb"><i class="icon-folder-open-o	"></i></a>';
+											}
+											?>
+										</td>
 										<td class="tac">
 											<?php
 											// echo '<span>N/A</span>'; 

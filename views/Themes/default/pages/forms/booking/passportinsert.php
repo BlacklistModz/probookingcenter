@@ -20,7 +20,7 @@ $form 	->field("book_passport_file")
 		
 
 # set form
-$arr['form'] = '<form class="js-submit-form" style="color:#000;" method="post" action="'.URL.'booking/passport"  enctype="multipart/form-data"></form>';
+$arr['form'] = '<form class="js-submit-form" style="color:#000;" method="post" action="'.URL.'booking/passport_insert"  enctype="multipart/form-data"></form>';
 
 # set body
 $arr['body'] = $form->html();
