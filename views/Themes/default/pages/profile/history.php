@@ -1,11 +1,26 @@
+
+<style>
+.c1{
+	position: absolute;
+    top: 70px;
+    left: 42rem;
+}
+.c2{
+	position: absolute;
+    top: 70px;
+    right: 42rem;
+}
+</style>
+
 <section id="product" class="module parallax product" style="padding-top: 180px; background-image: url(<?=IMAGES?>/demo/curtain/curtain-3.jpg)">
 
 	<div class=" container clearfix">
 		<div class="primary-content post">
 			<div class="card">
 				<header class="header clearfix">
-					<h1 class="tac"><i class="icon-book"></i> Booking History</h1>
+						<h1 class="tac"><i class="icon-book"></i> Booking History</h1>
 					<h3 class="tac">บริษัท : <?=$this->me['company_name']?></h3>
+				
 				</header>
 				<ul class="rfloat mbm" ref="control">
 					<li>
@@ -125,11 +140,14 @@
 										<td class="tac">
 											<?php
 											// passport ; 
-											if( $value['status'] == 5 || $value['status'] == 10 || $value['status'] == 15 || $value['status'] == 40 ) {
+											if( ($value['status'] == 00 || $value['status'] == 05 || $value['status'] == 10 || $value['status'] == 40 || $value['status'] == 50) || ($this->me['id'] != $value['agen_id'] && $this->me['role']!='admin' && $value['booking_passport'] == 1) ) {
 												echo '<p class="fca lock"><i class="icon-lock"></i></p>';
 											}
 											else{
-												echo '<a href="'.URL.'/booking/passport/'.$value['book_id'].'" role="dialog-close" data-plugins="dialog" class="fcb"><i class="icon-upload"></i></a>&nbsp;<a href="'.URL.'/booking/passport_view/'.$value['book_id'].'"class="fcb"><i class="icon-folder-open-o	"></i></a>';
+												echo '<a href="'.URL.'/booking/passport/'.$value['book_id'].'" role="dialog-close" data-plugins="dialog" class="fcb"><i class="icon-upload"></i></a>';
+												if( !empty($value["total_passport"]) ){
+													echo '&nbsp;<a href="'.URL.'/booking/passport_view/'.$value['book_id'].'"class="fcb"><i class="icon-folder-open-o"></i></a>';
+												}
 											}
 											?>
 										</td>
@@ -172,4 +190,116 @@
 		// alert($(this).val());
 		window.location.href = Event.URL + "profile/history/" + $(this).val();
 	});
+
+	(function () {
+    var requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
+    window.requestAnimationFrame = requestAnimationFrame;
+})();
+
+var c = document.getElementById('c'),
+    ctx = c.getContext('2d'),
+    cw = c.width = 300,
+    ch = c.height = 200,
+    parts = [],
+    partCount = 200,   
+    partsFull = false,    
+    hueRange = 50,
+    globalTick = 0,
+    rand = function(min, max){
+        return Math.floor( (Math.random() * (max - min + 1) ) + min);
+    };
+
+var Part = function(){
+  this.reset();
+};
+
+Part.prototype.reset = function(){
+  this.startRadius = rand(0, 15);
+  this.radius = this.startRadius;
+  this.x = cw/2 + (rand(0, 3) - 3);
+  this.y = 130;      
+  this.vx = 0;
+  this.vy = 0;
+  this.hue = rand(globalTick - hueRange, globalTick + hueRange);
+  this.saturation = rand(50, 30);
+  this.lightness = rand(50, 50);
+  this.startAlpha = rand(10, 10) / 100;
+  this.alpha = this.startAlpha;
+  this.decayRate = .1;  
+  this.startLife = 7;
+  this.life = this.startLife;
+  this.lineWidth = rand(1, 3);
+}
+    
+Part.prototype.update = function(){  
+  this.vx += (rand(0, 200) - 100) / 1500;
+  this.vy -= this.life/50;  
+  this.x += this.vx;
+  this.y += this.vy;  
+  this.alpha = this.startAlpha * (this.life / this.startLife);
+  this.radius = this.startRadius * (this.life / this.startLife);
+  this.life -= this.decayRate;  
+  if(
+    this.x > cw + this.radius || 
+    this.x < -this.radius ||
+    this.y > ch + this.radius ||
+    this.y < -this.radius ||
+    this.life <= this.decayRate
+  ){
+    this.reset();  
+  }  
+};
+  
+Part.prototype.render = function(){
+  ctx.beginPath();
+  ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
+  ctx.fillStyle = ctx.strokeStyle = 'hsla('+this.hue+', '+this.saturation+'%, '+this.lightness+'%, '+this.alpha+')';
+  ctx.lineWidth = this.lineWidth;
+  ctx.fill();
+  ctx.stroke();
+};
+
+var createParts = function(){
+  if(!partsFull){
+    if(parts.length > partCount){
+      partsFull = true;
+    } else {
+      parts.push(new Part()); 
+    }
+  }
+};
+  
+var updateParts = function(){
+  var i = parts.length;
+  while(i--){
+    parts[i].update();
+  }
+};
+
+var renderParts = function(){
+  var i = parts.length;
+  while(i--){
+    parts[i].render();
+  }   
+};
+    
+var clear = function(){
+  ctx.globalCompositeOperation = 'destination-out';
+  ctx.fillStyle = 'hsla(0, 0%, 0%, .3)';
+  ctx.fillRect(0, 0, cw, ch);
+  ctx.globalCompositeOperation = 'lighter';
+};
+     
+var loop = function(){
+  window.requestAnimFrame(loop, c);
+  clear();
+  createParts();
+  updateParts();
+  renderParts();
+  globalTick++;
+};
+
+window.requestAnimFrame=function(){return window.requestAnimationFrame||window.webkitRequestAnimationFrame||window.mozRequestAnimationFrame||window.oRequestAnimationFrame||window.msRequestAnimationFrame||function(a){window.setTimeout(a,1E3/60)}}();
+
+loop();
 </script>

@@ -102,19 +102,8 @@ class Booking_Model extends Model {
     public function update($id, $data){
         $this->db->update($this->_objName, $data, "{$this->_cutNamefield}id={$id}");
     }
-    public function setPassport($data){
-        if( !empty($data["id"]) ){
             $id = $data["id"];
-            unset($data["id"]);
-            $this->db->update("passport", $data, "pass_id={$id}");
-        }
-        else{
-            $this->db->insert("passport", $data);
-        }
-    }
-    public function unsetPassport($id){
-        $this->db->delete("passport", "pass_id={$id}");
-    }
+   
     public function buildFrag($results, $options=array()) {
         $data = array();
         foreach ($results as $key => $value) {
@@ -159,6 +148,7 @@ class Booking_Model extends Model {
             }
         }
 
+        $data["total_passport"] = $this->db->count("passport", "pass_book_id={$data["book_id"]}");
 
         $data["permit"]["cancel"] = false;
         if( $data["status"] == 0 || $data["status"] == 5 ){
@@ -302,6 +292,19 @@ class Booking_Model extends Model {
             $data[$key]['pass_file_url']= $file;   
         }
         return$data;
+    }
+    public function setPassport($data){
+        if( !empty($data["id"]) ){
+            $id = $data["id"];
+            unset($data["id"]);
+            $this->db->update("passport", $data, "pass_id={$id}");
+        }
+        else{
+            $this->db->insert("passport", $data);
+        }
+    }
+     public function unsetPassport($id){
+        $this->db->delete("passport", "pass_id={$id}");
     }
     
 }
