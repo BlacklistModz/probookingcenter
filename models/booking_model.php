@@ -305,5 +305,15 @@ class Booking_Model extends Model {
         }
         return$data;
     }
-    
+
+    public function getPromotion( $date ){
+        $sth = $this->db->prepare("SELECT COALESCE(SUM(pro_discount),0) AS discount FROM promotions WHERE pro_start_date <= :datenow AND pro_end_date >= :datenow AND pro_status='enabled' LIMIT 1");
+        $sth->execute( array( ':datenow' => $date ) );
+
+        $fdata = $sth->fetch( PDO::FETCH_ASSOC );
+
+        if( $sth->rowCount()==1 ){
+            return $fdata["discount"];
+        } return 0;
+    }
 }

@@ -8,7 +8,7 @@ class Series extends Controller {
 
     public function index()
     {
-    	header("location:".URL."series/online");
+    	header("location:".URL."series/hotsale");
     }
     public function online($id=null){
         if( empty($this->me) ) $this->error();

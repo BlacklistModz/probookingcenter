@@ -114,7 +114,7 @@ class agency extends Controller {
             if( $_POST["type"] == "company" ){
                 if( empty($_POST["agency_company_id"]) ){
                     foreach ($_POST["company"] as $key => $value) {
-                        if( $key != 'com_fax' ){
+                        if( $key != 'com_fax' && $key != 'com_address2' ){
                             if( empty($value) ) $arr['error']['agen_'.$key] = 'กรุณากรอกข้อมูล';
                         }
                     }

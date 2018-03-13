@@ -272,6 +272,7 @@ class Products_Model extends Model{
         , p.per_price_4
         , p.per_price_5
         , p.single_charge
+        , p.per_discount
         
         , p.per_qty_seats
 
@@ -423,6 +424,7 @@ class Products_Model extends Model{
                 ,a.`per_com_agency`
                 ,a.`per_com_company_agency`
                 ,a.`single_charge`
+                ,a.`per_discount`
                 ,(SELECT  COALESCE(SUM(b.`book_list_qty`),0) FROM `booking_list` b LEFT OUTER JOIN `booking` e on b.`book_code` = e.`book_code` WHERE e.`per_id` =  a.`per_id` 
                 AND e.`bus_no` = bl.`bus_no` 
                 AND b.`book_list_code` IN ('1','2','3')

@@ -13,16 +13,34 @@ $formCom 	->field("agen_com_name")
             ->attr('style', 'color:black;')
             ->value('');
 
-$formCom 	->field("agen_com_address1")
+// $formCom 	->field("agen_com_address1")
+//             ->label("ที่อยู่บริษัท <span style='color:red'>*</span>")
+//             ->name('company[com_address1]')
+//             ->addClass('inputtext')
+//             ->autocomplete('off')
+//             ->type('textarea')
+//             ->attr('data-plugins', 'autosize')
+//             ->placeholder('ที่อยู่บริษัท')
+//             ->attr('style', 'color:black;')
+//             ->value('');
+
+$formCom    ->field("agen_com_address1")
             ->label("ที่อยู่บริษัท <span style='color:red'>*</span>")
-            ->name('company[com_address1]')
-            ->addClass('inputtext')
-            ->autocomplete('off')
-            ->type('textarea')
-            ->attr('data-plugins', 'autosize')
-            ->placeholder('ที่อยู่บริษัท')
-            ->attr('style', 'color:black;')
-            ->value('');
+            ->name("company[com_address1]")
+            ->addClass("inputtext")
+            ->autocomplete("off")
+            ->placeholder("ที่อยู่1")
+            ->attr("style", "color:black;")
+            ->value("");
+
+$formCom    ->field("agen_com_address2")
+            ->label("ที่อยู่บริษัท(ต่อ) <span style='color:red'>*</span>")
+            ->name("company[com_address2]")
+            ->addClass("inputtext")
+            ->autocomplete("off")
+            ->placeholder("ที่อยู่2")
+            ->attr("style", "color:black;")
+            ->value("");
 
 $formCom 	->field("agen_com_tel")
             ->label("เบอร์โทร <span style='color:red'>*</span>")

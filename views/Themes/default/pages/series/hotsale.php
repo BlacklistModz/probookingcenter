@@ -33,14 +33,35 @@
 						<tbody>
 							<?php foreach ($this->results as $key => $value) { 
 								$dateStr = $this->fn->q('time')->str_event_date($value["date_start"], $value["date_end"]);
+
+								$price_1 = $value["price_1"];
+								$price_2 = $value["price_2"];
+								$price_3 = $value["price_3"];
+
+								if( $value["discount"] != 0.00 ){
+									$price_1 = $value["price_1"]!=0.00 
+											   ? '<strike style="color:red;">'.number_format($value["price_1"]).'</strike> <label class="fwb">'.number_format($value["price_1"] - $value["discount"]).'.-</label>' 
+											   : '-';
+									$price_2 = $value["price_2"]!=0.00 
+											   ? '<strike style="color:red;">'.number_format($value["price_2"]).'</strike> <label class="fwb">'.number_format($value["price_2"] - $value["discount"]).'.-</label>' 
+											   : '-';
+									$price_3 = $value["price_3"]!=0.00 
+											   ? '<strike style="color:red;">'.number_format($value["price_3"]).'</strike> <label class="fwb">'.number_format($value["price_3"] - $value["discount"]).'.-</label>' 
+											   : '-';
+								}
+								else{
+									$price_1 = number_format($value["price_1"]).'.-';
+									$price_2 = number_format($value["price_2"]).'.-';
+									$price_3 = number_format($value["price_3"]).'.-';
+								}
 							?>
 							<tr>
 								<td class="tac fwb"><?=$value["ser_code"]?></td>
 								<td><span class="mls"><?=$value["ser_name"]?></span></td>
 								<td class="tac"><?=$dateStr?></td>
-								<td class="tar"><span class="mrs"><?= $value["price_1"]!=0.00 ? number_format($value["price_1"]).'.-' : '-' ?></span></td>
-								<td class="tar"><span class="mrs"><?= $value["price_2"]!=0.00 ? number_format($value["price_2"]).'.-' : '-' ?></span></td>
-								<td class="tar"><span class="mrs"><?= $value["price_3"]!=0.00 ? number_format($value["price_3"]).'.-' : '-' ?></span></td>
+								<td class="tar"><span class="mrs"><?= $price_1 ?></span></td>
+								<td class="tar"><span class="mrs"><?= $price_2 ?></span></td>
+								<td class="tar"><span class="mrs"><?= $price_3 ?></span></td>
 								<td class="tar"><span class="mrs"><?= $value["price_4"]!=0.00 ? number_format($value["price_4"]).'.-' : '-' ?></span></td>
 								<td class="tar"><span class="mrs"><?= $value["price_5"]!=0.00 ? number_format($value["price_5"]).'.-' : '-' ?></span></td>
 								<td class="tar"><span class="mrs"><?=number_format($value["single_charge"])?>.-</span></td>

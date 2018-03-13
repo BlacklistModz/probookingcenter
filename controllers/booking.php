@@ -41,6 +41,8 @@
         if( empty($item) ) $this->error();
         // print_r($item); die;
 
+        $promotion = $this->model->getPromotion( date("Y-m-d") );
+
         // จำนวน ที่นั่ง ที่จองไปแล้ว
         $seatBooked = $this->model->query('products')->seatBooked( $period );
         $availableSeat = $item['per_qty_seats']-$seatBooked['booking'];
@@ -55,39 +57,52 @@
             ),
             
         );
-        $DayOfGo = $this->fn->q('time')->DateDiff( date("Y-m-d"), $item['per_date_start'] ); // ระยะเวลา ระหว่าง วันนี้ กับ วันเดินทาง
-        $dw = date('w');
-    
-     
-                    if( $DayOfGo > 30 ){
-                        $settings['deposit']['date'] = date("Y-m-d 18:00:00", strtotime("+2 day"));
-                        $settings['fullPayment']['date'] = date('Y-m-d 18:00:00', strtotime("-30 day", strtotime($settings['trave']['date'])));
-                    }else if ($DayOfGo >8 && $DayOfGo <=30){
-                        $settings['fullPayment']['date'] = date("Y-m-d 18:00:00", strtotime("tomorrow"));
-                        $settings['deposit']['date'] = '-';
-                        $settings['deposit']['price'] = 0;
 
-                    }else if ($DayOfGo >=1 || $DayOfGo <=1  && $DayOfGo <=8){
-                            $settings['fullPayment']['date'] = date("Y-m-d H:i:s", strtotime("+3 hour"));
-                        $settings['deposit']['date'] = '-';
-                        $settings['deposit']['price'] = 0;
-                    }
-           
-           
-        // $settings['trave']['date'] = date('Y-m-d', strtotime("-1 day", strtotime($settings['trave']['date'])));
+        $DayOfGo = $this->fn->q('time')->DateDiff( date("Y-m-d"), $item['per_date_start'] );
+        if( $DayOfGo > 33 ){
+            $settings['deposit']['date'] = date("Y-m-d 18:00", strtotime("+2 day"));
+            $settings['fullPayment']['date'] = date('Y-m-d 18:00', strtotime("-30 day", strtotime($settings['trave']['date'])));
+        }elseif ( $DayOfGo > 8 ){
+            $settings['fullPayment']['date'] = date("Y-m-d 18:00", strtotime("tomorrow"));
+            $settings['deposit']['date'] = '';
+            $settings['deposit']['price'] = 0;
+        }else{
+            $settings['fullPayment']['date'] = date("Y-m-d H:i", strtotime("+3 hour"));
+            $settings['deposit']['date'] = '';
+            $settings['deposit']['price'] = 0;
+        }
+  
+        /* CODE คำนวนวันเดินทาง 3 เงื่อนไขของ ใบเฟิร์น (มากกว่า 30 วัน || 8 - 30 วัน || ต่ำกว่า 8 วัน)
+        $DayOfGo = $this->fn->q('time')->DateDiff( date("Y-m-d"), $item['per_date_start'] );
+        if( $DayOfGo > 30 ){
+            $settings['deposit']['date'] = date("Y-m-d", strtotime("+2 day"));
+            
+        }else if ($DayOfGo >8 && $DayOfGo <=30){
+            $settings['fullPayment']['date'] = date("Y-m-d 18:00:00", strtotime("tomorrow"));
+            $settings['deposit']['date'] = '-';
+            $settings['deposit']['price'] = 0;
+
+        }else if ($DayOfGo >=1 || $DayOfGo <=1  && $DayOfGo <=8){
+            $settings['fullPayment']['date'] = date("Y-m-d H:i:s", strtotime("+1 min"));
+            $settings['deposit']['date'] = '-';
+            $settings['deposit']['price'] = 0;
+        }
+        */
+
+        $settings['trave']['date'] = date('Y-m-d', strtotime("-1 day", strtotime($settings['trave']['date'])));
 
         // $settings['fullPayment']['date'] = date('Y-m-d', strtotime("-21 day", strtotime($settings['trave']['date'])));
 
         // if( strtotime($settings['fullPayment']['date']) < strtotime(date('Y-m-d')) ){
-        //     $settings['fullPayment']['date'] = date("Y-m-d 18:00:00", strtotime('tomorrow'));
+        //     $settings['fullPayment']['date'] = date("Y-m-d", strtotime('tomorrow'));
         //     $settings['deposit']['date'] = '-';
         //     $settings['deposit']['price'] = 0;
         // }
-        
 
         if( !empty($_POST) ){
 
             $totalQty = 0;
+            $totalDis = 0;
             $status = $availableSeat<=0 ? '05': '00'; // 00 = จอง, 05=รอ
             $_SUM = array('subtotal'=>0, 'discount'=>0, 'total'=>0); $seats = array(); $n = 0;
             foreach ($_POST['seat'] as $key => $value) {
@@ -113,6 +128,10 @@
                     'book_list_total' => $total,
                 );
 
+                if( in_array($key, array('adult', 'child', 'child_bed')) ){
+                    $totalDis += $value;
+                }
+
                 if( in_array($key, array('adult', 'child', 'child_bed', 'joinland')) ){
                     $totalQty += $value;
                 }
@@ -120,8 +139,17 @@
                 $_SUM['subtotal'] += $total;
             }
 
+            $room_total = 0;
+            foreach ($_POST["room"] as $key => $value) {
+                if( empty($value) ) continue;
+                $room_total += $value;
+            }
 
-            if( $totalQty>$availableSeat && $status=='00' ){
+            if( empty($_POST["sale_id"]) ){
+                $arr["error"]["sale_id"] = "กรุณาเลือก Sale Contact";
+                $arr['message'] = array('text'=>'กรุณาเลือก Sale Contact', 'auto'=>1, 'load'=>1, 'bg'=>'red');
+            }
+            else if( $totalDis>$availableSeat && $status=='00' ){
                 $arr['error'] = 1;
                 $arr['message'] = array('text'=>'ใส่จำนวนคนไม่ถูกต้อง!', 'auto'=>1, 'load'=>1, 'bg'=>'red') ;
             }
@@ -129,8 +157,17 @@
                 $arr['error'] = 1;
                 $arr['message'] = array('text'=>'Please, Input seat!', 'auto'=>1, 'load'=>1, 'bg'=>'red') ;
             }
-            else{
+            else if( empty($room_total) ){
+                $arr['error'] = 1;
+                $arr['message'] = array('text'=>'กรุณาเลือกห้อง', 'auto'=>1, 'load'=>1, 'bg'=>'red');
+            }
+            else if( empty($_POST["customername"]) || empty($_POST["customertel"]) ){
+                $arr['error']['customername'] = 'กรุณากรอกข้อมูลให้ครบถ้วน';
+                $arr['error']['customertel'] = 'กรุณากรอกข้อมูลให้ครบถ้วน';
 
+                $arr['message'] = array('text'=>'กรุณากรอกชื่อ-นามสกุล และเบอร์โทรศัพท์ของลูกค้า', 'auto'=>1, 'load'=>1, 'bg'=>'red');
+            }
+            else{
                 /*-- get: prefixnumber --*/
                 $prefixNumber = $this->model->prefixNumber();
 
@@ -153,7 +190,15 @@
                 $comOffice = $item['per_com_company_agency']*$totalQty;
                 $comAgency = $item['per_com_agency']*$totalQty;
 
-                $_SUM['discount'] = $comOffice + $comAgency;
+                $extra_discount = 0;
+                if( $item["per_discount"] > 0 ){
+                    $extra_discount += $item["per_discount"] * $totalDis;
+                }
+                if( $promotion > 0 ){
+                    $extra_discount += $promotion * $totalQty;
+                }
+
+                $_SUM['discount'] = $comOffice + $comAgency + $extra_discount;
                 $_SUM['total'] = $_SUM['subtotal'] - $_SUM['discount'];
 
                 $settings['deposit']['price'] *= $totalQty;
@@ -169,7 +214,7 @@
                     "per_id"=>$period, // period: id
                     "bus_no"=> isset($_POST['bus']) ? $_POST['bus']: 1,  // POST: bus
 
-                    "book_total"=>$_SUM['total'], // SUM: total
+                    "book_total"=>$_SUM['subtotal'], // book_total // ยอดรวมทั้งหมด
 
                     "book_master_deposit"=>$settings['deposit']['price'], // จำนวนเงินที่ต้องมัดจำ Master
                     "book_due_date_deposit"=>$settings['deposit']['date'], // กำหนดจ่ายเงินมัดจำ
@@ -177,8 +222,8 @@
                     "book_due_date_full_payment"=>$settings['fullPayment']['date'], // กำหนดจ่ายเงิน Full payment
 
                     "status"=> $status,
-                    // "book_discount"=>'', // 0
-                    "book_amountgrandtotal"=> $_SUM['total'], 
+                    "book_discount"=> $extra_discount , // 0
+                    "book_amountgrandtotal"=> $_SUM['total'],  // book_amountgrandtotal // ยอดสุทธิ
                     "book_comment"=>$_POST['comment'], // POST: comment
 
                     "book_com_agency_company"=>$comOffice,  // period: per_com_company_agency
@@ -188,7 +233,7 @@
                     "book_room_double"=>$_POST['room']['double'], 
                     "book_room_triple"=>$_POST['room']['triple'], 
                     "book_room_single"=>$_POST['room']['single'], 
-                    
+
                     "create_date"=>date('c'),
                     "book_cus_name"=>$_POST['customername'],
                     "book_cus_tel"=>$_POST['customertel'],
@@ -218,9 +263,11 @@
             }
 
            echo json_encode( $arr );
-        //    die;
+           die;
         }
         else{
+            $this->view->setData('promotion', $promotion);
+
             $this->view->setData( 'busList', $this->model->query('products')->busList( $period ) );
             $this->view->setData( 'salesList', $this->model->query('products')->salesList( $period ) );
 

@@ -370,7 +370,8 @@ if ( typeof Object.create !== 'function' ) {
                 );
 
             self.$elem.find('input#agen_com_name').val( data.com_name ).addClass('disabled').prop('disabled', true);
-            self.$elem.find('textarea#agen_com_address1').val( data.com_address1 ).addClass('disabled').prop('disabled', true);
+            self.$elem.find('input#agen_com_address1').val( data.com_address1 ).addClass('disabled').prop('disabled', true);
+            self.$elem.find('input#agen_com_address2').val( data.com_address2 ).addClass('disabled').prop('disabled', true);
             self.$elem.find('input#agen_com_tel').val( data.com_tel ).addClass('disabled').prop('disabled', true);
             self.$elem.find('input#agen_com_fax').val( data.com_fax ).addClass('disabled').prop('disabled', true);
             self.$elem.find('input#agen_com_ttt_on').val( data.com_ttt_on ).addClass('disabled').prop('disabled', true);
@@ -380,7 +381,8 @@ if ( typeof Object.create !== 'function' ) {
             self.hideCompany();
             $remove.click(function() {
                 self.$elem.find('input#agen_com_name').val( '' ).removeClass('disabled').prop('disabled', false);
-                self.$elem.find('textarea#agen_com_address1').val( '' ).removeClass('disabled').prop('disabled', false);
+                self.$elem.find('input#agen_com_address1').val( '' ).removeClass('disabled').prop('disabled', false);
+                self.$elem.find('input#agen_com_address2').val( '' ).removeClass('disabled').prop('disabled', false);
                 self.$elem.find('input#agen_com_tel').val( '' ).removeClass('disabled').prop('disabled', false);
                 self.$elem.find('input#agen_com_fax').val( '' ).removeClass('disabled').prop('disabled', false);
                 self.$elem.find('input#agen_com_ttt_on').val( '' ).removeClass('disabled').prop('disabled', false);

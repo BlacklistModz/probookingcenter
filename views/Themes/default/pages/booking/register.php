@@ -67,9 +67,9 @@ $roomtypeFrom = $form->html();
 
 #priceFrom
 $tablePrice = array();
-$tablePrice[] = array('id'=>'seat_adult','name'=>'Audit','price'=>$this->item['per_price_1'], 'cls'=>'sum-qty');
-$tablePrice[] = array('id'=>'seat_child','name'=>'Child','price'=>$this->item['per_price_2'], 'cls'=>'sum-qty');
-$tablePrice[] = array('id'=>'seat_child_bed','name'=>'Child No bed','price'=>$this->item['per_price_3'], 'cls'=>'sum-qty');
+$tablePrice[] = array('id'=>'seat_adult','name'=>'Audit','price'=>$this->item['per_price_1'], 'cls'=>'sum-qty sum-dis');
+$tablePrice[] = array('id'=>'seat_child','name'=>'Child','price'=>$this->item['per_price_2'], 'cls'=>'sum-qty sum-dis');
+$tablePrice[] = array('id'=>'seat_child_bed','name'=>'Child No bed','price'=>$this->item['per_price_3'], 'cls'=>'sum-qty sum-dis');
 $tablePrice[] = array('id'=>'seat_infant','name'=>'Infant','price'=>$this->item['per_price_4']);
 $tablePrice[] = array('id'=>'seat_joinland','name'=>'Joinland','price'=> $this->item['per_price_5'], 'cls'=>'sum-qty');
 $tablePrice[] = array('id'=>'room_single','name'=>'Sing Charge','price'=> $this->item['single_charge'] );
@@ -82,6 +82,13 @@ if( $this->item['per_com_agency']>0 ){
     $tablePrice[] = array('id'=>'sales_com','name'=>'Com Sale','price'=>$this->item['per_com_agency'], 'type'=> 'discount');
 }
 
+if( $this->item['per_discount'] > 0 ){
+    $tablePrice[] = array('id'=>'discount','name'=>'Discount','price'=>$this->item['per_discount'], 'type'=> 'discount_extra');
+}
+
+if( $this->promotion > 0 ){
+    $tablePrice[] = array('id'=>'promotion', 'name'=>'Promotion','price'=>$this->promotion, 'type'=>'discount');
+}
 
 ?>
 <section id="product" class="module parallax product" style="padding-top: 180px; background-image: url(<?=IMAGES?>/demo/curtain/curtain-3.jpg)">
@@ -193,7 +200,7 @@ if( $this->item['per_com_agency']>0 ){
                                     $type = !empty($value['type']) ?$value['type']: 'income';
 
                                     $cls = !empty($value['cls']) ?$value['cls']: '';
-                                    if( $type=='discount' ){
+                                    if( $type=='discount' || $type=='discount_extra' ){
 
                                         if( !$discountFrist ){
                                             $cls.=!empty($cls) ? " ":"";
@@ -216,7 +223,7 @@ if( $this->item['per_com_agency']>0 ){
                                     <td class="unit">x</td>
                                     <td class="qty" data-qty="<?=$value['qty']?>"><?=$value['qty']?></td>
                                     <td class="unit">=</td>
-                                    <td class="total"><?=$type=='discount' ? '-':''?><span data-total><?=number_format($value['qty']*$value['price'])?></span></td>
+                                    <td class="total"><?=$type=='discount' || $type=='discount_extra' ? '-':''?><span data-total><?=number_format($value['qty']*$value['price'])?></span></td>
                                 </tr>
                                 <?php } ?>
                             </tbody></table>
@@ -229,7 +236,7 @@ if( $this->item['per_com_agency']>0 ){
                     
                     <table >
                         <tr>
-                            <td class="prl" width="50%" valign="top">
+                            <td class="prl" width="40%" valign="top">
                                 <?php if( $availableSeat<=0 ){ ?>
                             <div class="uiBoxYellow pam fwb">*เนื่องจากมีจำนวนการจองที่นั่งเต็มจำนวนแล้ว<br>คุณจะสามาจองทัวร์นี้ได้ในสถานะ Waiting List เท่านั้น</div>
                             <?php }?>
@@ -347,12 +354,16 @@ if( $this->item['per_com_agency']>0 ){
 
         var comQty = 0;
         $.each( $('.tablePrice .sum-qty'), function () {
-
             comQty += parseInt( $(this).find('[data-qty]').attr('data-qty') ) || 0;
-
         } );
 
-        $('[data-summary-id=agency_com], [data-summary-id=sales_com]').find('[data-qty]').attr('data-qty', comQty).text( comQty );
+        var disQty = 0;
+        $.each( $('.tablePrice .sum-dis'), function() {
+            disQty += parseInt( $(this).find('[data-qty]').attr('data-qty') ) || 0;
+        } );
+
+        $('[data-summary-id=agency_com], [data-summary-id=sales_com], [data-summary-id=promotion]').find('[data-qty]').attr('data-qty', comQty).text( comQty );
+        $('[data-summary-id=discount]').find('[data-qty]').attr('data-qty', disQty).text( disQty );
 
         var _deposit = deposit*comQty;
         $('[data-deposit]').text( number_format(_deposit) );
@@ -367,7 +378,7 @@ if( $this->item['per_com_agency']>0 ){
             var qty = parseInt( $(this).find('[data-qty]').attr('data-qty') ) || 0;
             var total = price*qty;
             
-            if( type=='discount' ){
+            if( type=='discount' || type=='discount_extra' ){
                 discount+=total;
             }
             else{
